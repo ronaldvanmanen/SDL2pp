@@ -53,4 +53,4 @@ _deps
 CMakeUserPresets.json
 
 # CMake output
-out/
+artifacts/
