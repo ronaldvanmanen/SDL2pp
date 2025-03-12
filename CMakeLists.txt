@@ -14,4 +14,12 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET "${PROJECT_NAME}" PROPERTY CXX_STANDARD 20)
 endif()
 
+find_package(SDL2 CONFIG REQUIRED)
+
+target_link_libraries("${PROJECT_NAME}"
+    PRIVATE
+    $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
+    $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
+)
+
 target_include_directories("${PROJECT_NAME}" PUBLIC "${PROJECT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/include")
