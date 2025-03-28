@@ -86,7 +86,7 @@ namespace sdl2
     texture<TPixelFormat>
     renderer::create_texture(texture_access access, size size)
     {
-        return create_texture(access, size.width, size.height);
+        return create_texture<TPixelFormat>(access, size.width, size.height);
     }
 
     template<typename TPixelFormat>

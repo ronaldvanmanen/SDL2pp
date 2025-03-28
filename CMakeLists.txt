@@ -8,7 +8,7 @@ endif()
 
 project ("SDL2pp")
 
-add_library("SDL2pp"
+add_library("${PROJECT_NAME}"
   "src/argb8888.cpp"
   "src/color.cpp"
   "src/error.cpp"
@@ -28,11 +28,9 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
 endif()
 
 find_package(boost_optional REQUIRED CONFIG)
-
 target_link_libraries("${PROJECT_NAME}" PRIVATE Boost::optional)
 
 find_package(SDL2 REQUIRED CONFIG)
-
 target_link_libraries("${PROJECT_NAME}"
     PUBLIC
     $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
@@ -42,3 +40,5 @@ target_link_libraries("${PROJECT_NAME}"
 target_include_directories("${PROJECT_NAME}" PUBLIC "${PROJECT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/include")
 
 add_subdirectory("${PROJECT_SOURCE_DIR}/samples")
+
+add_subdirectory("${PROJECT_SOURCE_DIR}/tests")
