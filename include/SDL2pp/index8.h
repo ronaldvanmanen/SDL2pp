@@ -26,15 +26,32 @@
 
 namespace sdl2
 {
-    class alignas(alignof(uint32_t)) rgba8888
+    class alignas(alignof(uint8_t)) index8
     {
     public:
-        static constexpr pixel_format format = pixel_format::rgba8888;
+        static constexpr pixel_format format = pixel_format::index8;
 
     public:
-        rgba8888(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+        index8();
 
-    public:
-        uint8_t a, b, g, r;
+        index8(uint8_t value);
+
+        index8(const index8 &other);
+
+        index8& operator=(const index8 &other);
+
+        index8 operator++();
+
+        index8 operator++(int);
+
+        index8 operator--();
+
+        index8 operator--(int);
+
+        operator uint8_t() const;
+
+    private:
+        uint8_t _value;
     };
 }
+ 

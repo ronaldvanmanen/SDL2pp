@@ -20,21 +20,53 @@
 
 #pragma once
 
-#include <stdint.h>
+#include "SDL2pp/index8.h"
 
-#include "pixel_format.h"
+sdl2::index8::index8() { }
 
-namespace sdl2
+sdl2::index8::index8(uint8_t value)
+: _value(value)
+{ }
+
+sdl2::index8::index8(const sdl2::index8 &other)
+: _value(other._value)
+{ }
+
+sdl2::index8&
+sdl2::index8::operator=(const sdl2::index8 &other)
 {
-    class alignas(alignof(uint32_t)) rgba8888
+    if (this != &other)
     {
-    public:
-        static constexpr pixel_format format = pixel_format::rgba8888;
+        _value = other._value;
+    }
+    return *this;    
+}
 
-    public:
-        rgba8888(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+sdl2::index8
+sdl2::index8::operator++()
+{
+    return index8(++_value);
+}
 
-    public:
-        uint8_t a, b, g, r;
-    };
+sdl2::index8
+sdl2::index8::operator++(int)
+{
+    return index8(_value++);
+}
+
+sdl2::index8
+sdl2::index8::operator--()
+{
+    return index8(--_value);
+}
+
+sdl2::index8
+sdl2::index8::operator--(int)
+{
+    return index8(_value--);
+}
+
+sdl2::index8::operator uint8_t() const
+{
+    return _value;
 }

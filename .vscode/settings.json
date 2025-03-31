@@ -107,6 +107,7 @@
         "typeindex": "cpp",
         "unordered_set": "cpp",
         "variant": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "stack": "cpp"
     }
 }

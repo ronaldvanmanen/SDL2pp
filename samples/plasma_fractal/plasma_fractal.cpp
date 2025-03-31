@@ -25,64 +25,62 @@
 
 #include "SDL2pp/sdl.h"
 #include "SDL2pp/argb8888.h"
+#include "SDL2pp/index8.h"
 
 using namespace std;
 using namespace sdl2;
 
 namespace sdl2
 {
-    template<typename TColor>
     class palette
     {
     public:
-        palette(int capacity);
+        using size_type = typename vector<argb8888>::size_type;
 
-        TColor& operator[](size_t index);
+    public:
+        palette();
 
-        const TColor& operator[](size_t index) const;
+        argb8888& operator[](index8 index);
 
-        size_t size() const;
+        const argb8888& operator[](index8 index) const;
+
+        size_type size() const;
 
         void rotate_left();
 
         void rotate_right();
 
     private:
-        vector<TColor> _colors;
+        vector<argb8888> _colors;
 
-        size_t _offset;
+        size_type _offset;
     };
 
-    template<typename TColor>
-    palette<TColor>::palette(int capacity)
-    : _colors(capacity)
+    palette::palette()
+    : _colors(256)
     , _offset(0)
     { }
 
-    template<typename TColor>
-    TColor&
-    palette<TColor>::operator[](size_t index)
+    argb8888&
+    palette::operator[](index8 index)
     {
         return _colors[(_offset + index) % _colors.size()];
     }
 
-    template<typename TColor>
-    const TColor&
-    palette<TColor>::operator[](size_t index) const
+    const argb8888&
+    palette::operator[](index8 index) const
     {
         return _colors[(_offset + index) % _colors.size()];
     }
 
-    template<typename TColor>
-    size_t
-    palette<TColor>::size() const
+    palette::size_type
+    palette::size() const
     {
         return _colors.size();
     }
 
-    template<typename TColor>
     void
-    palette<TColor>::rotate_left()
+    palette::rotate_left()
     {
         --_offset;
 
@@ -92,9 +90,8 @@ namespace sdl2
         }
     }
 
-    template<typename TColor>
     void
-    palette<TColor>::rotate_right()
+    palette::rotate_right()
     {
         ++_offset;
         
@@ -109,17 +106,17 @@ random_device random_number_generator;
 
 default_random_engine random_number_engine(random_number_generator());
 
-palette<argb8888> generate_palette();
+palette generate_palette();
 
-image<uint8_t> generate_diamond_square_image(sdl2::size size);
+image<index8> generate_diamond_square_image(sdl2::size size);
 
-image<uint8_t> generate_diamond_square_image(int width, int height);
+image<index8> generate_diamond_square_image(int width, int height);
 
-image<uint8_t> generate_diamond_square_image(int size);
+image<index8> generate_diamond_square_image(int size);
 
-void generate_diamond(image<uint8_t> &map, int centerX, int centerY, int distance, int randomness);
+void generate_diamond(image<index8> &map, int centerX, int centerY, int distance, int randomness);
 
-void generate_square(image<uint8_t> &map, int center_x, int center_y, int distance, int randomness);
+void generate_square(image<index8> &map, int center_x, int center_y, int distance, int randomness);
 
 int next_power_of_two(int value);
 
@@ -130,15 +127,11 @@ int main()
     auto video_subsystem = sdl.init_video();
     auto window = video_subsystem.create_window("Plasma Fractal", 640, 480, window_flags::shown | window_flags::resizable);
     auto renderer = window.create_renderer(renderer_flags::accelerated | renderer_flags::present_vsync);
-    auto renderer_output_size = renderer.output_size();
-    auto texture = renderer.create_texture<argb8888>(
-        texture_access::streaming_access,
-        renderer_output_size.width,
-        renderer_output_size.height);
+    auto texture = renderer.create_texture<argb8888>(texture_access::streaming_access, renderer.output_size());
 
     auto palette = generate_palette();
 
-    auto plasma_fractal_image = generate_diamond_square_image(renderer_output_size);
+    auto plasma_fractal_image = generate_diamond_square_image(renderer.output_size());
 
     auto running = true;
     while (running)
@@ -150,6 +143,10 @@ int main()
             {
                 case event_type::quit:
                     running = false;
+                    break;
+
+                case event_type::key_up:
+                    plasma_fractal_image = generate_diamond_square_image(renderer.output_size());
                     break;
             }
         }
@@ -181,21 +178,22 @@ int main()
 }
 
 
-image<uint8_t> generate_diamond_square_image(sdl2::size size)
+image<index8> generate_diamond_square_image(sdl2::size size)
 {
     return generate_diamond_square_image(size.width, size.height);
 }
 
-image<uint8_t> generate_diamond_square_image(int width, int height)
+image<index8> generate_diamond_square_image(int width, int height)
 {
-    auto size = next_power_of_two(max(width, height)) + 1;
+    auto size = max(width, height);
     auto image = generate_diamond_square_image(size);
     return image;
 }
 
-image<uint8_t> generate_diamond_square_image(int size)
+image<index8> generate_diamond_square_image(int width_and_height)
 {
-    image<uint8_t> image(size, size);
+    int size = next_power_of_two(width_and_height) + 1;
+    image<index8> image(size, size);
     int randomness = 256;
     uniform_int_distribution<int> random_number_distribution(0, randomness - 1);
 
@@ -231,7 +229,7 @@ image<uint8_t> generate_diamond_square_image(int size)
     return image;
 }
 
-void generate_diamond(image<uint8_t> &map, int center_x, int center_y, int distance, int randomness)
+void generate_diamond(image<index8> &map, int center_x, int center_y, int distance, int randomness)
 {
     uniform_int_distribution<int> random_number_distribution(-randomness, randomness);
 
@@ -280,7 +278,7 @@ void generate_diamond(image<uint8_t> &map, int center_x, int center_y, int dista
     map(center_x, center_y) = static_cast<uint8_t>(value);
 }
 
-void generate_square(image<uint8_t> &map, int center_x, int center_y, int distance, int randomness)
+void generate_square(image<index8> &map, int center_x, int center_y, int distance, int randomness)
 {
     uniform_int_distribution<int> random_number_distribution(-randomness, randomness);
 
@@ -321,23 +319,25 @@ void generate_square(image<uint8_t> &map, int center_x, int center_y, int distan
     map(center_x, center_y) = static_cast<uint8_t>(value);
 }
 
-palette<argb8888> generate_palette()
+palette generate_palette()
 {
-    palette<argb8888> palette(256);
-    for (uint8_t i = 0; i < 32; ++i)
+    palette result;
+
+    for (index8 i = 0; i < 32; ++i)
     {
         uint8_t lo = i * 255 / 31;
         uint8_t hi = 255 - lo;
-        palette[i] = argb8888(255, lo, 0, 0);
-        palette[i + 32] = argb8888(255, hi, 0, 0);
-        palette[i + 64] = argb8888(255, 0, lo, 0);
-        palette[i + 96] = argb8888(255, 0, hi, 0);
-        palette[i + 128] = argb8888(255, 0, 0, lo);
-        palette[i + 160] = argb8888(255, 0, 0, hi);
-        palette[i + 192] = argb8888(255, lo, 0, lo);
-        palette[i + 224] = argb8888(255, hi, 0, hi);
+        result[i] = argb8888(255, lo, 0, 0);
+        result[i + 32] = argb8888(255, hi, 0, 0);
+        result[i + 64] = argb8888(255, 0, lo, 0);
+        result[i + 96] = argb8888(255, 0, hi, 0);
+        result[i + 128] = argb8888(255, 0, 0, lo);
+        result[i + 160] = argb8888(255, 0, 0, hi);
+        result[i + 192] = argb8888(255, lo, 0, lo);
+        result[i + 224] = argb8888(255, hi, 0, hi);
     }
-    return palette;
+
+    return result;
 }
 
 int next_power_of_two(int value)

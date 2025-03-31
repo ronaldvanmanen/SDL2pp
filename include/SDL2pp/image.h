@@ -23,6 +23,7 @@
 #include <stdint.h>
 
 #include "pixel_format.h"
+#include "pixel_format_traits.h"
 
 namespace sdl2
 {
@@ -30,7 +31,7 @@ namespace sdl2
     class image
     {
     public:
-        static const pixel_format format = pixel_format::ARGB8888;
+        static constexpr pixel_format format = pixel_format_traits<TPixelFormat>::format;
 
     public:
         image(int width, int height);

@@ -29,7 +29,7 @@ namespace sdl2
     class alignas(alignof(uint32_t)) argb8888
     {
     public:
-        static const pixel_format format = pixel_format::ARGB8888;
+        static constexpr pixel_format format = pixel_format::argb8888;
 
     public:
         argb8888();
@@ -41,6 +41,6 @@ namespace sdl2
         argb8888& operator=(const argb8888 &other);
 
     public:
-        uint8_t a, r, g, b;
+        uint8_t b, g, r, a;
     };
 }

@@ -26,10 +26,10 @@
 
 namespace sdl2
 {
-    template<class TPixelFormat>
+    template<typename TPixelFormat>
     class pixel_format_traits
     {
     public:
-        static const pixel_format format = TPixelFormat::format;
+        static constexpr pixel_format format = TPixelFormat::format;
     };
 }
