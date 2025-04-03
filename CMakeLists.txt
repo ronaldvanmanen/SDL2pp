@@ -8,7 +8,11 @@ endif()
 
 project ("SDL2pp")
 
-add_library("${PROJECT_NAME}" "${PROJECT_SOURCE_DIR}/sources/sdl.cpp")
+add_library("${PROJECT_NAME}"
+  "sources/error.cpp"
+  "sources/sdl.cpp"
+  "sources/window_flags.cpp"
+  "sources/window.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET "${PROJECT_NAME}" PROPERTY CXX_STANDARD 20)
@@ -17,7 +21,7 @@ endif()
 find_package(SDL2 CONFIG REQUIRED)
 
 target_link_libraries("${PROJECT_NAME}"
-    PRIVATE
+    PUBLIC
     $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
     $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
 )
