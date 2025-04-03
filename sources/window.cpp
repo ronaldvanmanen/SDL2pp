@@ -44,3 +44,15 @@ sdl2::window::~window()
         SDL_DestroyWindow(_wrappee);
     }
 }
+
+sdl2::renderer
+sdl2::window::create_renderer() const
+{
+    return sdl2::renderer(SDL_CreateRenderer(_wrappee, -1, 0));
+}
+
+sdl2::renderer
+sdl2::window::create_renderer(sdl2::renderer_flags flags) const
+{
+    return sdl2::renderer(SDL_CreateRenderer(_wrappee, -1, static_cast<uint32_t>(flags)));
+}

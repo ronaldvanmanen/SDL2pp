@@ -18,12 +18,39 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "SDL2pp/window.h"
-#include "SDL2pp/renderer.h"
+#pragma once
 
-int main()
+namespace sdl2
 {
-    sdl2::window window("Plasma Fractal", 640, 480, sdl2::window_flags::shown | sdl2::window_flags::resizable);
-    sdl2::renderer renderer = window.create_renderer(sdl2::renderer_flags::accelerated | sdl2::renderer_flags::present_vsync);
-    return 0;
+    class window;
+}
+
+#include <string>
+
+#include <SDL2/SDL_render.h>
+
+#include "error.h"
+#include "window.h"
+
+namespace sdl2
+{
+    class renderer
+    {
+    private:
+        renderer(SDL_Renderer* wrappee);
+
+    public:
+        renderer(const renderer& other) = delete;
+
+        renderer(renderer&& other);
+
+        ~renderer();
+
+        renderer& operator=(const renderer& other) = delete;
+    
+    private:
+        SDL_Renderer* _wrappee;
+
+        friend class window;
+    };
 }

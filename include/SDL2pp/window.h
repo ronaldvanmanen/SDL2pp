@@ -20,11 +20,18 @@
 
 #pragma once
 
+namespace sdl2
+{
+    class renderer;
+}
+
 #include <string>
 #include <memory>
 
 #include <SDL2/SDL_video.h>
 
+#include "renderer_flags.h"
+#include "renderer.h"
 #include "window_flags.h"
 
 namespace sdl2
@@ -43,6 +50,10 @@ namespace sdl2
         ~window();
 
         window operator=(const window& other) = delete;
+
+        renderer create_renderer() const;
+
+        renderer create_renderer(renderer_flags flags) const;
 
     private:
         SDL_Window* _wrappee;

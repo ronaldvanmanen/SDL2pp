@@ -32,3 +32,16 @@ BOOST_AUTO_TEST_CASE(test_window_constructors)
         sdl2::window window("test_window_constructor", 640, 480, sdl2::window_flags::hidden)
     );
 }
+
+BOOST_AUTO_TEST_CASE(test_window_create_renderer)
+{
+    sdl2::window window("test_window_create_renderer", 640, 480, sdl2::window_flags::hidden);
+
+    BOOST_REQUIRE_NO_THROW(
+        window.create_renderer()
+    );
+
+    BOOST_REQUIRE_NO_THROW(
+        window.create_renderer(sdl2::renderer_flags::accelerated | sdl2::renderer_flags::present_vsync)
+    );
+}
