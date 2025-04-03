@@ -8,4 +8,10 @@ endif()
 
 project ("SDL2pp-samples")
 
-add_subdirectory("${PROJECT_SOURCE_DIR}/plasma_fractal")
+add_executable("plasma_fractal" "plasma_fractal.cpp")
+
+if (CMAKE_VERSION VERSION_GREATER 3.12)
+  set_property(TARGET "plasma_fractal" PROPERTY CXX_STANDARD 20)
+endif()
+
+target_link_libraries("plasma_fractal" PRIVATE SDL2pp)
