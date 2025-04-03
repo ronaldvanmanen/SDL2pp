@@ -18,12 +18,19 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "SDL2pp/window.h"
+#include <boost/test/unit_test.hpp>
+
 #include "SDL2pp/renderer.h"
 
-int main()
+BOOST_AUTO_TEST_CASE(test_renderer_constructors)
 {
-    sdl2::window window("Plasma Fractal", 640, 480, sdl2::window_flags::shown | sdl2::window_flags::resizable);
-    sdl2::renderer renderer(window, sdl2::renderer_flags::accelerated | sdl2::renderer_flags::present_vsync);
-    return 0;
+    sdl2::window main_window("test_renderer_constructors", 640, 480, sdl2::window_flags::hidden);
+
+    BOOST_REQUIRE_NO_THROW(
+        sdl2::renderer renderer(main_window);
+    );
+
+    BOOST_REQUIRE_NO_THROW(
+        sdl2::renderer renderer(main_window, sdl2::renderer_flags::accelerated | sdl2::renderer_flags::present_vsync)
+    );
 }
