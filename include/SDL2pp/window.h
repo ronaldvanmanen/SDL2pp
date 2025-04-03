@@ -44,6 +44,8 @@ namespace sdl2
 
         window operator=(const window& other) = delete;
 
+        SDL_Window* wrappee() const;
+
     private:
         SDL_Window* _wrappee;
     };

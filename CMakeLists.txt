@@ -18,6 +18,8 @@ include(CTest)
 
 add_library("${PROJECT_NAME}"
   "sources/error.cpp"
+  "sources/renderer_flags.cpp"
+  "sources/renderer.cpp"
   "sources/sdl.cpp"
   "sources/window_flags.cpp"
   "sources/window.cpp")

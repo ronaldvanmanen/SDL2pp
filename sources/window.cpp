@@ -44,3 +44,9 @@ sdl2::window::~window()
         SDL_DestroyWindow(_wrappee);
     }
 }
+
+SDL_Window*
+sdl2::window::wrappee() const
+{
+    return _wrappee;
+}

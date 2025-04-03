@@ -18,12 +18,20 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "SDL2pp/window.h"
-#include "SDL2pp/renderer.h"
+#pragma once
 
-int main()
+#include <SDL2/SDL_render.h>
+
+namespace sdl2
 {
-    sdl2::window window("Plasma Fractal", 640, 480, sdl2::window_flags::shown | sdl2::window_flags::resizable);
-    sdl2::renderer renderer(window, sdl2::renderer_flags::accelerated | sdl2::renderer_flags::present_vsync);
-    return 0;
+    enum class renderer_flags
+    {
+        none = 0,
+        software = SDL_RENDERER_SOFTWARE,
+        accelerated = SDL_RENDERER_ACCELERATED,
+        present_vsync = SDL_RENDERER_PRESENTVSYNC,
+        target_texture = SDL_RENDERER_TARGETTEXTURE,
+    };
+
+    renderer_flags operator|(renderer_flags left, renderer_flags right);
 }
