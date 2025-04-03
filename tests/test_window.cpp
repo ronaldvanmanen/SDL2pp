@@ -18,11 +18,17 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
+#include <boost/test/unit_test.hpp>
+
 #include "SDL2pp/window.h"
 
-int main()
+BOOST_AUTO_TEST_CASE(test_window_constructors)
 {
-    sdl2::window window("Plasma Fractal", 640, 480, sdl2::window_flags::shown | sdl2::window_flags::resizable);
-    
-    return 0;
+    BOOST_REQUIRE_NO_THROW(
+        sdl2::window window("test_window_constructor", 640, 480)
+    );
+
+    BOOST_REQUIRE_NO_THROW(
+        sdl2::window window("test_window_constructor", 640, 480, sdl2::window_flags::hidden)
+    );
 }

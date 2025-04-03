@@ -10,7 +10,8 @@ project ("SDLpp-tests")
 
 add_executable("${PROJECT_NAME}"
   "global_fixture.cpp"
-  "test_main.cpp")
+  "test_main.cpp"
+  "test_window.cpp")
 
 find_package(boost_unit_test_framework REQUIRED CONFIG)
 target_link_libraries("${PROJECT_NAME}"

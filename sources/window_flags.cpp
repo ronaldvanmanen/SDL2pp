@@ -18,11 +18,9 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "SDL2pp/window.h"
+#include "SDL2pp/window_flags.h"
 
-int main()
+sdl2::window_flags sdl2::operator|(sdl2::window_flags left, sdl2::window_flags right)
 {
-    sdl2::window window("Plasma Fractal", 640, 480, sdl2::window_flags::shown | sdl2::window_flags::resizable);
-    
-    return 0;
+    return (sdl2::window_flags)(((uint32_t)left) | ((uint32_t)right));
 }
