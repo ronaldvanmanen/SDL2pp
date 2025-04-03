@@ -8,7 +8,7 @@
         "name": "(Windows) Launch",
         "type": "cppvsdbg",
         "request": "launch",
-        "program": "${workspaceFolder}/artifacts/build/x64-debug/samples/plasma_fractal/plasma_fractal.exe",
+        "program": "${workspaceFolder}/artifacts/build/x64-debug/samples/plasma_fractal.exe",
         "args": [],
         "stopAtEntry": false,
         "cwd": "${fileDirname}",
