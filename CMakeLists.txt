@@ -7,8 +7,20 @@ if (POLICY CMP0141)
 endif()
 
 project ("SDL2pp")
+  
+# FIX: Running tests from within VSCode fails unless we
+#
+# A) Remove "enable_testing()"
+# B) Add "include(CTest)" to the root "CMakeLists.txt" before we declare any tests
+#
+# See: https://github.com/microsoft/vscode-cmake-tools/issues/3917
+include(CTest)
 
-add_library("${PROJECT_NAME}" "${PROJECT_SOURCE_DIR}/sources/sdl.cpp")
+add_library("${PROJECT_NAME}"
+  "sources/error.cpp"
+  "sources/sdl.cpp"
+  "sources/window_flags.cpp"
+  "sources/window.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET "${PROJECT_NAME}" PROPERTY CXX_STANDARD 20)
