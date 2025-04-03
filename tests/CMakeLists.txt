@@ -10,7 +10,8 @@ project ("SDLpp-tests")
 
 add_executable("${PROJECT_NAME}"
   "global_fixture.cpp"
-  "test_main.cpp")
+  "test_main.cpp"
+  "test_window.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)

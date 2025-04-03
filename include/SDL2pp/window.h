@@ -18,11 +18,33 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "SDL2pp/window.h"
+#pragma once
 
-int main()
+#include <string>
+#include <memory>
+
+#include <SDL2/SDL_video.h>
+
+#include "window_flags.h"
+
+namespace sdl2
 {
-    sdl2::window window("Plasma Fractal", 640, 480, sdl2::window_flags::shown | sdl2::window_flags::resizable);
-    
-    return 0;
+    class window
+    {
+    public:
+        window(const std::string& title, int width, int height);
+
+        window(const std::string& title, int width, int height, window_flags flags);
+
+        window(const window& other) = delete;
+
+        window(window&& other);
+
+        ~window();
+
+        window operator=(const window& other) = delete;
+
+    private:
+        SDL_Window* _wrappee;
+    };
 }

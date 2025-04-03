@@ -18,11 +18,23 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "SDL2pp/window.h"
+#pragma once
 
-int main()
+#include <stdexcept>
+
+namespace sdl2
 {
-    sdl2::window window("Plasma Fractal", 640, 480, sdl2::window_flags::shown | sdl2::window_flags::resizable);
-    
-    return 0;
+    class error : public std::runtime_error
+    {
+    public:
+        error(const std::string &what_arg);
+
+        error(const char *what_arg);
+
+        error(const error &other);
+
+        error& operator=(const error &other);
+    };
+
+    void throw_last_error(bool condition);
 }

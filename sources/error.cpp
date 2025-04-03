@@ -18,11 +18,37 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "SDL2pp/window.h"
+#include <SDL2/SDL_error.h>
 
-int main()
+#include "SDL2pp/error.h"
+
+sdl2::error::error(const std::string &what_arg)
+: std::runtime_error(what_arg)
+{ }
+
+sdl2::error::error(const char* what_arg)
+: std::runtime_error(what_arg)
+{ }
+
+sdl2::error::error(const sdl2::error& other)
+: std::runtime_error(other)
+{ }
+
+sdl2::error&
+sdl2::error::operator=(const error& other)
 {
-    sdl2::window window("Plasma Fractal", 640, 480, sdl2::window_flags::shown | sdl2::window_flags::resizable);
-    
-    return 0;
+    if (this != &other)
+    {
+        std::runtime_error::operator= (other);
+    }
+    return *this;
+}
+
+void
+sdl2::throw_last_error(bool condition)
+{
+    if (condition)
+    {
+        throw sdl2::error(SDL_GetError());
+    }
 }

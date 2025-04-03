@@ -18,11 +18,29 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
+#include "SDL2pp/error.h"
 #include "SDL2pp/window.h"
 
-int main()
+sdl2::window::window(const std::string& title, int width, int height)
+: _wrappee(SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, 0))
 {
-    sdl2::window window("Plasma Fractal", 640, 480, sdl2::window_flags::shown | sdl2::window_flags::resizable);
-    
-    return 0;
+    sdl2::throw_last_error(_wrappee == nullptr);
+}
+
+sdl2::window::window(const std::string& title, int width, int height, sdl2::window_flags flags)
+: _wrappee(SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, static_cast<uint32_t>(flags)))
+{
+    sdl2::throw_last_error(_wrappee == nullptr);
+}
+
+sdl2::window::window(sdl2::window&& other)
+: _wrappee(std::exchange(other._wrappee, nullptr))
+{ }
+
+sdl2::window::~window()
+{
+    if (_wrappee != nullptr)
+    {
+        SDL_DestroyWindow(_wrappee);
+    }
 }
