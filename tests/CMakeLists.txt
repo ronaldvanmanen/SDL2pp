@@ -12,6 +12,7 @@ add_executable("${PROJECT_NAME}"
   "global_fixture.cpp"
   "test_main.cpp"
   "test_renderer.cpp"
+  "test_texture.cpp"
   "test_window.cpp")
 
 find_package(boost_unit_test_framework REQUIRED CONFIG)

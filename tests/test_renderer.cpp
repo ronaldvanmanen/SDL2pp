@@ -24,13 +24,22 @@
 
 BOOST_AUTO_TEST_CASE(test_renderer_constructors)
 {
-    sdl2::window main_window("test_renderer_constructors", 640, 480, sdl2::window_flags::hidden);
+    sdl2::window test_window("test_renderer_constructors", 640, 480, sdl2::window_flags::hidden);
 
     BOOST_REQUIRE_NO_THROW(
-        sdl2::renderer renderer(main_window);
+        sdl2::renderer test_renderer(test_window);
     );
 
     BOOST_REQUIRE_NO_THROW(
-        sdl2::renderer renderer(main_window, sdl2::renderer_flags::accelerated | sdl2::renderer_flags::present_vsync)
+        sdl2::renderer test_renderer(test_window, sdl2::renderer_flags::accelerated | sdl2::renderer_flags::present_vsync)
     );
+}
+
+BOOST_AUTO_TEST_CASE(test_renderer_output_size)
+{
+    sdl2::window test_window("test_renderer_constructors", 640, 480, sdl2::window_flags::hidden);
+    sdl2::renderer test_renderer(test_window);
+    sdl2::size test_renderer_output_size = test_renderer.output_size();
+    BOOST_TEST(test_renderer_output_size.width == 640);
+    BOOST_TEST(test_renderer_output_size.height == 480);
 }

@@ -40,3 +40,18 @@ sdl2::renderer::~renderer()
         SDL_DestroyRenderer(_wrappee);
     }
 }
+
+sdl2::size
+sdl2::renderer::output_size() const
+{
+    int width, height;
+    sdl2::throw_last_error(
+        SDL_GetRendererOutputSize(_wrappee, &width, &height) < 0
+    );
+    return sdl2::size(width, height);
+}
+
+SDL_Renderer* sdl2::renderer::wrappee() const
+{
+    return _wrappee;
+}
