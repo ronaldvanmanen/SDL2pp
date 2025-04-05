@@ -18,13 +18,18 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "SDL2pp/window.h"
-#include "SDL2pp/renderer.h"
+#pragma once
 
-int main()
+#include <string>
+
+#include <SDL2/SDL_render.h>
+
+namespace sdl2
 {
-    sdl2::window window("Plasma Fractal", 640, 480, sdl2::window_flags::shown | sdl2::window_flags::resizable);
-    sdl2::renderer renderer = window.create_renderer(sdl2::renderer_flags::accelerated | sdl2::renderer_flags::present_vsync);
-    sdl2::texture texture = renderer.create_texture<argb8888>(texture_access::streaming_access, renderer.output_size());
-    return 0;
+    enum class texture_access : int32_t
+    {
+        static_access = SDL_TEXTUREACCESS_STATIC,
+        streaming_access = SDL_TEXTUREACCESS_STREAMING,
+        target_access = SDL_TEXTUREACCESS_TARGET
+    };
 }

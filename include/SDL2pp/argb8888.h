@@ -18,13 +18,29 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "SDL2pp/window.h"
-#include "SDL2pp/renderer.h"
+#pragma once
 
-int main()
+#include <stdint.h>
+
+#include "pixel_format.h"
+
+namespace sdl2
 {
-    sdl2::window window("Plasma Fractal", 640, 480, sdl2::window_flags::shown | sdl2::window_flags::resizable);
-    sdl2::renderer renderer = window.create_renderer(sdl2::renderer_flags::accelerated | sdl2::renderer_flags::present_vsync);
-    sdl2::texture texture = renderer.create_texture<argb8888>(texture_access::streaming_access, renderer.output_size());
-    return 0;
+    class alignas(alignof(uint32_t)) argb8888
+    {
+    public:
+        static constexpr pixel_format format = pixel_format::argb8888;
+
+    public:
+        argb8888();
+
+        argb8888(uint8_t a, uint8_t r, uint8_t g, uint8_t b);
+
+        argb8888(const argb8888 &other);
+
+        argb8888& operator=(const argb8888 &other);
+
+    public:
+        uint8_t b, g, r, a;
+    };
 }

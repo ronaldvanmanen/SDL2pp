@@ -20,50 +20,50 @@
 
 #pragma once
 
-namespace sdl2
-{
-    class window;
-}
-
+#include <functional>
 #include <string>
 
 #include <SDL2/SDL_render.h>
 
-#include "error.h"
-#include "pixel_format_traits.h"
-#include "texture_access.h"
-#include "texture.h"
-#include "window.h"
+#include "SDL2pp/error.h"
 
 namespace sdl2
 {
-    class renderer
+    template<typename TPixelFormat>
+    class texture
     {
     private:
-        renderer(SDL_Renderer* wrappee);
-
+        texture(SDL_Window* window, texture_access access, int width, int height);
+    
     public:
-        renderer(const renderer& other) = delete;
+        texture(const texture<TPixelFormat>& other) = delete;
 
-        renderer(renderer&& other);
+        texture(texture<TPixelFormat>&& other);
 
-        ~renderer();
+        ~texture();
 
-        renderer& operator=(const renderer& other) = delete;
-
-        template<typename TPixelFormat>
-        texture<TPixelFormat> create_texture(texture_access access, int width, int height);
+        texture<TPixelFormat>& operator=(const texture<TPixelFormat>& other) = delete;
 
     private:
-        SDL_Renderer* _wrappee;
-
-        friend class window;
+        SDL_Texture* _wrappee;
     };
 
     template<typename TPixelFormat>
-    texture<TPixelFormat>
-    renderer::create_texture(texture_access access, int width, int height)
+    texture<TPixelFormat>::texture(SDL_Texture* wrappee)
+    : _wrappee(wrappee)
+    { }
+    
+    template<typename TPixelFormat>
+    texture<TPixelFormat>::texture(sdl2::texture<TPixelFormat>&& other)
+    : _wrappee(std::exchange(other._wrappee, nullptr))
+    { }
+    
+    template<typename TPixelFormat>
+    texture<TPixelFormat>::~texture()
     {
-        return texture<TPixelFormat>(_wrappee, access, width, height);
-    }    
+        if (_wrappee != nullptr)
+        {
+            SDL_DestroyTexture(_wrappee);
+        }
+    }
 }

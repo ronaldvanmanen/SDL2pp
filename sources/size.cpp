@@ -18,13 +18,9 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "SDL2pp/window.h"
-#include "SDL2pp/renderer.h"
+#include "SDL2pp/size.h"
 
-int main()
-{
-    sdl2::window window("Plasma Fractal", 640, 480, sdl2::window_flags::shown | sdl2::window_flags::resizable);
-    sdl2::renderer renderer = window.create_renderer(sdl2::renderer_flags::accelerated | sdl2::renderer_flags::present_vsync);
-    sdl2::texture texture = renderer.create_texture<argb8888>(texture_access::streaming_access, renderer.output_size());
-    return 0;
-}
+sdl2::size::size(int width, int height)
+: width(width)
+, height(height)
+{ }
