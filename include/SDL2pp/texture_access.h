@@ -20,38 +20,16 @@
 
 #pragma once
 
-#include <string>
+#include <stdint.h>
 
 #include <SDL2/SDL_render.h>
 
-#include "error.h"
-#include "pixel_format_traits.h"
-#include "renderer_flags.h"
-#include "size.h"
-#include "window.h"
-
 namespace sdl2
 {
-    class renderer
+    enum class texture_access : int32_t
     {
-    public:
-        renderer(const window& owner);
-
-        renderer(const window& owner, renderer_flags flags);
-
-        renderer(const renderer& other) = delete;
-
-        renderer(renderer&& other);
-
-        ~renderer();
-
-        renderer& operator=(const renderer& other) = delete;
-
-        size output_size() const;
-
-        SDL_Renderer* wrappee() const;
-
-    private:
-        SDL_Renderer* _wrappee;
+        static_access = SDL_TEXTUREACCESS_STATIC,
+        streaming_access = SDL_TEXTUREACCESS_STREAMING,
+        target_access = SDL_TEXTUREACCESS_TARGET
     };
 }

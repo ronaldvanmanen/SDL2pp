@@ -18,40 +18,27 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#pragma once
+#include <boost/test/unit_test.hpp>
 
-#include <string>
+#include "SDL2pp/argb8888.h"
+#include "SDL2pp/renderer.h"
+#include "SDL2pp/texture.h"
 
-#include <SDL2/SDL_render.h>
-
-#include "error.h"
-#include "pixel_format_traits.h"
-#include "renderer_flags.h"
-#include "size.h"
-#include "window.h"
-
-namespace sdl2
+BOOST_AUTO_TEST_CASE(test_texture_constructors)
 {
-    class renderer
-    {
-    public:
-        renderer(const window& owner);
+    sdl2::window test_window(
+        "test_renderer_constructors",
+        640,
+        480,
+        sdl2::window_flags::hidden
+    );
 
-        renderer(const window& owner, renderer_flags flags);
+    sdl2::renderer test_renderer(
+        test_window,
+        sdl2::renderer_flags::accelerated | sdl2::renderer_flags::present_vsync
+    );
 
-        renderer(const renderer& other) = delete;
-
-        renderer(renderer&& other);
-
-        ~renderer();
-
-        renderer& operator=(const renderer& other) = delete;
-
-        size output_size() const;
-
-        SDL_Renderer* wrappee() const;
-
-    private:
-        SDL_Renderer* _wrappee;
-    };
+    BOOST_REQUIRE_NO_THROW(
+        sdl2::texture<sdl2::argb8888> test_texture(test_renderer, sdl2::texture_access::streaming_access, test_renderer.output_size())
+    );
 }

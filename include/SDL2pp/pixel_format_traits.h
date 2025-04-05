@@ -20,38 +20,16 @@
 
 #pragma once
 
-#include <string>
+#include <memory>
 
-#include <SDL2/SDL_render.h>
-
-#include "error.h"
-#include "pixel_format_traits.h"
-#include "renderer_flags.h"
-#include "size.h"
-#include "window.h"
+#include "pixel_format.h"
 
 namespace sdl2
 {
-    class renderer
+    template<typename TPixelFormat>
+    class pixel_format_traits
     {
     public:
-        renderer(const window& owner);
-
-        renderer(const window& owner, renderer_flags flags);
-
-        renderer(const renderer& other) = delete;
-
-        renderer(renderer&& other);
-
-        ~renderer();
-
-        renderer& operator=(const renderer& other) = delete;
-
-        size output_size() const;
-
-        SDL_Renderer* wrappee() const;
-
-    private:
-        SDL_Renderer* _wrappee;
+        static constexpr pixel_format format = TPixelFormat::format;
     };
 }

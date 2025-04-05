@@ -18,40 +18,9 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#pragma once
+#include "SDL2pp/size.h"
 
-#include <string>
-
-#include <SDL2/SDL_render.h>
-
-#include "error.h"
-#include "pixel_format_traits.h"
-#include "renderer_flags.h"
-#include "size.h"
-#include "window.h"
-
-namespace sdl2
-{
-    class renderer
-    {
-    public:
-        renderer(const window& owner);
-
-        renderer(const window& owner, renderer_flags flags);
-
-        renderer(const renderer& other) = delete;
-
-        renderer(renderer&& other);
-
-        ~renderer();
-
-        renderer& operator=(const renderer& other) = delete;
-
-        size output_size() const;
-
-        SDL_Renderer* wrappee() const;
-
-    private:
-        SDL_Renderer* _wrappee;
-    };
-}
+sdl2::size::size(int width, int height)
+: width(width)
+, height(height)
+{ }

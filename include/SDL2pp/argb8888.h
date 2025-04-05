@@ -20,38 +20,27 @@
 
 #pragma once
 
-#include <string>
+#include <stdint.h>
 
-#include <SDL2/SDL_render.h>
-
-#include "error.h"
-#include "pixel_format_traits.h"
-#include "renderer_flags.h"
-#include "size.h"
-#include "window.h"
+#include "pixel_format.h"
 
 namespace sdl2
 {
-    class renderer
+    class alignas(alignof(uint32_t)) argb8888
     {
     public:
-        renderer(const window& owner);
+        static constexpr pixel_format format = pixel_format::argb8888;
 
-        renderer(const window& owner, renderer_flags flags);
+    public:
+        argb8888();
 
-        renderer(const renderer& other) = delete;
+        argb8888(uint8_t a, uint8_t r, uint8_t g, uint8_t b);
 
-        renderer(renderer&& other);
+        argb8888(const argb8888 &other);
 
-        ~renderer();
+        argb8888& operator=(const argb8888 &other);
 
-        renderer& operator=(const renderer& other) = delete;
-
-        size output_size() const;
-
-        SDL_Renderer* wrappee() const;
-
-    private:
-        SDL_Renderer* _wrappee;
+    public:
+        uint8_t b, g, r, a;
     };
 }

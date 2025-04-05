@@ -18,40 +18,29 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#pragma once
+#include "SDL2pp/argb8888.h"
 
-#include <string>
+sdl2::argb8888::argb8888()
+: argb8888(0, 0, 0, 0)
+{ }
 
-#include <SDL2/SDL_render.h>
+sdl2::argb8888::argb8888(uint8_t a, uint8_t r, uint8_t g, uint8_t b)
+: b(b), r(r), g(g), a(a)
+{ }
 
-#include "error.h"
-#include "pixel_format_traits.h"
-#include "renderer_flags.h"
-#include "size.h"
-#include "window.h"
+sdl2::argb8888::argb8888(const argb8888 &other)
+: b(other.b), r(other.r), g(other.g), a(other.a)
+{ }
 
-namespace sdl2
+sdl2::argb8888&
+sdl2::argb8888::operator=(const argb8888 &other)
 {
-    class renderer
+    if (this != &other)
     {
-    public:
-        renderer(const window& owner);
-
-        renderer(const window& owner, renderer_flags flags);
-
-        renderer(const renderer& other) = delete;
-
-        renderer(renderer&& other);
-
-        ~renderer();
-
-        renderer& operator=(const renderer& other) = delete;
-
-        size output_size() const;
-
-        SDL_Renderer* wrappee() const;
-
-    private:
-        SDL_Renderer* _wrappee;
-    };
+        b = other.b;
+        r = other.r;
+        g = other.g;
+        a = other.a;
+    }
+    return *this;
 }
