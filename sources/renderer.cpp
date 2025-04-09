@@ -58,5 +58,5 @@ SDL_Renderer* sdl2::renderer::wrappee() const
 
 sdl2::renderer_flags sdl2::operator|(sdl2::renderer_flags left, sdl2::renderer_flags right)
 {
-    return (sdl2::renderer_flags)(((uint32_t)left) | ((uint32_t)right));
+    return static_cast<sdl2::renderer_flags>(static_cast<uint32_t>(left) | static_cast<uint32_t>(right));
 }
