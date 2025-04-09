@@ -18,34 +18,30 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "SDL2pp/argb8888.h"
+#include <memory>
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_events.h>
+
 #include "SDL2pp/event_queue.h"
-#include "SDL2pp/event.h"
-#include "SDL2pp/renderer.h"
-#include "SDL2pp/texture.h"
-#include "SDL2pp/window.h"
 
-int main()
+sdl2::event_queue::event_queue()
 {
-    sdl2::window window("Plasma Fractal", 640, 480, sdl2::window_flags::shown | sdl2::window_flags::resizable);
-    sdl2::renderer renderer(window, sdl2::renderer_flags::accelerated | sdl2::renderer_flags::present_vsync);
-    sdl2::texture<sdl2::argb8888> texture(renderer, sdl2::texture_access::streaming_access, renderer.output_size());
-    sdl2::event_queue event_queue;
+    SDL_InitSubSystem(SDL_INIT_EVENTS);
+}
 
-    auto running = true;
-    while (running)
+sdl2::event_queue::~event_queue()
+{
+    SDL_QuitSubSystem(SDL_INIT_EVENTS);
+}
+
+boost::optional<sdl2::event>
+sdl2::event_queue::poll_event()
+{
+    SDL_Event event;
+    if (!SDL_PollEvent(&event))
     {
-        auto event = event_queue.poll_event();
-        if (event)
-        {
-            switch (event->type())
-            {
-                case sdl2::event_type::quit:
-                    running = false;
-                    break;
-            }
-        }
+        return boost::none;
     }
-
-    return 0;
+    return sdl2::event(event);
 }

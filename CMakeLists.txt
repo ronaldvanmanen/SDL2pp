@@ -19,6 +19,8 @@ include(CTest)
 add_library("${PROJECT_NAME}"
   "sources/argb8888.cpp"
   "sources/error.cpp"
+  "sources/event_queue.cpp"
+  "sources/event.cpp"
   "sources/renderer.cpp"
   "sources/sdl.cpp"
   "sources/size.cpp"
@@ -29,8 +31,12 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET "${PROJECT_NAME}" PROPERTY CXX_STANDARD 20)
 endif()
 
-find_package(SDL2 CONFIG REQUIRED)
+find_package(boost_optional REQUIRED CONFIG)
+target_link_libraries("${PROJECT_NAME}"
+  PRIVATE
+  Boost::optional)
 
+find_package(SDL2 CONFIG REQUIRED)
 target_link_libraries("${PROJECT_NAME}"
     PUBLIC
     $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>

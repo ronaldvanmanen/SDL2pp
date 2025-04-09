@@ -10,6 +10,7 @@ project ("SDLpp-tests")
 
 add_executable("${PROJECT_NAME}"
   "global_fixture.cpp"
+  "test_event_queue.cpp"
   "test_main.cpp"
   "test_renderer.cpp"
   "test_texture.cpp"

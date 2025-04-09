@@ -18,34 +18,20 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "SDL2pp/argb8888.h"
-#include "SDL2pp/event_queue.h"
 #include "SDL2pp/event.h"
-#include "SDL2pp/renderer.h"
-#include "SDL2pp/texture.h"
-#include "SDL2pp/window.h"
 
-int main()
+sdl2::event::event()
+: _wrappee(SDL_Event())
 {
-    sdl2::window window("Plasma Fractal", 640, 480, sdl2::window_flags::shown | sdl2::window_flags::resizable);
-    sdl2::renderer renderer(window, sdl2::renderer_flags::accelerated | sdl2::renderer_flags::present_vsync);
-    sdl2::texture<sdl2::argb8888> texture(renderer, sdl2::texture_access::streaming_access, renderer.output_size());
-    sdl2::event_queue event_queue;
+    SDL_zero(_wrappee);
+}
 
-    auto running = true;
-    while (running)
-    {
-        auto event = event_queue.poll_event();
-        if (event)
-        {
-            switch (event->type())
-            {
-                case sdl2::event_type::quit:
-                    running = false;
-                    break;
-            }
-        }
-    }
+sdl2::event::event(const SDL_Event& wrappee)
+: _wrappee(wrappee)
+{ }
 
-    return 0;
+sdl2::event_type
+sdl2::event::type() const
+{
+    return static_cast<sdl2::event_type>(_wrappee.type);
 }
