@@ -50,6 +50,7 @@ int main()
         {
             renderer.set_draw_color(sdl2::color::white);
             renderer.clear();
+            renderer.copy(texture);
             renderer.present();
         }
 

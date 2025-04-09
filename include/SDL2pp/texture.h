@@ -55,6 +55,8 @@ namespace sdl2
 
         texture<TPixelFormat>& operator=(const texture<TPixelFormat>& other) = delete;
 
+        SDL_Texture* wrappee() const;
+
     private:
         SDL_Texture* _wrappee;
     };
@@ -91,5 +93,12 @@ namespace sdl2
         {
             SDL_DestroyTexture(_wrappee);
         }
+    }
+    
+    template<typename TPixelFormat>
+    SDL_Texture*
+    texture<TPixelFormat>::wrappee() const
+    {
+        return _wrappee;
     }
 }

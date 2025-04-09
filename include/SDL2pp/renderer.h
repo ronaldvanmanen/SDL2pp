@@ -22,6 +22,12 @@
 
 #include <SDL2/SDL_render.h>
 
+namespace sdl2
+{
+    template<class TPixelFormat>
+    class texture;
+}
+
 #include "color.h"
 #include "error.h"
 #include "pixel_format.h"
@@ -64,11 +70,23 @@ namespace sdl2
 
         void present();
 
+        template<typename TPixelFormat>
+        void copy(texture<TPixelFormat> const& texture);
+
         SDL_Renderer* wrappee() const;
 
     private:
         SDL_Renderer* _wrappee;
     };
+
+    template<typename TPixelFormat>
+    void
+    renderer::copy(texture<TPixelFormat> const& texture)
+    {
+        throw_last_error(
+            SDL_RenderCopy(_wrappee, texture.wrappee(), nullptr, nullptr) < 0
+        );
+    }
 
     renderer_flags operator|(renderer_flags left, renderer_flags right);
 }
