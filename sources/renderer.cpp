@@ -51,6 +51,40 @@ sdl2::renderer::output_size() const
     return sdl2::size(width, height);
 }
 
+sdl2::color
+sdl2::renderer::get_draw_color() const
+{
+    uint8_t r, g, b, a;
+    throw_last_error(
+        SDL_GetRenderDrawColor(_wrappee, &r, &g, &b, &a) < 0
+    );
+    return sdl2::color(r, g, b, a);
+}
+
+void
+sdl2::renderer::set_draw_color(const sdl2::color& draw_color)
+{
+    throw_last_error(
+        SDL_SetRenderDrawColor(
+            _wrappee, draw_color.r, draw_color.g, draw_color.b, draw_color.a
+        ) < 0
+    );
+}
+
+void
+sdl2::renderer::clear()
+{
+    sdl2::throw_last_error(
+        SDL_RenderClear(_wrappee) < 0
+    );
+}
+
+void
+sdl2::renderer::present()
+{
+    SDL_RenderPresent(_wrappee);
+}
+
 SDL_Renderer* sdl2::renderer::wrappee() const
 {
     return _wrappee;
