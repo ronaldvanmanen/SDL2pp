@@ -20,11 +20,13 @@
 
 #pragma once
 
+#include <stdint.h>
+
 #include <SDL2/SDL_events.h>
 
 namespace sdl2
 {
-    enum class event_type
+    enum class event_type : int32_t
     {
         quit = SDL_QUIT,
         app_terminating = SDL_APP_TERMINATING,
