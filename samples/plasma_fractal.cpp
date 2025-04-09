@@ -19,6 +19,7 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "SDL2pp/argb8888.h"
+#include "SDL2pp/color.h"
 #include "SDL2pp/event_queue.h"
 #include "SDL2pp/event.h"
 #include "SDL2pp/renderer.h"
@@ -45,6 +46,13 @@ int main()
                     break;
             }
         }
+        else
+        {
+            renderer.set_draw_color(sdl2::color::white);
+            renderer.clear();
+            renderer.present();
+        }
+
     }
 
     return 0;

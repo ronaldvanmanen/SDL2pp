@@ -18,6 +18,7 @@ include(CTest)
 
 add_library("${PROJECT_NAME}"
   "sources/argb8888.cpp"
+  "sources/color.cpp"
   "sources/error.cpp"
   "sources/event_queue.cpp"
   "sources/event.cpp"

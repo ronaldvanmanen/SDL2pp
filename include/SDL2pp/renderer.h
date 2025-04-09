@@ -22,6 +22,7 @@
 
 #include <SDL2/SDL_render.h>
 
+#include "color.h"
 #include "error.h"
 #include "pixel_format.h"
 #include "size.h"
@@ -54,6 +55,14 @@ namespace sdl2
         renderer& operator=(const renderer& other) = delete;
 
         size output_size() const;
+
+        color get_draw_color() const;
+
+        void set_draw_color(const color& draw_color);
+
+        void clear();
+
+        void present();
 
         SDL_Renderer* wrappee() const;
 
