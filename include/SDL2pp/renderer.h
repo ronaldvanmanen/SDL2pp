@@ -25,13 +25,21 @@
 #include <SDL2/SDL_render.h>
 
 #include "error.h"
-#include "pixel_format_traits.h"
-#include "renderer_flags.h"
+#include "pixel_format.h"
 #include "size.h"
 #include "window.h"
 
 namespace sdl2
 {
+    enum class renderer_flags
+    {
+        none = 0,
+        software = SDL_RENDERER_SOFTWARE,
+        accelerated = SDL_RENDERER_ACCELERATED,
+        present_vsync = SDL_RENDERER_PRESENTVSYNC,
+        target_texture = SDL_RENDERER_TARGETTEXTURE,
+    };
+
     class renderer
     {
     public:
@@ -54,4 +62,6 @@ namespace sdl2
     private:
         SDL_Renderer* _wrappee;
     };
+
+    renderer_flags operator|(renderer_flags left, renderer_flags right);
 }

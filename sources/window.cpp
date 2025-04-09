@@ -50,3 +50,8 @@ sdl2::window::wrappee() const
 {
     return _wrappee;
 }
+
+sdl2::window_flags sdl2::operator|(sdl2::window_flags left, sdl2::window_flags right)
+{
+    return (sdl2::window_flags)(((uint32_t)left) | ((uint32_t)right));
+}

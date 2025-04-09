@@ -26,13 +26,19 @@
 #include <SDL2/SDL_render.h>
 
 #include "SDL2pp/error.h"
-#include "SDL2pp/pixel_format_traits.h"
+#include "SDL2pp/pixel_format.h"
 #include "SDL2pp/renderer.h"
 #include "SDL2pp/size.h"
-#include "SDL2pp/texture_access.h"
 
 namespace sdl2
 {
+    enum class texture_access : int32_t
+    {
+        static_access = SDL_TEXTUREACCESS_STATIC,
+        streaming_access = SDL_TEXTUREACCESS_STREAMING,
+        target_access = SDL_TEXTUREACCESS_TARGET
+    };
+
     template<typename TPixelFormat>
     class texture
     {
