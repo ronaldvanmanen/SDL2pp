@@ -20,6 +20,7 @@
 
 #include "SDL2pp/error.h"
 #include "SDL2pp/renderer.h"
+#include "SDL2pp/texture.h"
 
 sdl2::renderer::renderer(const sdl2::window& owner)
 : _wrappee(SDL_CreateRenderer(owner.wrappee(), -1, 0))
@@ -83,6 +84,14 @@ void
 sdl2::renderer::present()
 {
     SDL_RenderPresent(_wrappee);
+}
+
+void
+sdl2::renderer::copy(sdl2::texture_base const& texture)
+{
+    throw_last_error(
+        SDL_RenderCopy(_wrappee, texture.wrappee(), nullptr, nullptr) < 0
+    );
 }
 
 SDL_Renderer* sdl2::renderer::wrappee() const

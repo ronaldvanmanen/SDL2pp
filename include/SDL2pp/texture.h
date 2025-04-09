@@ -39,8 +39,26 @@ namespace sdl2
         target_access = SDL_TEXTUREACCESS_TARGET
     };
 
+    class texture_base
+    {
+    protected:
+        texture_base(const renderer& owner, pixel_format format, texture_access access, int width, int height);
+
+        texture_base(const texture_base& other) = delete;
+
+        ~texture_base();
+
+        texture_base& operator=(const texture_base& other) = delete;
+
+    public:
+        SDL_Texture* wrappee() const;
+
+    protected:
+        SDL_Texture* _wrappee;
+    };
+
     template<typename TPixelFormat>
-    class texture
+    class texture : public texture_base
     {
     public:
         texture(const renderer& owner, texture_access access, int width, int height);
@@ -51,54 +69,21 @@ namespace sdl2
 
         texture(texture<TPixelFormat>&& other);
 
-        ~texture();
-
         texture<TPixelFormat>& operator=(const texture<TPixelFormat>& other) = delete;
-
-        SDL_Texture* wrappee() const;
-
-    private:
-        SDL_Texture* _wrappee;
     };
 
     template<typename TPixelFormat>
     texture<TPixelFormat>::texture(const renderer& owner, texture_access access, int width, int height)
-    : _wrappee(
-        SDL_CreateTexture(
-            owner.wrappee(),
-            static_cast<uint32_t>(pixel_format_traits<TPixelFormat>::format),
-            static_cast<uint32_t>(access),
-            width,
-            height
-        )
-    )
-    {
-        throw_last_error(_wrappee == nullptr);
-    }
+    : texture_base(owner, pixel_format_traits<TPixelFormat>::format, access, width, height)
+    { }
 
     template<typename TPixelFormat>
     texture<TPixelFormat>::texture(const renderer& owner, texture_access access, size const& size)
-    : texture(owner, access, size.width, size.height)
+    : texture_base(owner, pixel_format_traits<TPixelFormat>::format, access, size.width, size.height)
     { }
 
     template<typename TPixelFormat>
     texture<TPixelFormat>::texture(sdl2::texture<TPixelFormat>&& other)
     : _wrappee(std::exchange(other._wrappee, nullptr))
     { }
-    
-    template<typename TPixelFormat>
-    texture<TPixelFormat>::~texture()
-    {
-        if (_wrappee != nullptr)
-        {
-            SDL_DestroyTexture(_wrappee);
-        }
-    }
-    
-    template<typename TPixelFormat>
-    SDL_Texture*
-    texture<TPixelFormat>::wrappee() const
-    {
-        return _wrappee;
-    }
 }

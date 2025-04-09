@@ -19,3 +19,31 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "SDL2pp/texture.h"
+
+sdl2::texture_base::texture_base(const renderer& owner, pixel_format format, texture_access access, int width, int height)
+: _wrappee(
+    SDL_CreateTexture(
+        owner.wrappee(),
+        static_cast<uint32_t>(format),
+        static_cast<uint32_t>(access),
+        width,
+        height
+    )
+)
+{
+    throw_last_error(_wrappee == nullptr);
+}
+
+sdl2::texture_base::~texture_base()
+{
+    if (_wrappee != nullptr)
+    {
+        SDL_DestroyTexture(_wrappee);
+    }
+}
+
+SDL_Texture*
+sdl2::texture_base::wrappee() const
+{
+    return _wrappee;
+}
