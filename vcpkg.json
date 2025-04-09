@@ -1,5 +1,6 @@
 {
     "dependencies": [
+      "boost-optional",
       "boost-test",
       "sdl2"
     ]
