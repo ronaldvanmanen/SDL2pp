@@ -20,8 +20,8 @@
 
 #pragma once
 
-#include <functional>
-#include <string>
+#include <stdint.h>
+#include <utility>
 
 #include <SDL2/SDL_render.h>
 
