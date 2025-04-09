@@ -20,15 +20,40 @@
 
 #pragma once
 
+#include <stdint.h>
 #include <string>
-#include <memory>
 
 #include <SDL2/SDL_video.h>
 
-#include "window_flags.h"
-
 namespace sdl2
 {
+    enum class window_flags : uint32_t
+    {
+        none = 0,
+        fullscreen = SDL_WINDOW_FULLSCREEN,
+        opengl = SDL_WINDOW_OPENGL,
+        shown = SDL_WINDOW_SHOWN,
+        hidden = SDL_WINDOW_HIDDEN,
+        borderless = SDL_WINDOW_BORDERLESS,
+        resizable = SDL_WINDOW_RESIZABLE,
+        minimized = SDL_WINDOW_MINIMIZED,
+        maximized = SDL_WINDOW_MAXIMIZED,
+        input_grabbed = SDL_WINDOW_INPUT_GRABBED,
+        input_focus = SDL_WINDOW_INPUT_FOCUS,
+        mouse_focus = SDL_WINDOW_MOUSE_FOCUS,
+        fullscreen_desktop = SDL_WINDOW_FULLSCREEN_DESKTOP,
+        foreign = SDL_WINDOW_FOREIGN,
+        allow_high_dpi = SDL_WINDOW_ALLOW_HIGHDPI,
+        mouse_capture = SDL_WINDOW_MOUSE_CAPTURE,
+        always_on_top = SDL_WINDOW_ALWAYS_ON_TOP,
+        skip_taskbar = SDL_WINDOW_SKIP_TASKBAR,
+        utility = SDL_WINDOW_UTILITY,
+        tooltip = SDL_WINDOW_TOOLTIP,
+        popup_menu = SDL_WINDOW_POPUP_MENU,
+        vulkan = SDL_WINDOW_VULKAN,
+        metal = SDL_WINDOW_METAL,
+    };
+
     class window
     {
     public:
@@ -49,4 +74,7 @@ namespace sdl2
     private:
         SDL_Window* _wrappee;
     };
+
+
+    window_flags operator|(window_flags left, window_flags right);
 }

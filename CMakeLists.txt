@@ -19,12 +19,10 @@ include(CTest)
 add_library("${PROJECT_NAME}"
   "sources/argb8888.cpp"
   "sources/error.cpp"
-  "sources/renderer_flags.cpp"
   "sources/renderer.cpp"
   "sources/sdl.cpp"
   "sources/size.cpp"
   "sources/texture.cpp"
-  "sources/window_flags.cpp"
   "sources/window.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

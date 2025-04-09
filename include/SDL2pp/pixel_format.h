@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <memory>
+#include <stdint.h>
 
 #include <SDL2/SDL_pixels.h>
 
@@ -78,5 +78,12 @@ namespace sdl2
         nv12 = SDL_PIXELFORMAT_NV12,
         nv21 = SDL_PIXELFORMAT_NV21,
         external_oes = SDL_PIXELFORMAT_EXTERNAL_OES
+    };
+
+    template<typename TPixelFormat>
+    class pixel_format_traits
+    {
+    public:
+        static constexpr pixel_format format = TPixelFormat::format;
     };
 }
