@@ -24,8 +24,7 @@
 
 namespace sdl2
 {
-    template<class TPixelFormat>
-    class texture;
+    class texture_base;
 }
 
 #include "color.h"
@@ -70,23 +69,13 @@ namespace sdl2
 
         void present();
 
-        template<typename TPixelFormat>
-        void copy(texture<TPixelFormat> const& texture);
+        void copy(texture_base const& texture);
 
         SDL_Renderer* wrappee() const;
 
     private:
         SDL_Renderer* _wrappee;
     };
-
-    template<typename TPixelFormat>
-    void
-    renderer::copy(texture<TPixelFormat> const& texture)
-    {
-        throw_last_error(
-            SDL_RenderCopy(_wrappee, texture.wrappee(), nullptr, nullptr) < 0
-        );
-    }
 
     renderer_flags operator|(renderer_flags left, renderer_flags right);
 }
