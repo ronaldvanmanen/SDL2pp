@@ -53,5 +53,5 @@ sdl2::window::wrappee() const
 
 sdl2::window_flags sdl2::operator|(sdl2::window_flags left, sdl2::window_flags right)
 {
-    return (sdl2::window_flags)(((uint32_t)left) | ((uint32_t)right));
+    return static_cast<sdl2::window_flags>(static_cast<uint32_t>(left) | static_cast<uint32_t>(right));
 }
