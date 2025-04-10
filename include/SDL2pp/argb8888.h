@@ -20,13 +20,13 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "pixel_format.h"
 
 namespace sdl2
 {
-    class alignas(alignof(uint32_t)) argb8888
+    class alignas(alignof(std::uint32_t)) argb8888
     {
     public:
         static constexpr pixel_format format = pixel_format::argb8888;
@@ -38,13 +38,13 @@ namespace sdl2
     public:
         argb8888();
 
-        argb8888(uint8_t a, uint8_t r, uint8_t g, uint8_t b);
+        argb8888(std::uint8_t a, std::uint8_t r, std::uint8_t g, std::uint8_t b);
 
         argb8888(const argb8888 &other);
 
         argb8888& operator=(const argb8888 &other);
 
     public:
-        uint8_t b, g, r, a;
+        std::uint8_t b, g, r, a;
     };
 }

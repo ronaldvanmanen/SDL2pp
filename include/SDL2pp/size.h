@@ -20,12 +20,14 @@
 
 #pragma once
 
+#include <cstdint>
+
 namespace sdl2
 {
     struct size
     {
-        size(int width, int height);
+        size(std::uint32_t width, std::uint32_t height);
 
-        int width, height;
+        std::uint32_t width, height;
     };
 }

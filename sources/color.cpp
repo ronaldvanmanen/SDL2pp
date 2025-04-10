@@ -30,7 +30,7 @@ sdl2::color::color()
 : r(0), g(0), b(0), a(0)
 { }
 
-sdl2::color::color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+sdl2::color::color(std::uint8_t r, std::uint8_t g, std::uint8_t b, std::uint8_t a)
 : r(r), g(g), b(b), a(a)
 { }
 

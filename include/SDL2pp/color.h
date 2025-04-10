@@ -21,7 +21,7 @@
 #pragma once
 
 #include <iostream>
-#include <stdint.h>
+#include <cstdint>
 
 namespace sdl2
 {
@@ -35,10 +35,10 @@ namespace sdl2
     public:
         color();
         
-        color(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+        color(std::uint8_t r, std::uint8_t g, std::uint8_t b, std::uint8_t a);
 
     public:
-        uint8_t r, g, b, a;
+        std::uint8_t r, g, b, a;
 
     protected:
         friend bool operator==(const color& left, const color& right);

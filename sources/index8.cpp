@@ -24,7 +24,7 @@
 
 sdl2::index8::index8() { }
 
-sdl2::index8::index8(uint8_t value)
+sdl2::index8::index8(std::uint8_t value)
 : _value(value)
 { }
 
@@ -66,7 +66,7 @@ sdl2::index8::operator--(int)
     return index8(_value--);
 }
 
-sdl2::index8::operator uint8_t() const
+sdl2::index8::operator std::uint8_t() const
 {
     return _value;
 }

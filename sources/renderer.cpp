@@ -27,7 +27,7 @@ sdl2::renderer::renderer(const sdl2::window& owner)
 { }
 
 sdl2::renderer::renderer(const sdl2::window& owner, sdl2::renderer_flags flags)
-: _wrappee(SDL_CreateRenderer(owner.wrappee(), -1, static_cast<uint32_t>(flags)))
+: _wrappee(SDL_CreateRenderer(owner.wrappee(), -1, static_cast<std::uint32_t>(flags)))
 { }
 
 sdl2::renderer::renderer(renderer&& other)
@@ -55,7 +55,7 @@ sdl2::renderer::output_size() const
 sdl2::color
 sdl2::renderer::get_draw_color() const
 {
-    uint8_t r, g, b, a;
+    std::uint8_t r, g, b, a;
     throw_last_error(
         SDL_GetRenderDrawColor(_wrappee, &r, &g, &b, &a) < 0
     );
@@ -119,5 +119,5 @@ SDL_Renderer* sdl2::renderer::wrappee() const
 
 sdl2::renderer_flags sdl2::operator|(sdl2::renderer_flags left, sdl2::renderer_flags right)
 {
-    return static_cast<sdl2::renderer_flags>(static_cast<uint32_t>(left) | static_cast<uint32_t>(right));
+    return static_cast<sdl2::renderer_flags>(static_cast<std::uint32_t>(left) | static_cast<std::uint32_t>(right));
 }

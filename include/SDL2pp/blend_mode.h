@@ -21,12 +21,13 @@
 #pragma once
 
 #include <iostream>
-#include <stdint.h>
+#include <cstdint>
+
 #include <SDL2/SDL_blendmode.h>
 
 namespace sdl2
 {
-    enum class blend_mode : int32_t
+    enum class blend_mode : std::uint32_t
     {
         none = SDL_BLENDMODE_NONE,
         blend = SDL_BLENDMODE_BLEND,

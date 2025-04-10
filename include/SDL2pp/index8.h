@@ -20,13 +20,13 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "pixel_format.h"
 
 namespace sdl2
 {
-    class alignas(alignof(uint8_t)) index8
+    class alignas(alignof(std::uint8_t)) index8
     {
     public:
         static constexpr pixel_format format = pixel_format::index8;
@@ -34,7 +34,7 @@ namespace sdl2
     public:
         index8();
 
-        index8(uint8_t value);
+        index8(std::uint8_t value);
 
         index8(const index8 &other);
 
@@ -48,10 +48,10 @@ namespace sdl2
 
         index8 operator--(int);
 
-        operator uint8_t() const;
+        operator std::uint8_t() const;
 
     private:
-        uint8_t _value;
+        std::uint8_t _value;
     };
 }
  

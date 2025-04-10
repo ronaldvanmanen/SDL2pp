@@ -20,7 +20,7 @@
 
 #include "SDL2pp/size.h"
 
-sdl2::size::size(int width, int height)
+sdl2::size::size(std::uint32_t width, std::uint32_t height)
 : width(width)
 , height(height)
 { }

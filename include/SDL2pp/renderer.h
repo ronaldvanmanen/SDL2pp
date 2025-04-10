@@ -20,6 +20,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 #include <SDL2/SDL_render.h>
 
 namespace sdl2
@@ -36,7 +38,7 @@ namespace sdl2
 
 namespace sdl2
 {
-    enum class renderer_flags
+    enum class renderer_flags : std::uint32_t
     {
         none = 0,
         software = SDL_RENDERER_SOFTWARE,

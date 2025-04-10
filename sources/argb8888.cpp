@@ -28,7 +28,7 @@ sdl2::argb8888::argb8888()
 : argb8888(0, 0, 0, 0)
 { }
 
-sdl2::argb8888::argb8888(uint8_t a, uint8_t r, uint8_t g, uint8_t b)
+sdl2::argb8888::argb8888(std::uint8_t a, std::uint8_t r, std::uint8_t g, std::uint8_t b)
 : b(b), r(r), g(g), a(a)
 { }
 

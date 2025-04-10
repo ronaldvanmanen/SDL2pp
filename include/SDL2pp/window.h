@@ -20,14 +20,14 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 
 #include <SDL2/SDL_video.h>
 
 namespace sdl2
 {
-    enum class window_flags : uint32_t
+    enum class window_flags : std::uint32_t
     {
         none = 0,
         fullscreen = SDL_WINDOW_FULLSCREEN,
