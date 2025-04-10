@@ -48,6 +48,7 @@ int main()
         }
         else
         {
+            renderer.set_draw_blend_mode(sdl2::blend_mode::none);
             renderer.set_draw_color(sdl2::color::white);
             renderer.clear();
             renderer.copy(texture);

@@ -7,7 +7,13 @@ if (POLICY CMP0141)
 endif()
 
 project ("SDL2pp")
-  
+
+# if (MSVC)
+#   set(ENV{esp.extensions} cppcorecheck.dll)
+#   set(ENV{caexcludepath} "%include%")
+#   add_compile_options(/analyze /analyze:plugin EspXEngine.dll)
+# endif()
+
 # FIX: Running tests from within VSCode fails unless we
 #
 # A) Remove "enable_testing()"
@@ -18,6 +24,7 @@ include(CTest)
 
 add_library("${PROJECT_NAME}"
   "sources/argb8888.cpp"
+  "sources/blend_mode.cpp"
   "sources/color.cpp"
   "sources/error.cpp"
   "sources/event_queue.cpp"
