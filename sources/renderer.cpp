@@ -72,6 +72,24 @@ sdl2::renderer::set_draw_color(const sdl2::color& draw_color)
     );
 }
 
+sdl2::blend_mode
+sdl2::renderer::get_draw_blend_mode() const
+{
+    SDL_BlendMode mode;
+    throw_last_error(
+        SDL_GetRenderDrawBlendMode(_wrappee, &mode) < 0
+    );
+    return static_cast<sdl2::blend_mode>(mode);
+}
+
+void
+sdl2::renderer::set_draw_blend_mode(sdl2::blend_mode mode)
+{
+    throw_last_error(
+        SDL_SetRenderDrawBlendMode(_wrappee, static_cast<SDL_BlendMode>(mode)) < 0
+    );
+}
+
 void
 sdl2::renderer::clear()
 {

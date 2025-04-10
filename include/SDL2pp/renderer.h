@@ -27,6 +27,7 @@ namespace sdl2
     class texture_base;
 }
 
+#include "blend_mode.h"
 #include "color.h"
 #include "error.h"
 #include "pixel_format.h"
@@ -64,6 +65,10 @@ namespace sdl2
         color get_draw_color() const;
 
         void set_draw_color(const color& draw_color);
+
+        blend_mode get_draw_blend_mode() const;
+
+        void set_draw_blend_mode(blend_mode mode);
 
         void clear();
 
