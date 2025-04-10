@@ -22,6 +22,7 @@
 #include "SDL2pp/color.h"
 #include "SDL2pp/event_queue.h"
 #include "SDL2pp/event.h"
+#include "SDL2pp/image.h"
 #include "SDL2pp/renderer.h"
 #include "SDL2pp/texture.h"
 #include "SDL2pp/window.h"
@@ -48,8 +49,21 @@ int main()
         }
         else
         {
+            texture.with_lock(
+                [](sdl2::image<sdl2::argb8888> &pixels)
+                {
+                    for (int y = 0; y < pixels.height(); ++y)
+                    {
+                        for (int x = 0; x < pixels.width(); ++x)
+                        {
+                            pixels(x, y) = sdl2::argb8888::white;
+                        }
+                    }
+                }
+            );
+
             renderer.set_draw_blend_mode(sdl2::blend_mode::none);
-            renderer.set_draw_color(sdl2::color::white);
+            renderer.set_draw_color(sdl2::color::black);
             renderer.clear();
             renderer.copy(texture);
             renderer.present();
