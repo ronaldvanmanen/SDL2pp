@@ -20,6 +20,10 @@
 
 #include "SDL2pp/argb8888.h"
 
+const sdl2::argb8888 sdl2::argb8888::black(255, 0, 0, 0);
+
+const sdl2::argb8888 sdl2::argb8888::white(255, 255, 255, 255);
+
 sdl2::argb8888::argb8888()
 : argb8888(0, 0, 0, 0)
 { }

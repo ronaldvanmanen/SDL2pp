@@ -26,6 +26,7 @@
 #include <SDL2/SDL_render.h>
 
 #include "SDL2pp/error.h"
+#include "SDL2pp/image.h"
 #include "SDL2pp/pixel_format.h"
 #include "SDL2pp/renderer.h"
 #include "SDL2pp/size.h"
@@ -70,6 +71,9 @@ namespace sdl2
         texture(texture<TPixelFormat>&& other);
 
         texture<TPixelFormat>& operator=(const texture<TPixelFormat>& other) = delete;
+
+        template<typename CallbackFunction>
+        void with_lock(CallbackFunction callback);
     };
 
     template<typename TPixelFormat>
@@ -86,4 +90,31 @@ namespace sdl2
     texture<TPixelFormat>::texture(sdl2::texture<TPixelFormat>&& other)
     : _wrappee(std::exchange(other._wrappee, nullptr))
     { }
+
+    template<typename TPixelFormat> template <typename CallbackFunction>
+    void
+    texture<TPixelFormat>::with_lock(CallbackFunction callback)
+    {
+        void* pixels;
+        int pitch;
+        throw_last_error(
+            SDL_LockTexture(_wrappee, nullptr, &pixels, &pitch) < 0
+        );
+
+        int width, height;
+        throw_last_error(
+            SDL_QueryTexture(_wrappee, nullptr, nullptr, &width, &height) < 0
+        );
+
+        image<TPixelFormat> locked_texture(
+            static_cast<TPixelFormat*>(pixels),
+            width,
+            height,
+            pitch / sizeof(TPixelFormat)
+        );
+
+        callback(locked_texture);
+
+        SDL_UnlockTexture(_wrappee);
+    }
 }

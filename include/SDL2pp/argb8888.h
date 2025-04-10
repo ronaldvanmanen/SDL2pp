@@ -31,6 +31,10 @@ namespace sdl2
     public:
         static constexpr pixel_format format = pixel_format::argb8888;
 
+        static const argb8888 black;
+
+        static const argb8888 white;
+
     public:
         argb8888();
 
