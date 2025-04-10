@@ -20,13 +20,13 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
 #include <SDL2/SDL_pixels.h>
 
 namespace sdl2
 {
-    enum class pixel_format : uint32_t
+    enum class pixel_format : std::uint32_t
     {
         unknown = SDL_PIXELFORMAT_UNKNOWN,
         index1lsb = SDL_PIXELFORMAT_INDEX1LSB,

@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
 namespace sdl2
 {
@@ -28,35 +28,35 @@ namespace sdl2
     class image
     {
     public:
-        image(int width, int height);
+        image(std::uint32_t width, std::uint32_t height);
 
-        image(TPixelFormat* pixels, int width, int height, int pitch);
+        image(TPixelFormat* pixels, std::uint32_t width, std::uint32_t height, std::uint32_t pitch);
 
-        int width() const;
+        std::uint32_t width() const;
 
-        int height() const;
+        std::uint32_t height() const;
 
-        TPixelFormat& operator()(int x, int y);
+        TPixelFormat& operator()(std::uint32_t x, std::uint32_t y);
 
-        TPixelFormat const& operator()(int x, int y) const;
+        TPixelFormat const& operator()(std::uint32_t x, std::uint32_t y) const;
 
     private:
         TPixelFormat* _pixels;
 
-        int _pitch;
+        std::uint32_t _pitch;
 
-        int _width;
+        std::uint32_t _width;
 
-        int _height;
+        std::uint32_t _height;
     };
 
     template<typename TPixelFormat>
-    image<TPixelFormat>::image(int width, int height)
+    image<TPixelFormat>::image(std::uint32_t width, std::uint32_t height)
     : image(new TPixelFormat[height * width], width, height, width)
     {}
 
     template<typename TPixelFormat>
-    image<TPixelFormat>::image(TPixelFormat* pixels, int width, int height, int pitch)
+    image<TPixelFormat>::image(TPixelFormat* pixels, std::uint32_t width, std::uint32_t height, std::uint32_t pitch)
     : _pixels(pixels)
     , _width(width)
     , _height(height)
@@ -65,14 +65,14 @@ namespace sdl2
 
 
     template<typename TPixelFormat>
-    int
+    std::uint32_t
     image<TPixelFormat>::width() const
     {
         return _width;
     }
 
     template<typename TPixelFormat>
-    int
+    std::uint32_t
     image<TPixelFormat>::height() const
     {
         return _height;
@@ -80,14 +80,14 @@ namespace sdl2
 
     template<typename TPixelFormat>
     TPixelFormat&
-    image<TPixelFormat>::operator()(int x, int y)
+    image<TPixelFormat>::operator()(std::uint32_t x, std::uint32_t y)
     {
         return _pixels[y * _pitch + x];
     }
 
     template<typename TPixelFormat>
     TPixelFormat const&
-    image<TPixelFormat>::operator()(int x, int y) const
+    image<TPixelFormat>::operator()(std::uint32_t x, std::uint32_t y) const
     {
         return _pixels[y * _pitch + x];
     }

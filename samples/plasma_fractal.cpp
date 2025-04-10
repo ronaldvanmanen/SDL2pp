@@ -20,7 +20,7 @@
 
 #include <algorithm>
 #include <array>
-#include <memory>
+#include <cstdint>
 #include <random>
 
 #include "SDL2pp/argb8888.h"
@@ -84,7 +84,7 @@ sdl2::palette generate_palette()
     
     assert(palette.size() == 256);
 
-    for (sdl2::index8 i = 0; i < 32; ++i)
+    for (std::uint8_t i = 0; i < 32; ++i)
     {
         uint8_t lo = i * 255 / 31;
         uint8_t hi = 255 - lo;
@@ -128,9 +128,9 @@ int main()
             texture.with_lock(
                 [palette](sdl2::image<sdl2::argb8888> &pixels)
                 {
-                    for (int y = 0; y < pixels.height(); ++y)
+                    for (std::uint32_t y = 0; y < pixels.height(); ++y)
                     {
-                        for (int x = 0; x < pixels.width(); ++x)
+                        for (std::uint32_t x = 0; x < pixels.width(); ++x)
                         {
                             pixels(x, y) = palette[(x + y) % palette.size()];
                         }

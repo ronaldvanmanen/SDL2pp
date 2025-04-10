@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 #include <utility>
 
 #include <SDL2/SDL_render.h>
@@ -33,7 +33,7 @@
 
 namespace sdl2
 {
-    enum class texture_access : int32_t
+    enum class texture_access : std::int32_t
     {
         static_access = SDL_TEXTUREACCESS_STATIC,
         streaming_access = SDL_TEXTUREACCESS_STREAMING,

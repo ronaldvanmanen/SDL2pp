@@ -24,8 +24,8 @@ sdl2::texture_base::texture_base(const renderer& owner, pixel_format format, tex
 : _wrappee(
     SDL_CreateTexture(
         owner.wrappee(),
-        static_cast<uint32_t>(format),
-        static_cast<uint32_t>(access),
+        static_cast<std::uint32_t>(format),
+        static_cast<std::int32_t>(access),
         width,
         height
     )
