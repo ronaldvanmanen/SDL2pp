@@ -1,6 +1,10 @@
 {
     "files.associations": {
         "ostream": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "random": "cpp",
+        "chrono": "cpp",
+        "variant": "cpp",
+        "array": "cpp"
     }
 }

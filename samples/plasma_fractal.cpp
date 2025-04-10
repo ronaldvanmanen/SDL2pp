@@ -18,20 +18,96 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
+#include <algorithm>
+#include <array>
+#include <memory>
+#include <random>
+
 #include "SDL2pp/argb8888.h"
 #include "SDL2pp/color.h"
 #include "SDL2pp/event_queue.h"
 #include "SDL2pp/event.h"
 #include "SDL2pp/image.h"
+#include "SDL2pp/index8.h"
 #include "SDL2pp/renderer.h"
 #include "SDL2pp/texture.h"
 #include "SDL2pp/window.h"
+
+namespace sdl2
+{
+    class palette
+    {
+    public:
+        using size_type = std::array<argb8888, 256>::size_type;
+
+    public:
+        palette();
+
+        argb8888& operator[](size_type index);
+
+        const argb8888& operator[](size_type index) const;
+
+        size_type size() const;
+
+    private:
+        std::array<argb8888, 256> _colors;
+
+        size_type _offset;
+    };
+}
+
+sdl2::palette::palette()
+: _offset(0)
+{ }
+
+sdl2::argb8888&
+sdl2::palette::operator[](sdl2::palette::size_type index)
+{
+    return _colors[(_offset + index) % _colors.size()];
+}
+
+const sdl2::argb8888&
+sdl2::palette::operator[](sdl2::palette::size_type index) const
+{
+    return _colors[(_offset + index) % _colors.size()];
+}
+
+sdl2::palette::size_type
+sdl2::palette::size() const
+{
+    return _colors.size();
+}
+
+sdl2::palette generate_palette()
+{
+    sdl2::palette palette;
+    
+    assert(palette.size() == 256);
+
+    for (sdl2::index8 i = 0; i < 32; ++i)
+    {
+        uint8_t lo = i * 255 / 31;
+        uint8_t hi = 255 - lo;
+        palette[i] = sdl2::argb8888(255, lo, 0, 0);
+        palette[i + 32] = sdl2::argb8888(255, hi, 0, 0);
+        palette[i + 64] = sdl2::argb8888(255, 0, lo, 0);
+        palette[i + 96] = sdl2::argb8888(255, 0, hi, 0);
+        palette[i + 128] = sdl2::argb8888(255, 0, 0, lo);
+        palette[i + 160] = sdl2::argb8888(255, 0, 0, hi);
+        palette[i + 192] = sdl2::argb8888(255, lo, 0, lo);
+        palette[i + 224] = sdl2::argb8888(255, hi, 0, hi);
+    }
+
+    return palette;
+}
 
 int main()
 {
     sdl2::window window("Plasma Fractal", 640, 480, sdl2::window_flags::shown | sdl2::window_flags::resizable);
     sdl2::renderer renderer(window, sdl2::renderer_flags::accelerated | sdl2::renderer_flags::present_vsync);
     sdl2::texture<sdl2::argb8888> texture(renderer, sdl2::texture_access::streaming_access, renderer.output_size());
+    sdl2::palette palette = generate_palette();
+
     sdl2::event_queue event_queue;
 
     auto running = true;
@@ -50,13 +126,13 @@ int main()
         else
         {
             texture.with_lock(
-                [](sdl2::image<sdl2::argb8888> &pixels)
+                [palette](sdl2::image<sdl2::argb8888> &pixels)
                 {
                     for (int y = 0; y < pixels.height(); ++y)
                     {
                         for (int x = 0; x < pixels.width(); ++x)
                         {
-                            pixels(x, y) = sdl2::argb8888::white;
+                            pixels(x, y) = palette[(x + y) % palette.size()];
                         }
                     }
                 }
