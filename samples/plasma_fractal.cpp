@@ -48,6 +48,10 @@ namespace sdl2
         const argb8888& operator[](size_type index) const;
 
         size_type size() const;
+        
+        void rotate_left();
+
+        void rotate_right();
 
     private:
         std::array<argb8888, 256> _colors;
@@ -76,6 +80,28 @@ sdl2::palette::size_type
 sdl2::palette::size() const
 {
     return _colors.size();
+}
+
+void
+sdl2::palette::rotate_left()
+{
+    --_offset;
+
+    if (_offset < 0)
+    {
+        _offset += _colors.size();
+    }
+}
+
+void
+sdl2::palette::rotate_right()
+{
+    ++_offset;
+    
+    if (_offset >= _colors.size())
+    {
+        _offset -= _colors.size();
+    }
 }
 
 sdl2::palette generate_palette()
@@ -110,7 +136,9 @@ int main()
 
     sdl2::event_queue event_queue;
 
-    auto running = true;
+    bool reverse_rotation = false;
+
+    bool running = true;
     while (running)
     {
         auto event = event_queue.poll_event();
@@ -120,6 +148,10 @@ int main()
             {
                 case sdl2::event_type::quit:
                     running = false;
+                    break;
+
+                case sdl2::event_type::key_up:
+                    reverse_rotation = !reverse_rotation;
                     break;
             }
         }
@@ -143,6 +175,15 @@ int main()
             renderer.clear();
             renderer.copy(texture);
             renderer.present();
+
+            if (reverse_rotation)
+            {
+                palette.rotate_left();
+            }
+            else
+            {
+                palette.rotate_right();
+            }
         }
 
     }
