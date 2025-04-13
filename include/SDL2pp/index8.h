@@ -36,9 +36,9 @@ namespace sdl2
 
         index8(std::uint8_t value);
 
-        index8(const index8 &other);
+        index8(index8 const& other);
 
-        index8& operator=(const index8 &other);
+        index8& operator=(index8 const& other);
 
         index8 operator++();
 

@@ -28,12 +28,12 @@ sdl2::index8::index8(std::uint8_t value)
 : _value(value)
 { }
 
-sdl2::index8::index8(const sdl2::index8 &other)
+sdl2::index8::index8(sdl2::index8 const& other)
 : _value(other._value)
 { }
 
 sdl2::index8&
-sdl2::index8::operator=(const sdl2::index8 &other)
+sdl2::index8::operator=(sdl2::index8 const& other)
 {
     if (this != &other)
     {

@@ -35,19 +35,19 @@ sdl2::color::color(std::uint8_t r, std::uint8_t g, std::uint8_t b, std::uint8_t 
 { }
 
 bool
-sdl2::operator==(const color& left, const color& right)
+sdl2::operator==(color const& left, color const& right)
 {
     return left.r == right.r && left.g == right.g && left.b == right.b && left.a == right.a;
 }
 
 bool
-sdl2::operator!=(const color& left, const color& right)
+sdl2::operator!=(color const& left, color const& right)
 {
     return !(left == right);
 }
 
 std::ostream&
-sdl2::operator<<(std::ostream& stream, const color& value)
+sdl2::operator<<(std::ostream& stream, color const& value)
 {
     return stream
         << static_cast<unsigned int>(value.r)

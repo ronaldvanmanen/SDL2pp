@@ -23,7 +23,7 @@
 #include "SDL2pp/blend_mode.h"
 
 std::ostream&
-sdl2::operator<<(std::ostream& stream, const sdl2::blend_mode& value)
+sdl2::operator<<(std::ostream& stream, sdl2::blend_mode const& value)
 {
     switch (value)
     {

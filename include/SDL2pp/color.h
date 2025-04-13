@@ -41,14 +41,14 @@ namespace sdl2
         std::uint8_t r, g, b, a;
 
     protected:
-        friend bool operator==(const color& left, const color& right);
+        friend bool operator==(color const& left, color const& right);
 
-        friend std::ostream& operator<<(std::ostream& os, const color& value);
+        friend std::ostream& operator<<(std::ostream& os, color const& value);
     };
 
-    bool operator==(const color& left, const color& right);
+    bool operator==(color const& left, color const& right);
 
-    bool operator!=(const color& left, const color& right);
+    bool operator!=(color const& left, color const& right);
 
-    std::ostream& operator<<(std::ostream& stream, const color& value);
+    std::ostream& operator<<(std::ostream& stream, color const& value);
 }

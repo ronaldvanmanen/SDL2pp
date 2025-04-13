@@ -27,13 +27,13 @@ namespace sdl2
     class error : public std::runtime_error
     {
     public:
-        error(const std::string &what_arg);
+        error(std::string const& what_arg);
 
         error(const char *what_arg);
 
-        error(const error &other);
+        error(error const& other);
 
-        error& operator=(const error &other);
+        error& operator=(error const& other);
     };
 
     void throw_last_error(bool condition);

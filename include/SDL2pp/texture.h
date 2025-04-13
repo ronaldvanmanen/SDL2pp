@@ -43,13 +43,13 @@ namespace sdl2
     class texture_base
     {
     protected:
-        texture_base(const renderer& owner, pixel_format format, texture_access access, int width, int height);
+        texture_base(renderer const& owner, pixel_format format, texture_access access, int width, int height);
 
-        texture_base(const texture_base& other) = delete;
+        texture_base(texture_base const& other) = delete;
 
         ~texture_base();
 
-        texture_base& operator=(const texture_base& other) = delete;
+        texture_base& operator=(texture_base const& other) = delete;
 
     public:
         SDL_Texture* wrappee() const;
@@ -62,27 +62,27 @@ namespace sdl2
     class texture : public texture_base
     {
     public:
-        texture(const renderer& owner, texture_access access, int width, int height);
+        texture(renderer const& owner, texture_access access, int width, int height);
 
-        texture(const renderer& owner, texture_access access, size const& size);
+        texture(renderer const& owner, texture_access access, size const& size);
 
-        texture(const texture<TPixelFormat>& other) = delete;
+        texture(texture<TPixelFormat> const& other) = delete;
 
         texture(texture<TPixelFormat>&& other);
 
-        texture<TPixelFormat>& operator=(const texture<TPixelFormat>& other) = delete;
+        texture<TPixelFormat>& operator=(texture<TPixelFormat> const& other) = delete;
 
         template<typename CallbackFunction>
         void with_lock(CallbackFunction callback);
     };
 
     template<typename TPixelFormat>
-    texture<TPixelFormat>::texture(const renderer& owner, texture_access access, int width, int height)
+    texture<TPixelFormat>::texture(renderer const& owner, texture_access access, int width, int height)
     : texture_base(owner, pixel_format_traits<TPixelFormat>::format, access, width, height)
     { }
 
     template<typename TPixelFormat>
-    texture<TPixelFormat>::texture(const renderer& owner, texture_access access, size const& size)
+    texture<TPixelFormat>::texture(renderer const& owner, texture_access access, size const& size)
     : texture_base(owner, pixel_format_traits<TPixelFormat>::format, access, size.width, size.height)
     { }
 

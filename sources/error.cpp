@@ -22,7 +22,7 @@
 
 #include "SDL2pp/error.h"
 
-sdl2::error::error(const std::string &what_arg)
+sdl2::error::error(std::string const& what_arg)
 : std::runtime_error(what_arg)
 { }
 
@@ -30,12 +30,12 @@ sdl2::error::error(const char* what_arg)
 : std::runtime_error(what_arg)
 { }
 
-sdl2::error::error(const sdl2::error& other)
+sdl2::error::error(sdl2::error const& other)
 : std::runtime_error(other)
 { }
 
 sdl2::error&
-sdl2::error::operator=(const error& other)
+sdl2::error::operator=(error const& other)
 {
     if (this != &other)
     {

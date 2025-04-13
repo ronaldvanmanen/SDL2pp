@@ -26,7 +26,7 @@ sdl2::renderer::renderer(const sdl2::window& owner)
 : _wrappee(SDL_CreateRenderer(owner.wrappee(), -1, 0))
 { }
 
-sdl2::renderer::renderer(const sdl2::window& owner, sdl2::renderer_flags flags)
+sdl2::renderer::renderer(sdl2::window const& owner, sdl2::renderer_flags flags)
 : _wrappee(SDL_CreateRenderer(owner.wrappee(), -1, static_cast<std::uint32_t>(flags)))
 { }
 
@@ -63,7 +63,7 @@ sdl2::renderer::get_draw_color() const
 }
 
 void
-sdl2::renderer::set_draw_color(const sdl2::color& draw_color)
+sdl2::renderer::set_draw_color(sdl2::color const& draw_color)
 {
     throw_last_error(
         SDL_SetRenderDrawColor(

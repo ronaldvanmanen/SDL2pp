@@ -40,9 +40,9 @@ namespace sdl2
 
         argb8888(std::uint8_t a, std::uint8_t r, std::uint8_t g, std::uint8_t b);
 
-        argb8888(const argb8888 &other);
+        argb8888(argb8888 const& other);
 
-        argb8888& operator=(const argb8888 &other);
+        argb8888& operator=(argb8888 const& other);
 
     public:
         std::uint8_t b, g, r, a;

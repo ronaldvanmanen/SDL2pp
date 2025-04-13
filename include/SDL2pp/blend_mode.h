@@ -37,5 +37,5 @@ namespace sdl2
         invalid = SDL_BLENDMODE_INVALID
     };
 
-    std::ostream& operator<<(std::ostream& stream, const blend_mode& value);
+    std::ostream& operator<<(std::ostream& stream, blend_mode const& value);
 }

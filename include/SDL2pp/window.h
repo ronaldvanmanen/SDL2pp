@@ -57,17 +57,17 @@ namespace sdl2
     class window
     {
     public:
-        window(const std::string& title, int width, int height);
+        window(std::string const& title, int width, int height);
 
-        window(const std::string& title, int width, int height, window_flags flags);
+        window(std::string const& title, int width, int height, window_flags flags);
 
-        window(const window& other) = delete;
+        window(window const& other) = delete;
 
         window(window&& other);
 
         ~window();
 
-        window operator=(const window& other) = delete;
+        window operator=(window const& other) = delete;
 
         SDL_Window* wrappee() const;
 

@@ -50,23 +50,23 @@ namespace sdl2
     class renderer
     {
     public:
-        renderer(const window& owner);
+        renderer(window const& owner);
 
-        renderer(const window& owner, renderer_flags flags);
+        renderer(window const& owner, renderer_flags flags);
 
-        renderer(const renderer& other) = delete;
+        renderer(renderer const& other) = delete;
 
         renderer(renderer&& other);
 
         ~renderer();
 
-        renderer& operator=(const renderer& other) = delete;
+        renderer& operator=(renderer const& other) = delete;
 
         size output_size() const;
 
         color get_draw_color() const;
 
-        void set_draw_color(const color& draw_color);
+        void set_draw_color(color const& draw_color);
 
         blend_mode get_draw_blend_mode() const;
 

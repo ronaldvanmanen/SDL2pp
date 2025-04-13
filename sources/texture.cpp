@@ -20,7 +20,7 @@
 
 #include "SDL2pp/texture.h"
 
-sdl2::texture_base::texture_base(const renderer& owner, pixel_format format, texture_access access, int width, int height)
+sdl2::texture_base::texture_base(sdl2::renderer const& owner, sdl2::pixel_format format, sdl2::texture_access access, int width, int height)
 : _wrappee(
     SDL_CreateTexture(
         owner.wrappee(),

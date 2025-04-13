@@ -32,12 +32,12 @@ sdl2::argb8888::argb8888(std::uint8_t a, std::uint8_t r, std::uint8_t g, std::ui
 : b(b), r(r), g(g), a(a)
 { }
 
-sdl2::argb8888::argb8888(const argb8888 &other)
+sdl2::argb8888::argb8888(argb8888 const& other)
 : b(other.b), r(other.r), g(other.g), a(other.a)
 { }
 
 sdl2::argb8888&
-sdl2::argb8888::operator=(const argb8888 &other)
+sdl2::argb8888::operator=(argb8888 const& other)
 {
     if (this != &other)
     {
