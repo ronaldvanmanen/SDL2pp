@@ -97,6 +97,6 @@ namespace sdl2
         event_type type() const;
 
     private:
-        SDL_Event _wrappee;
+        SDL_Event _native_handle;
     };
 }

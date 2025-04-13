@@ -21,34 +21,48 @@
 #include "SDL2pp/error.h"
 #include "SDL2pp/window.h"
 
-sdl2::window::window(const std::string& title, int width, int height)
-: _wrappee(SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, 0))
+namespace sdl2
 {
-    sdl2::throw_last_error(_wrappee == nullptr);
+    SDL_Window* create_window(std::string const& title, int width, int height, sdl2::window_flags flags)
+    {
+        SDL_Window* native_handle =
+            SDL_CreateWindow(
+                title.c_str(),
+                SDL_WINDOWPOS_UNDEFINED,
+                SDL_WINDOWPOS_UNDEFINED,
+                width,
+                height,
+                static_cast<std::uint32_t>(flags)
+            );
+        sdl2::throw_last_error(native_handle == nullptr);        
+        return native_handle;
+    }
 }
 
-sdl2::window::window(const std::string& title, int width, int height, sdl2::window_flags flags)
-: _wrappee(SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, static_cast<std::uint32_t>(flags)))
-{
-    sdl2::throw_last_error(_wrappee == nullptr);
-}
+sdl2::window::window(std::string const& title, int width, int height)
+: _native_handle(sdl2::create_window(title, width, height, sdl2::window_flags::none))
+{ }
+
+sdl2::window::window(std::string const& title, int width, int height, sdl2::window_flags flags)
+: _native_handle(sdl2::create_window(title, width, height, flags))
+{ }
 
 sdl2::window::window(sdl2::window&& other)
-: _wrappee(std::exchange(other._wrappee, nullptr))
+: _native_handle(std::exchange(other._native_handle, nullptr))
 { }
 
 sdl2::window::~window()
 {
-    if (_wrappee != nullptr)
+    if (_native_handle != nullptr)
     {
-        SDL_DestroyWindow(_wrappee);
+        SDL_DestroyWindow(_native_handle);
     }
 }
 
 SDL_Window*
-sdl2::window::wrappee() const
+sdl2::window::native_handle()
 {
-    return _wrappee;
+    return _native_handle;
 }
 
 sdl2::window_flags sdl2::operator|(sdl2::window_flags left, sdl2::window_flags right)

@@ -21,9 +21,9 @@
 #include "SDL2pp/event.h"
 
 sdl2::event::event()
-: _wrappee(SDL_Event())
+: _native_handle(SDL_Event())
 {
-    SDL_zero(_wrappee);
+    SDL_zero(_native_handle);
 }
 
 sdl2::event::event(const SDL_Event& wrappee)
@@ -33,5 +33,6 @@ sdl2::event::event(const SDL_Event& wrappee)
 sdl2::event_type
 sdl2::event::type() const
 {
-    return static_cast<sdl2::event_type>(_wrappee.type);
+    return static_cast<sdl2::event_type>(_native_handle.type);
+}
 }

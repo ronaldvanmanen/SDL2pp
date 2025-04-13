@@ -52,10 +52,10 @@ namespace sdl2
         texture_base& operator=(texture_base const& other) = delete;
 
     public:
-        SDL_Texture* wrappee() const;
+        SDL_Texture* native_handle();
 
     protected:
-        SDL_Texture* _wrappee;
+        SDL_Texture* _native_handle;
     };
 
     template<typename TPixelFormat>
@@ -88,7 +88,7 @@ namespace sdl2
 
     template<typename TPixelFormat>
     texture<TPixelFormat>::texture(sdl2::texture<TPixelFormat>&& other)
-    : _wrappee(std::exchange(other._wrappee, nullptr))
+    : _native_handle(std::exchange(other._native_handle, nullptr))
     { }
 
     template<typename TPixelFormat> template <typename CallbackFunction>
@@ -98,12 +98,12 @@ namespace sdl2
         void* pixels;
         int pitch;
         throw_last_error(
-            SDL_LockTexture(_wrappee, nullptr, &pixels, &pitch) < 0
+            SDL_LockTexture(_native_handle, nullptr, &pixels, &pitch) < 0
         );
 
         int width, height;
         throw_last_error(
-            SDL_QueryTexture(_wrappee, nullptr, nullptr, &width, &height) < 0
+            SDL_QueryTexture(_native_handle, nullptr, nullptr, &width, &height) < 0
         );
 
         image<TPixelFormat> locked_texture(
@@ -115,6 +115,6 @@ namespace sdl2
 
         callback(locked_texture);
 
-        SDL_UnlockTexture(_wrappee);
+        SDL_UnlockTexture(_native_handle);
     }
 }

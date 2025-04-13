@@ -78,10 +78,10 @@ namespace sdl2
 
         void copy(texture_base const& texture);
 
-        SDL_Renderer* wrappee() const;
+        SDL_Renderer* native_handle();
 
     private:
-        SDL_Renderer* _wrappee;
+        SDL_Renderer* _native_handle;
     };
 
     renderer_flags operator|(renderer_flags left, renderer_flags right);

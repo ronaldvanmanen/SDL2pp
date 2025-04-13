@@ -69,12 +69,11 @@ namespace sdl2
 
         window operator=(window const& other) = delete;
 
-        SDL_Window* wrappee() const;
+        SDL_Window* native_handle();
 
     private:
-        SDL_Window* _wrappee;
+        SDL_Window* _native_handle;
     };
-
 
     window_flags operator|(window_flags left, window_flags right);
 }

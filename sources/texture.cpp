@@ -20,30 +20,36 @@
 
 #include "SDL2pp/texture.h"
 
-sdl2::texture_base::texture_base(sdl2::renderer const& owner, sdl2::pixel_format format, sdl2::texture_access access, int width, int height)
-: _wrappee(
-    SDL_CreateTexture(
-        owner.wrappee(),
-        static_cast<std::uint32_t>(format),
-        static_cast<std::int32_t>(access),
-        width,
-        height
-    )
-)
+namespace sdl2
 {
-    throw_last_error(_wrappee == nullptr);
+    SDL_Texture* create_texture(sdl2::renderer const& owner, sdl2::pixel_format format, sdl2::texture_access access, int width, int height)
+    {
+        SDL_Texture* native_handle = SDL_CreateTexture(
+            const_cast<sdl2::renderer&>(owner).native_handle(),
+            static_cast<std::uint32_t>(format),
+            static_cast<std::int32_t>(access),
+            width,
+            height
+        );
+        throw_last_error(native_handle == nullptr);
+        return native_handle;
+    }
 }
+
+sdl2::texture_base::texture_base(sdl2::renderer const& owner, sdl2::pixel_format format, sdl2::texture_access access, int width, int height)
+: _native_handle(sdl2::create_texture(owner, format, access, width, height))
+{ }
 
 sdl2::texture_base::~texture_base()
 {
-    if (_wrappee != nullptr)
+    if (_native_handle != nullptr)
     {
-        SDL_DestroyTexture(_wrappee);
+        SDL_DestroyTexture(_native_handle);
     }
 }
 
 SDL_Texture*
-sdl2::texture_base::wrappee() const
+sdl2::texture_base::native_handle()
 {
-    return _wrappee;
+    return _native_handle;
 }

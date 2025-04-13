@@ -22,23 +22,37 @@
 #include "SDL2pp/renderer.h"
 #include "SDL2pp/texture.h"
 
-sdl2::renderer::renderer(const sdl2::window& owner)
-: _wrappee(SDL_CreateRenderer(owner.wrappee(), -1, 0))
+namespace sdl2
+{
+    SDL_Renderer* create_renderer(sdl2::window const& owner, int32_t index, sdl2::renderer_flags flags)
+    {
+        SDL_Renderer* native_handle = SDL_CreateRenderer(
+            const_cast<sdl2::window&>(owner).native_handle(),
+            index,
+            static_cast<std::uint32_t>(flags)
+        );
+        throw_last_error(native_handle == nullptr);
+        return native_handle;
+    }
+}
+
+sdl2::renderer::renderer(sdl2::window const& owner)
+: _native_handle(sdl2::create_renderer(owner, -1, sdl2::renderer_flags::none))
 { }
 
 sdl2::renderer::renderer(sdl2::window const& owner, sdl2::renderer_flags flags)
-: _wrappee(SDL_CreateRenderer(owner.wrappee(), -1, static_cast<std::uint32_t>(flags)))
+: _native_handle(sdl2::create_renderer(owner, -1, flags))
 { }
 
 sdl2::renderer::renderer(renderer&& other)
-: _wrappee(std::exchange(other._wrappee, nullptr))
+: _native_handle(std::exchange(other._native_handle, nullptr))
 {}
 
 sdl2::renderer::~renderer()
 {
-    if (_wrappee != nullptr)
+    if (_native_handle != nullptr)
     {
-        SDL_DestroyRenderer(_wrappee);
+        SDL_DestroyRenderer(_native_handle);
     }
 }
 
@@ -47,7 +61,7 @@ sdl2::renderer::output_size() const
 {
     int width, height;
     sdl2::throw_last_error(
-        SDL_GetRendererOutputSize(_wrappee, &width, &height) < 0
+        SDL_GetRendererOutputSize(_native_handle, &width, &height) < 0
     );
     return sdl2::size(width, height);
 }
@@ -57,7 +71,7 @@ sdl2::renderer::get_draw_color() const
 {
     std::uint8_t r, g, b, a;
     throw_last_error(
-        SDL_GetRenderDrawColor(_wrappee, &r, &g, &b, &a) < 0
+        SDL_GetRenderDrawColor(_native_handle, &r, &g, &b, &a) < 0
     );
     return sdl2::color(r, g, b, a);
 }
@@ -67,7 +81,7 @@ sdl2::renderer::set_draw_color(sdl2::color const& draw_color)
 {
     throw_last_error(
         SDL_SetRenderDrawColor(
-            _wrappee, draw_color.r, draw_color.g, draw_color.b, draw_color.a
+            _native_handle, draw_color.r, draw_color.g, draw_color.b, draw_color.a
         ) < 0
     );
 }
@@ -77,7 +91,7 @@ sdl2::renderer::get_draw_blend_mode() const
 {
     SDL_BlendMode mode;
     throw_last_error(
-        SDL_GetRenderDrawBlendMode(_wrappee, &mode) < 0
+        SDL_GetRenderDrawBlendMode(_native_handle, &mode) < 0
     );
     return static_cast<sdl2::blend_mode>(mode);
 }
@@ -86,7 +100,7 @@ void
 sdl2::renderer::set_draw_blend_mode(sdl2::blend_mode mode)
 {
     throw_last_error(
-        SDL_SetRenderDrawBlendMode(_wrappee, static_cast<SDL_BlendMode>(mode)) < 0
+        SDL_SetRenderDrawBlendMode(_native_handle, static_cast<SDL_BlendMode>(mode)) < 0
     );
 }
 
@@ -94,27 +108,31 @@ void
 sdl2::renderer::clear()
 {
     sdl2::throw_last_error(
-        SDL_RenderClear(_wrappee) < 0
+        SDL_RenderClear(_native_handle) < 0
     );
 }
 
 void
 sdl2::renderer::present()
 {
-    SDL_RenderPresent(_wrappee);
+    SDL_RenderPresent(_native_handle);
 }
 
 void
 sdl2::renderer::copy(sdl2::texture_base const& texture)
 {
     throw_last_error(
-        SDL_RenderCopy(_wrappee, texture.wrappee(), nullptr, nullptr) < 0
+        SDL_RenderCopy(
+            _native_handle,
+            const_cast<sdl2::texture_base&>(texture).native_handle(),
+            nullptr,
+            nullptr) < 0
     );
 }
 
-SDL_Renderer* sdl2::renderer::wrappee() const
+SDL_Renderer* sdl2::renderer::native_handle()
 {
-    return _wrappee;
+    return _native_handle;
 }
 
 sdl2::renderer_flags sdl2::operator|(sdl2::renderer_flags left, sdl2::renderer_flags right)
