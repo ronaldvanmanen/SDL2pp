@@ -26,13 +26,20 @@ sdl2::event::event()
     SDL_zero(_native_handle);
 }
 
-sdl2::event::event(const SDL_Event& wrappee)
-: _wrappee(wrappee)
-{ }
-
 sdl2::event_type
 sdl2::event::type() const
 {
     return static_cast<sdl2::event_type>(_native_handle.type);
 }
+
+SDL_Event&
+sdl2::event::native_handle() &
+{
+    return _native_handle;
+}
+
+SDL_Event const&
+sdl2::event::native_handle() const&
+{
+    return _native_handle;
 }

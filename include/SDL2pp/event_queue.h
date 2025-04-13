@@ -33,6 +33,8 @@ namespace sdl2
 
         ~event_queue();
 
-        boost::optional<sdl2::event> poll_event();
+        bool poll(sdl2::event& event);
+
+        bool pending() const;
     };
 }

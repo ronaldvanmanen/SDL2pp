@@ -92,11 +92,22 @@ namespace sdl2
     public:
         event();
 
-        event(const SDL_Event& wrappee);
-
         event_type type() const;
+
+        template<class Event>
+        Event as();
+
+        SDL_Event& native_handle() &;
+
+        SDL_Event const& native_handle() const&;
 
     private:
         SDL_Event _native_handle;
     };
+
+    template<class Event>
+    Event event::as()
+    {
+        return Event(_native_handle);
+    }
 }

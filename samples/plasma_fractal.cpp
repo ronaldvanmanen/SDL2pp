@@ -29,6 +29,7 @@
 #include "SDL2pp/event.h"
 #include "SDL2pp/image.h"
 #include "SDL2pp/index8.h"
+#include "SDL2pp/keyboard_event.h"
 #include "SDL2pp/renderer.h"
 #include "SDL2pp/texture.h"
 #include "SDL2pp/window.h"
@@ -141,17 +142,23 @@ int main()
     bool running = true;
     while (running)
     {
-        auto event = event_queue.poll_event();
-        if (event)
+        sdl2::event event;
+        if (event_queue.poll(event))
         {
-            switch (event->type())
+            switch (event.type())
             {
                 case sdl2::event_type::quit:
                     running = false;
                     break;
 
                 case sdl2::event_type::key_up:
-                    reverse_rotation = !reverse_rotation;
+                    auto key_event = event.as<sdl2::keyboard_event>();
+                    switch (key_event.scan_code())
+                    {
+                        case sdl2::scan_code::r:
+                            reverse_rotation = !reverse_rotation;
+                            break;
+                    }
                     break;
             }
         }
@@ -185,7 +192,6 @@ int main()
                 palette.rotate_right();
             }
         }
-
     }
 
     return 0;

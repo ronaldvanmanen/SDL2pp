@@ -35,13 +35,14 @@ sdl2::event_queue::~event_queue()
     SDL_QuitSubSystem(SDL_INIT_EVENTS);
 }
 
-boost::optional<sdl2::event>
-sdl2::event_queue::poll_event()
+bool
+sdl2::event_queue::poll(sdl2::event& event)
 {
-    SDL_Event event;
-    if (!SDL_PollEvent(&event))
-    {
-        return boost::none;
-    }
-    return sdl2::event(event);
+    return 1 == SDL_PollEvent(&event.native_handle());
+}
+
+bool
+sdl2::event_queue::pending() const
+{
+    return 1 == SDL_PollEvent(nullptr);
 }
