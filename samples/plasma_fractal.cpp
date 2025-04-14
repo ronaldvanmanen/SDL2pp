@@ -36,17 +36,18 @@
 
 namespace sdl2
 {
+    template<typename PixelFormat, size_t Size>
     class palette
     {
     public:
-        using size_type = std::array<argb8888, 256>::size_type;
+        using size_type = std::array<PixelFormat, Size>::size_type;
 
     public:
         palette();
 
-        argb8888& operator[](size_type index);
+        PixelFormat& operator[](size_type index);
 
-        const argb8888& operator[](size_type index) const;
+        PixelFormat const& operator[](size_type index) const;
 
         size_type size() const;
         
@@ -55,36 +56,45 @@ namespace sdl2
         void rotate_right();
 
     private:
-        std::array<argb8888, 256> _colors;
+        std::array<PixelFormat, Size> _colors;
 
         size_type _offset;
     };
 }
 
-sdl2::palette::palette()
+template<typename PixelFormat, size_t Size>
+sdl2::palette<PixelFormat, Size>::palette()
 : _offset(0)
 { }
 
-sdl2::argb8888&
-sdl2::palette::operator[](sdl2::palette::size_type index)
+template<typename PixelFormat, size_t Size>
+PixelFormat&
+sdl2::palette<PixelFormat, Size>::operator[](
+    sdl2::palette<PixelFormat, Size>::size_type index
+)
 {
     return _colors[(_offset + index) % _colors.size()];
 }
 
-const sdl2::argb8888&
-sdl2::palette::operator[](sdl2::palette::size_type index) const
+template<typename PixelFormat, size_t Size>
+PixelFormat const&
+sdl2::palette<PixelFormat, Size>::operator[](
+    sdl2::palette<PixelFormat, Size>::size_type index
+) const
 {
     return _colors[(_offset + index) % _colors.size()];
 }
 
-sdl2::palette::size_type
-sdl2::palette::size() const
+template<typename PixelFormat, size_t Size>
+sdl2::palette<PixelFormat, Size>::size_type
+sdl2::palette<PixelFormat, Size>::size() const
 {
     return _colors.size();
 }
 
+template<typename PixelFormat, size_t Size>
 void
-sdl2::palette::rotate_left()
+sdl2::palette<PixelFormat, Size>::rotate_left()
 {
     --_offset;
 
@@ -94,8 +104,9 @@ sdl2::palette::rotate_left()
     }
 }
 
+template<typename PixelFormat, size_t Size>
 void
-sdl2::palette::rotate_right()
+sdl2::palette<PixelFormat, Size>::rotate_right()
 {
     ++_offset;
     
@@ -105,11 +116,9 @@ sdl2::palette::rotate_right()
     }
 }
 
-sdl2::palette generate_palette()
+sdl2::palette<sdl2::argb8888, 256> generate_palette()
 {
-    sdl2::palette palette;
-    
-    assert(palette.size() == 256);
+    sdl2::palette<sdl2::argb8888, 256> palette;
 
     for (std::uint8_t i = 0; i < 32; ++i)
     {
@@ -133,7 +142,7 @@ int main()
     sdl2::window window("Plasma Fractal", 640, 480, sdl2::window_flags::shown | sdl2::window_flags::resizable);
     sdl2::renderer renderer(window, sdl2::renderer_flags::accelerated | sdl2::renderer_flags::present_vsync);
     sdl2::texture<sdl2::argb8888> texture(renderer, sdl2::texture_access::streaming_access, renderer.output_size());
-    sdl2::palette palette = generate_palette();
+    sdl2::palette<sdl2::argb8888, 256> palette = generate_palette();
 
     sdl2::event_queue event_queue;
 
