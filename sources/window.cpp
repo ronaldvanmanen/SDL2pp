@@ -23,7 +23,7 @@
 
 namespace sdl2
 {
-    SDL_Window* create_window(std::string const& title, int width, int height, sdl2::window_flags flags)
+    SDL_Window* create_window(std::string const& title, std::int32_t width, std::int32_t height, sdl2::window_flags flags)
     {
         SDL_Window* native_handle =
             SDL_CreateWindow(
@@ -39,11 +39,11 @@ namespace sdl2
     }
 }
 
-sdl2::window::window(std::string const& title, int width, int height)
+sdl2::window::window(std::string const& title, std::int32_t width, std::int32_t height)
 : _native_handle(sdl2::create_window(title, width, height, sdl2::window_flags::none))
 { }
 
-sdl2::window::window(std::string const& title, int width, int height, sdl2::window_flags flags)
+sdl2::window::window(std::string const& title, std::int32_t width, std::int32_t height, sdl2::window_flags flags)
 : _native_handle(sdl2::create_window(title, width, height, flags))
 { }
 

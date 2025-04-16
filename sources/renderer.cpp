@@ -24,7 +24,7 @@
 
 namespace sdl2
 {
-    SDL_Renderer* create_renderer(sdl2::window const& owner, int32_t index, sdl2::renderer_flags flags)
+    SDL_Renderer* create_renderer(sdl2::window const& owner, std::int32_t index, sdl2::renderer_flags flags)
     {
         SDL_Renderer* native_handle = SDL_CreateRenderer(
             const_cast<sdl2::window&>(owner).native_handle(),

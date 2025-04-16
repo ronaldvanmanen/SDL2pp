@@ -43,7 +43,7 @@ namespace sdl2
     class texture_base
     {
     protected:
-        texture_base(renderer const& owner, pixel_format format, texture_access access, int width, int height);
+        texture_base(renderer const& owner, pixel_format format, texture_access access, std::int32_t width, std::int32_t height);
 
         texture_base(texture_base const& other) = delete;
 
@@ -62,7 +62,7 @@ namespace sdl2
     class texture : public texture_base
     {
     public:
-        texture(renderer const& owner, texture_access access, int width, int height);
+        texture(renderer const& owner, texture_access access, std::int32_t width, std::int32_t height);
 
         texture(renderer const& owner, texture_access access, size const& size);
 
@@ -77,7 +77,7 @@ namespace sdl2
     };
 
     template<typename TPixelFormat>
-    texture<TPixelFormat>::texture(renderer const& owner, texture_access access, int width, int height)
+    texture<TPixelFormat>::texture(renderer const& owner, texture_access access, std::int32_t width, std::int32_t height)
     : texture_base(owner, pixel_format_traits<TPixelFormat>::format, access, width, height)
     { }
 
@@ -96,12 +96,12 @@ namespace sdl2
     texture<TPixelFormat>::with_lock(CallbackFunction callback)
     {
         void* pixels;
-        int pitch;
+        std::int32_t pitch;
         throw_last_error(
             SDL_LockTexture(_native_handle, nullptr, &pixels, &pitch) < 0
         );
 
-        int width, height;
+        std::int32_t width, height;
         throw_last_error(
             SDL_QueryTexture(_native_handle, nullptr, nullptr, &width, &height) < 0
         );

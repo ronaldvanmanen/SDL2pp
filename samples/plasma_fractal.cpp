@@ -370,9 +370,9 @@ int main()
             texture.with_lock(
                 [palette, image](sdl2::image<sdl2::argb8888> &pixels)
                 {
-                    for (std::uint32_t y = 0; y < pixels.height(); ++y)
+                    for (std::int32_t y = 0; y < pixels.height(); ++y)
                     {
-                        for (std::uint32_t x = 0; x < pixels.width(); ++x)
+                        for (std::int32_t x = 0; x < pixels.width(); ++x)
                         {
                             pixels(x, y) = palette[image(x, y)];
                         }
