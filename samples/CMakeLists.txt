@@ -8,10 +8,17 @@ endif()
 
 project ("SDL2pp-samples")
 
-add_executable("plasma_fractal" "plasma_fractal.cpp")
+macro("add_sample" TARGET)
+  cmake_parse_arguments(arg "" "" "SOURCES" ${ARGN})
 
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET "plasma_fractal" PROPERTY CXX_STANDARD 20)
-endif()
+  add_executable(${TARGET} ${arg_SOURCES})
 
-target_link_libraries("plasma_fractal" PRIVATE SDL2pp)
+  if (CMAKE_VERSION VERSION_GREATER 3.12)
+    set_property(TARGET ${TARGET} PROPERTY CXX_STANDARD 20)
+  endif()
+
+  target_link_libraries(${TARGET} PRIVATE SDL2pp)
+endmacro()
+
+add_sample("plasma_fractal" SOURCES "plasma_fractal.cpp" "math.cpp")
+add_sample("tunnel_effect" SOURCES "tunnel_effect.cpp" "math.cpp")

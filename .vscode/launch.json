@@ -5,15 +5,26 @@
     "version": "0.2.0",
     "configurations": [
     {
-        "name": "(Windows) Launch",
+        "name": "(Windows) Launch sample",
         "type": "cppvsdbg",
         "request": "launch",
-        "program": "${workspaceFolder}/artifacts/build/x64-debug/samples/plasma_fractal.exe",
+        "program": "${workspaceFolder}/artifacts/build/x64-debug/samples/${input:samples}.exe",
         "args": [],
         "stopAtEntry": false,
         "cwd": "${fileDirname}",
         "environment": [],
         "console": "externalTerminal"
     }
+    ],
+    "inputs": [
+    {
+        "id": "samples",
+        "description": "Choose which sample should be launched",
+        "type": "pickString",
+        "options": [
+            "plasma_fractal",
+            "tunnel_effect"
+        ]
+    },
     ]
 }

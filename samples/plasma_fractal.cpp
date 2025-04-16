@@ -34,6 +34,8 @@
 #include "SDL2pp/texture.h"
 #include "SDL2pp/window.h"
 
+#include "math.h"
+
 namespace sdl2
 {
     template<typename PixelFormat, size_t Size>
@@ -82,8 +84,6 @@ namespace sdl2
 
         std::default_random_engine _random_number_engine;
     };
-
-    int next_power_of_two(int value);
 }
 
 sdl2::diamond_square_image_generator::diamond_square_image_generator()
@@ -288,18 +288,6 @@ sdl2::palette<PixelFormat, Size>::rotate_right()
     {
         _offset -= _colors.size();
     }
-}
-
-int sdl2::next_power_of_two(int value)
-{
-    --value;
-    value |= value >> 1;
-    value |= value >> 2;
-    value |= value >> 4;
-    value |= value >> 8;
-    value |= value >> 16;
-    ++value;
-    return value;
 }
 
 sdl2::palette<sdl2::argb8888, 256> generate_palette()
