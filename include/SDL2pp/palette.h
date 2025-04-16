@@ -18,22 +18,43 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "SDL2pp/event.h"
+#pragma once
 
-sdl2::event::event()
-: _native_handle(SDL_Event())
-{
-    SDL_zero(_native_handle);
-}
+#include <cstdint>
+#include <vector>
 
-sdl2::event_type
-sdl2::event::type() const
-{
-    return static_cast<sdl2::event_type>(_native_handle.type);
-}
+#include "SDL2/SDL_pixels.h"
 
-SDL_Event*
-sdl2::event::native_handle()
+#include "color.h"
+
+namespace sdl2
 {
-    return &_native_handle;
+    class palette
+    {
+    public:
+        palette(SDL_Palette *native_handle, bool free_handle);
+
+        palette(std::size_t size);
+
+        palette(std::initializer_list<sdl2::color> colors);
+
+        palette(palette const& other) = delete;
+
+        palette(palette && other);
+
+        ~palette();
+
+        palette operator=(palette const& other) = delete;
+
+        color const& operator[](std::size_t index) const;
+
+        void update(std::vector<sdl2::color> const& colors);
+
+        std::size_t size() const;
+
+    private:
+        SDL_Palette* _native_handle;
+
+        bool _free_handle;
+    };
 }

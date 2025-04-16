@@ -37,6 +37,10 @@ namespace sdl2
         
         color(std::uint8_t r, std::uint8_t g, std::uint8_t b, std::uint8_t a);
 
+        color(color const& other);
+
+        color& operator=(color const& other);
+
     public:
         std::uint8_t r, g, b, a;
 

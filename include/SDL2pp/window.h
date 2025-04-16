@@ -22,7 +22,11 @@
 
 #include <cstdint>
 #include <string>
+
 #include <SDL2/SDL_video.h>
+
+#include "size.h"
+#include "surface.h"
 
 namespace sdl2
 {
@@ -67,6 +71,12 @@ namespace sdl2
         ~window();
 
         window operator=(window const& other) = delete;
+
+        size size() const;
+
+        surface_base surface();
+
+        void update_surface();
 
         SDL_Window* native_handle();
 

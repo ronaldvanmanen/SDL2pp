@@ -97,9 +97,7 @@ namespace sdl2
         template<class Event>
         Event as();
 
-        SDL_Event& native_handle() &;
-
-        SDL_Event const& native_handle() const&;
+        SDL_Event* native_handle();
 
     private:
         SDL_Event _native_handle;

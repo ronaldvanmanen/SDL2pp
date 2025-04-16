@@ -18,22 +18,14 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "SDL2pp/event.h"
+#include <boost/test/unit_test.hpp>
 
-sdl2::event::event()
-: _native_handle(SDL_Event())
-{
-    SDL_zero(_native_handle);
-}
+#include "SDL2pp/index8.h"
+#include "SDL2pp/surface.h"
 
-sdl2::event_type
-sdl2::event::type() const
+BOOST_AUTO_TEST_CASE(test_surface_constructors)
 {
-    return static_cast<sdl2::event_type>(_native_handle.type);
-}
-
-SDL_Event*
-sdl2::event::native_handle()
-{
-    return &_native_handle;
+    BOOST_REQUIRE_NO_THROW(
+        sdl2::surface<sdl2::index8> test_surface(512, 384)
+    );
 }

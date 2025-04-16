@@ -13,7 +13,9 @@ add_executable("${PROJECT_NAME}"
   "test_color.cpp"
   "test_event_queue.cpp"
   "test_main.cpp"
+  "test_palette.cpp"
   "test_renderer.cpp"
+  "test_surface.cpp"
   "test_texture.cpp"
   "test_window.cpp")
 

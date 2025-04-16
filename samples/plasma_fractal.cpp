@@ -19,9 +19,10 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include <algorithm>
-#include <array>
+#include <cassert>
 #include <cstdint>
 #include <random>
+#include <vector>
 
 #include "SDL2pp/argb8888.h"
 #include "SDL2pp/color.h"
@@ -30,120 +31,16 @@
 #include "SDL2pp/image.h"
 #include "SDL2pp/index8.h"
 #include "SDL2pp/keyboard_event.h"
+#include "SDL2pp/palette.h"
 #include "SDL2pp/renderer.h"
-#include "SDL2pp/texture.h"
+#include "SDL2pp/size.h"
+#include "SDL2pp/surface.h"
 #include "SDL2pp/window.h"
 
 #include "math.h"
 
-namespace sdl2
-{
-    template<typename PixelFormat, size_t Size>
-    class palette
-    {
-    public:
-        using size_type = std::array<PixelFormat, Size>::size_type;
-
-    public:
-        palette();
-
-        PixelFormat& operator[](size_type index);
-
-        PixelFormat const& operator[](size_type index) const;
-
-        size_type size() const;
-        
-        void rotate_left();
-
-        void rotate_right();
-
-    private:
-        std::array<PixelFormat, Size> _colors;
-
-        size_type _offset;
-    };
-
-    class diamond_square_image_generator
-    {
-    public:
-        diamond_square_image_generator();
-
-        image<index8> generate(sdl2::size size);
-
-        image<index8> generate(int width, int height);
-        
-        image<index8> generate(int size);
-        
-    private:
-        void generate_diamond(image<index8> &map, int centerX, int centerY, int distance, int randomness);
-        
-        void generate_square(image<index8> &map, int center_x, int center_y, int distance, int randomness);
-
-    private:
-        std::random_device _random_number_generator;
-
-        std::default_random_engine _random_number_engine;
-    };
-}
-
-sdl2::diamond_square_image_generator::diamond_square_image_generator()
-: _random_number_engine(_random_number_generator())
-{ }
-
-sdl2::image<sdl2::index8>
-sdl2::diamond_square_image_generator::generate(sdl2::size size)
-{
-    return generate(size.width, size.height);
-}
-
-sdl2::image<sdl2::index8>
-sdl2::diamond_square_image_generator::generate(int width, int height)
-{
-    return generate(std::max(width, height));
-}
-
-sdl2::image<sdl2::index8>
-sdl2::diamond_square_image_generator::generate(int square_size)
-{
-    int actual_size = sdl2::next_power_of_two(square_size) + 1;
-    sdl2::image<index8> image(actual_size, actual_size);
-    int randomness = 256;
-    std::uniform_int_distribution<int> random_number_distribution(0, randomness - 1);
-
-    image(0, 0) = static_cast<uint8_t>(random_number_distribution(_random_number_engine));
-    image(actual_size - 1, 0) = static_cast<uint8_t>(random_number_distribution(_random_number_engine));
-    image(0, actual_size - 1) = static_cast<uint8_t>(random_number_distribution(_random_number_engine));
-    image(actual_size - 1, actual_size - 1) = static_cast<uint8_t>(random_number_distribution(_random_number_engine));
-
-    randomness /= 2;
-
-    for (int step_size = actual_size - 1; step_size > 1; step_size /= 2)
-    {
-        int half_step_size = step_size / 2;
-
-        for (int y = half_step_size; y < image.height(); y += step_size)
-        {
-            for (int x = half_step_size; x < image.width(); x += step_size)
-            {
-                generate_diamond(image, x, y, half_step_size, randomness);
-            }
-        }
-
-        for (int y = 0; y < image.height(); y += half_step_size)
-        {
-            for (int x = (y % step_size) == 0 ? half_step_size : 0; x < image.width(); x += step_size)
-            {
-                generate_square(image, x, y, half_step_size, randomness);
-            }
-        }
-
-        randomness /= 2;
-    }
-    return image;
-}
-
 void
-sdl2::diamond_square_image_generator::generate_diamond(sdl2::image<sdl2::index8> &map, int center_x, int center_y, int distance, int randomness)
+diamond_step(sdl2::image<sdl2::index8> &map, std::default_random_engine &random_number_engine, int center_x, int center_y, int distance, int randomness)
 {
     std::uniform_int_distribution<int> random_number_distribution(-randomness, randomness);
 
@@ -186,14 +83,14 @@ sdl2::diamond_square_image_generator::generate_diamond(sdl2::image<sdl2::index8>
     }
 
     int average = sum / count;
-    int random = random_number_distribution(_random_number_engine);
+    int random = random_number_distribution(random_number_engine);
     int value = std::clamp(average + random, 0, 255);
 
     map(center_x, center_y) = static_cast<uint8_t>(value);
 }
 
 void
-sdl2::diamond_square_image_generator::generate_square(sdl2::image<index8> &map, int center_x, int center_y, int distance, int randomness)
+square_step(sdl2::image<sdl2::index8> &map, std::default_random_engine &random_number_engine, int center_x, int center_y, int distance, int randomness)
 {
     std::uniform_int_distribution<int> random_number_distribution(-randomness, randomness);
 
@@ -228,106 +125,113 @@ sdl2::diamond_square_image_generator::generate_square(sdl2::image<index8> &map, 
     }
 
     int average = sum / count;
-    int random = random_number_distribution(_random_number_engine);
+    int random = random_number_distribution(random_number_engine);
     int value = std::clamp(average + random, 0, 255);
 
     map(center_x, center_y) = static_cast<uint8_t>(value);
 }
 
-template<typename PixelFormat, size_t Size>
-sdl2::palette<PixelFormat, Size>::palette()
-: _offset(0)
-{ }
-
-template<typename PixelFormat, size_t Size>
-PixelFormat&
-sdl2::palette<PixelFormat, Size>::operator[](
-    sdl2::palette<PixelFormat, Size>::size_type index
-)
+sdl2::surface<sdl2::index8>
+generate_diamond_square_image(std::default_random_engine &random_number_engine, int square_size)
 {
-    return _colors[(_offset + index) % _colors.size()];
-}
-
-template<typename PixelFormat, size_t Size>
-PixelFormat const&
-sdl2::palette<PixelFormat, Size>::operator[](
-    sdl2::palette<PixelFormat, Size>::size_type index
-) const
-{
-    return _colors[(_offset + index) % _colors.size()];
-}
-
-template<typename PixelFormat, size_t Size>
-sdl2::palette<PixelFormat, Size>::size_type
-sdl2::palette<PixelFormat, Size>::size() const
-{
-    return _colors.size();
-}
-
-template<typename PixelFormat, size_t Size>
-void
-sdl2::palette<PixelFormat, Size>::rotate_left()
-{
-    --_offset;
-
-    if (_offset < 0)
+    int actual_size = sdl2::next_power_of_two(square_size) + 1;
+    sdl2::surface<sdl2::index8> surface(actual_size, actual_size);
+    surface.with_lock([&random_number_engine](sdl2::image<sdl2::index8> & image)
     {
-        _offset += _colors.size();
-    }
+        const auto image_width = image.width();
+        const auto image_height = image.height();
+        int randomness = 256;
+        
+        std::uniform_int_distribution<int> random_number_distribution(0, randomness - 1);
+
+        image(0, 0) = static_cast<uint8_t>(random_number_distribution(random_number_engine));
+        image(image_width - 1, 0) = static_cast<uint8_t>(random_number_distribution(random_number_engine));
+        image(0, image_height - 1) = static_cast<uint8_t>(random_number_distribution(random_number_engine));
+        image(image_width - 1, image_height - 1) = static_cast<uint8_t>(random_number_distribution(random_number_engine));
+
+        randomness /= 2;
+
+        for (int step_size = image_height - 1; step_size > 1; step_size /= 2)
+        {
+            int half_step_size = step_size / 2;
+
+            for (int y = half_step_size; y < image_height; y += step_size)
+            {
+                for (int x = half_step_size; x < image_width; x += step_size)
+                {
+                    diamond_step(image, random_number_engine, x, y, half_step_size, randomness);
+                }
+            }
+
+            for (int y = 0; y < image_height; y += half_step_size)
+            {
+                for (int x = (y % step_size) == 0 ? half_step_size : 0; x < image_width; x += step_size)
+                {
+                    square_step(image, random_number_engine, x, y, half_step_size, randomness);
+                }
+            }
+
+            randomness /= 2;
+        }
+    });
+
+    return surface;
 }
 
-template<typename PixelFormat, size_t Size>
-void
-sdl2::palette<PixelFormat, Size>::rotate_right()
+sdl2::surface<sdl2::index8>
+generate_diamond_square_image(std::default_random_engine &random_number_engine, int width, int height)
 {
-    ++_offset;
-    
-    if (_offset >= _colors.size())
-    {
-        _offset -= _colors.size();
-    }
+    return generate_diamond_square_image(random_number_engine, std::max(width, height));
 }
 
-sdl2::palette<sdl2::argb8888, 256> generate_palette()
+sdl2::surface<sdl2::index8>
+generate_diamond_square_image(std::default_random_engine &random_number_engine, sdl2::size size)
 {
-    sdl2::palette<sdl2::argb8888, 256> palette;
+    return generate_diamond_square_image(random_number_engine, size.width, size.height);
+}
+
+void rotate_left(std::vector<sdl2::color> & palette)
+{
+    std::rotate(palette.begin(), palette.begin() + 1, palette.end());
+}
+
+void rotate_right(std::vector<sdl2::color> & palette)
+{
+    std::rotate(palette.begin(), palette.end() - 1, palette.end());
+}
+
+int main()
+{
+    auto window = sdl2::window("Plasma Fractal", 640, 480, sdl2::window_flags::shown);
+    auto renderer = sdl2::renderer(window, sdl2::renderer_flags::present_vsync);
+    auto window_surface = window.surface();
+    auto window_size = window.size();
+
+    auto random_device = std::random_device();
+    auto random_number_engine = std::default_random_engine(0);
+    auto plasma_surface = generate_diamond_square_image(random_number_engine, window_size);
+    auto plasma_palette = plasma_surface.palette();
+    auto plasma_colors = std::vector<sdl2::color>(256);
 
     for (std::uint8_t i = 0; i < 32; ++i)
     {
         std::uint8_t lo = i * 255 / 31;
         std::uint8_t hi = 255 - lo;
-        palette[i] = sdl2::argb8888(255, lo, 0, 0);
-        palette[i + 32] = sdl2::argb8888(255, hi, 0, 0);
-        palette[i + 64] = sdl2::argb8888(255, 0, lo, 0);
-        palette[i + 96] = sdl2::argb8888(255, 0, hi, 0);
-        palette[i + 128] = sdl2::argb8888(255, 0, 0, lo);
-        palette[i + 160] = sdl2::argb8888(255, 0, 0, hi);
-        palette[i + 192] = sdl2::argb8888(255, lo, 0, lo);
-        palette[i + 224] = sdl2::argb8888(255, hi, 0, hi);
+        plasma_colors[i] = sdl2::color(lo, 0, 0, 255);
+        plasma_colors[i + 32] = sdl2::color(hi, 0, 0, 255);
+        plasma_colors[i + 64] = sdl2::color(0, lo, 0, 255);
+        plasma_colors[i + 96] = sdl2::color(0, hi, 0, 255);
+        plasma_colors[i + 128] = sdl2::color(0, 0, lo, 255);
+        plasma_colors[i + 160] = sdl2::color(0, 0, hi, 255);
+        plasma_colors[i + 192] = sdl2::color(lo, 0, lo, 255);
+        plasma_colors[i + 224] = sdl2::color(hi, 0, hi, 255);
     }
 
-    return palette;
-}
-
-sdl2::image<sdl2::index8> generate_diamond_square_image(sdl2::size size)
-{
-    sdl2::diamond_square_image_generator generator;
-    sdl2::image<sdl2::index8> image = generator.generate(size);
-    return image;
-}
-
-int main()
-{
-    sdl2::window window("Plasma Fractal", 640, 480, sdl2::window_flags::shown | sdl2::window_flags::resizable);
-    sdl2::renderer renderer(window, sdl2::renderer_flags::accelerated | sdl2::renderer_flags::present_vsync);
-    sdl2::texture<sdl2::argb8888> texture(renderer, sdl2::texture_access::streaming_access, renderer.output_size());
-    sdl2::image<sdl2::index8> image = generate_diamond_square_image(renderer.output_size());
-    sdl2::palette<sdl2::argb8888, 256> palette = generate_palette();
+    plasma_palette.update(plasma_colors);
 
     sdl2::event_queue event_queue;
 
     bool reverse_rotation = false;
-
     bool running = true;
     while (running)
     {
@@ -353,33 +257,20 @@ int main()
         }
         else
         {
-            texture.with_lock(
-                [&palette, &image](sdl2::image<sdl2::argb8888> &pixels)
-                {
-                    for (std::int32_t y = 0; y < pixels.height(); ++y)
-                    {
-                        for (std::int32_t x = 0; x < pixels.width(); ++x)
-                        {
-                            pixels(x, y) = palette[image(x, y)];
-                        }
-                    }
-                }
-            );
-
-            renderer.draw_blend_mode(sdl2::blend_mode::none);
-            renderer.draw_color(sdl2::color::black);
-            renderer.clear();
-            renderer.copy(texture);
+            sdl2::blit(plasma_surface, window_surface);
+            window.update_surface();
             renderer.present();
 
             if (reverse_rotation)
             {
-                palette.rotate_left();
+                rotate_right(plasma_colors);
             }
             else
             {
-                palette.rotate_right();
+                rotate_left(plasma_colors);
             }
+
+            plasma_palette.update(plasma_colors);
         }
     }
 

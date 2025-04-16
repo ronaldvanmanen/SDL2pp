@@ -18,22 +18,21 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "SDL2pp/event.h"
+#include <boost/test/unit_test.hpp>
 
-sdl2::event::event()
-: _native_handle(SDL_Event())
+#include "SDL2pp/palette.h"
+
+BOOST_AUTO_TEST_CASE(test_palette_size_constructor)
 {
-    SDL_zero(_native_handle);
+    sdl2::palette test_palette(256);
+
+    BOOST_TEST(256 == test_palette.size());
 }
 
-sdl2::event_type
-sdl2::event::type() const
+BOOST_AUTO_TEST_CASE(test_palette_initializer_list_constructor)
 {
-    return static_cast<sdl2::event_type>(_native_handle.type);
-}
-
-SDL_Event*
-sdl2::event::native_handle()
-{
-    return &_native_handle;
+    sdl2::palette test_palette({ sdl2::color::white, sdl2::color::black });
+    BOOST_TEST(2 == test_palette.size());
+    BOOST_TEST(sdl2::color::white == test_palette[0]);
+    BOOST_TEST(sdl2::color::black == test_palette[1]);
 }

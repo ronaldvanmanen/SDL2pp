@@ -34,6 +34,23 @@ sdl2::color::color(std::uint8_t r, std::uint8_t g, std::uint8_t b, std::uint8_t 
 : r(r), g(g), b(b), a(a)
 { }
 
+sdl2::color::color(sdl2::color const& other)
+: r(other.r), g(other.g), b(other.b), a(other.a)
+{ }
+
+sdl2::color&
+sdl2::color::operator=(color const& other)
+{
+    if (*this != other)
+    {
+        r = other.r;
+        g = other.g;
+        b = other.b;
+        a = other.a;
+    }
+    return *this;
+}
+
 bool
 sdl2::operator==(color const& left, color const& right)
 {

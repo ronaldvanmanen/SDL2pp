@@ -31,9 +31,11 @@ add_library("${PROJECT_NAME}"
   "sources/event.cpp"
   "sources/index8.cpp"
   "sources/keyboard_event.cpp"
+  "sources/palette.cpp"
   "sources/renderer.cpp"
   "sources/sdl.cpp"
   "sources/size.cpp"
+  "sources/surface.cpp"
   "sources/texture.cpp"
   "sources/window.cpp")
 

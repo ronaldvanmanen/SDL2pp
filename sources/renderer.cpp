@@ -121,7 +121,7 @@ sdl2::renderer::present()
 void
 sdl2::renderer::copy(sdl2::texture_base const& texture)
 {
-    throw_last_error(
+    sdl2::throw_last_error(
         SDL_RenderCopy(
             _native_handle,
             const_cast<sdl2::texture_base&>(texture).native_handle(),

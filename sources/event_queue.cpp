@@ -38,7 +38,7 @@ sdl2::event_queue::~event_queue()
 bool
 sdl2::event_queue::poll(sdl2::event& event)
 {
-    return 1 == SDL_PollEvent(&event.native_handle());
+    return 1 == SDL_PollEvent(event.native_handle());
 }
 
 bool

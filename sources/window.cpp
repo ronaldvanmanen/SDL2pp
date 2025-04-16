@@ -59,6 +59,26 @@ sdl2::window::~window()
     }
 }
 
+sdl2::surface_base
+sdl2::window::surface()
+{
+    return sdl2::surface_base(SDL_GetWindowSurface(_native_handle), false);
+}
+
+sdl2::size
+sdl2::window::size() const
+{
+    int width, height;
+    SDL_GetWindowSize(_native_handle, &width, &height);
+    return sdl2::size(width, height);
+}
+
+void
+sdl2::window::update_surface()
+{
+    throw_last_error(SDL_UpdateWindowSurface(_native_handle) < 0);
+}
+
 SDL_Window*
 sdl2::window::native_handle()
 {
