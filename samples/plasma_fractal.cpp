@@ -99,9 +99,7 @@ sdl2::diamond_square_image_generator::generate(sdl2::size size)
 sdl2::image<sdl2::index8>
 sdl2::diamond_square_image_generator::generate(int width, int height)
 {
-    auto size = std::max(width, height);
-    auto image = generate(size);
-    return image;
+    return generate(std::max(width, height));
 }
 
 sdl2::image<sdl2::index8>
