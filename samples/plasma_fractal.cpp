@@ -356,7 +356,7 @@ int main()
         else
         {
             texture.with_lock(
-                [palette, image](sdl2::image<sdl2::argb8888> &pixels)
+                [&palette, &image](sdl2::image<sdl2::argb8888> &pixels)
                 {
                     for (std::int32_t y = 0; y < pixels.height(); ++y)
                     {

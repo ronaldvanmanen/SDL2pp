@@ -157,7 +157,7 @@ int main()
         else
         {
             texture.with_lock(
-                [source_image, transform_table, elapsed_time](sdl2::image<sdl2::argb8888> &screen_image)
+                [&source_image, &transform_table, elapsed_time](sdl2::image<sdl2::argb8888> &screen_image)
                 {
                     const std::int32_t screen_width = screen_image.width();
                     const std::int32_t screen_height = screen_image.height();
