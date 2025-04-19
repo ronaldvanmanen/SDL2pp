@@ -51,3 +51,11 @@ sdl2::stopwatch::elapsed()
     }
     return elapsed_time;
 }
+
+double
+sdl2::stopwatch::elapsed_seconds()
+{
+    return std::chrono::duration_cast<
+        std::chrono::duration<double>
+    >(elapsed()).count();
+}

@@ -37,6 +37,8 @@ namespace sdl2
 
         duration elapsed();
 
+        double elapsed_seconds();
+
     private:
         time_point _start_time;
 

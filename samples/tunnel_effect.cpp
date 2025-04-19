@@ -35,14 +35,6 @@
 #include "math.h"
 #include "stopwatch.h"
 
-namespace std
-{
-    namespace chrono
-    {
-        using fractional_seconds = duration<double>;
-    }
-}
-
 namespace sdl2
 {
     struct transform
@@ -164,7 +156,7 @@ int main()
                     const auto source_width = source_image.width();
                     const auto source_height = source_image.height();
  
-                    const auto elapsed_time = std::chrono::duration_cast<std::chrono::fractional_seconds>(stopwatch.elapsed()).count();
+                    const auto elapsed_time = stopwatch.elapsed_seconds();
                     const auto shift_x = static_cast<std::int32_t>(screen_width * elapsed_time);
                     const auto shift_y = static_cast<std::int32_t>(screen_height * elapsed_time / 4);
                     const auto look_x = (source_width - screen_width) / 2;
