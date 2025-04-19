@@ -130,13 +130,13 @@ sdl2::image<sdl2::argb8888> generate_xor_image(sdl2::size const& size)
 
 int main()
 {
-    sdl2::window window("Tunnel Effect", 640, 480, sdl2::window_flags::shown | sdl2::window_flags::resizable);
-    sdl2::renderer renderer(window, sdl2::renderer_flags::accelerated | sdl2::renderer_flags::present_vsync);
-    sdl2::texture<sdl2::argb8888> texture(renderer, sdl2::texture_access::streaming_access, renderer.output_size());
-    sdl2::image<sdl2::argb8888> source_image = generate_xor_image(renderer.output_size());
-    sdl2::image<sdl2::transform> transform_table = generate_transform_image(renderer.output_size());
+    auto window = sdl2::window("Tunnel Effect", 640, 480, sdl2::window_flags::shown | sdl2::window_flags::resizable);
+    auto renderer = sdl2::renderer(window, sdl2::renderer_flags::accelerated | sdl2::renderer_flags::present_vsync);
+    auto texture = sdl2::texture<sdl2::argb8888>(renderer, sdl2::texture_access::streaming_access, renderer.output_size());
+    auto event_queue = sdl2::event_queue();
 
-    sdl2::event_queue event_queue;
+    auto source_image = generate_xor_image(renderer.output_size());
+    auto transform_table = generate_transform_image(renderer.output_size());
     auto stopwatch = sdl2::stopwatch();
 
     stopwatch.start();
@@ -159,25 +159,26 @@ int main()
             texture.with_lock(
                 [&source_image, &transform_table, &stopwatch](sdl2::image<sdl2::argb8888> &screen_image)
                 {
-                    const std::int32_t screen_width = screen_image.width();
-                    const std::int32_t screen_height = screen_image.height();
-                    const std::int32_t source_width = source_image.width();
-                    const std::int32_t source_height = source_image.height();
+                    const auto screen_width = screen_image.width();
+                    const auto screen_height = screen_image.height();
+                    const auto source_width = source_image.width();
+                    const auto source_height = source_image.height();
  
-                    const std::int32_t shift_x = static_cast<std::int32_t>(screen_width * elapsed_time);
-                    const std::int32_t shift_y = static_cast<std::int32_t>(screen_height * elapsed_time / 4);
-                    const std::int32_t look_x = (source_width - screen_width) / 2;
-                    const std::int32_t look_y = (source_height - screen_height) / 2;
-                    const std::int32_t shift_look_x = shift_x + look_x;
-                    const std::int32_t shift_look_y = shift_y + look_y;
+                    const auto elapsed_time = std::chrono::duration_cast<std::chrono::fractional_seconds>(stopwatch.elapsed()).count();
+                    const auto shift_x = static_cast<std::int32_t>(screen_width * elapsed_time);
+                    const auto shift_y = static_cast<std::int32_t>(screen_height * elapsed_time / 4);
+                    const auto look_x = (source_width - screen_width) / 2;
+                    const auto look_y = (source_height - screen_height) / 2;
+                    const auto shift_look_x = shift_x + look_x;
+                    const auto shift_look_y = shift_y + look_y;
     
-                    for (std::int32_t y = 0; y < screen_image.height(); ++y)
+                    for (auto y = 0; y < screen_image.height(); ++y)
                     {
-                        for (std::int32_t x = 0; x < screen_image.width(); ++x)
+                        for (auto x = 0; x < screen_image.width(); ++x)
                         {
-                            const sdl2::transform transform = transform_table(x + look_x, y + look_y);
-                            const std::int32_t source_x = (transform.distance + shift_look_x) & (source_width - 1);
-                            const std::int32_t source_y = (transform.angle + shift_look_y) & (source_height - 1);
+                            const auto transform = transform_table(x + look_x, y + look_y);
+                            const auto source_x = (transform.distance + shift_look_x) & (source_width - 1);
+                            const auto source_y = (transform.angle + shift_look_y) & (source_height - 1);
     
                             screen_image(x, y) = source_image(source_x, source_y);
                         }
