@@ -20,5 +20,5 @@ macro("add_sample" TARGET)
   target_link_libraries(${TARGET} PRIVATE SDL2pp)
 endmacro()
 
-add_sample("plasma_fractal" SOURCES "plasma_fractal.cpp" "math.cpp")
-add_sample("tunnel_effect" SOURCES "tunnel_effect.cpp" "math.cpp")
+add_sample("plasma_fractal" SOURCES "plasma_fractal.cpp" "math.cpp" "stopwatch.cpp")
+add_sample("tunnel_effect" SOURCES "tunnel_effect.cpp" "math.cpp" "stopwatch.cpp")

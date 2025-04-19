@@ -33,6 +33,7 @@
 #include "SDL2pp/window.h"
 
 #include "math.h"
+#include "stopwatch.h"
 
 namespace std
 {
@@ -136,10 +137,9 @@ int main()
     sdl2::image<sdl2::transform> transform_table = generate_transform_image(renderer.output_size());
 
     sdl2::event_queue event_queue;
+    auto stopwatch = sdl2::stopwatch();
 
-    auto now = std::chrono::steady_clock::now();
-    auto start_time = now;
-    double elapsed_time = 0;
+    stopwatch.start();
 
     bool running = true;
     while (running)
@@ -157,7 +157,7 @@ int main()
         else
         {
             texture.with_lock(
-                [&source_image, &transform_table, elapsed_time](sdl2::image<sdl2::argb8888> &screen_image)
+                [&source_image, &transform_table, &stopwatch](sdl2::image<sdl2::argb8888> &screen_image)
                 {
                     const std::int32_t screen_width = screen_image.width();
                     const std::int32_t screen_height = screen_image.height();
@@ -190,11 +190,6 @@ int main()
             renderer.clear();
             renderer.copy(texture);
             renderer.present();
-
-            now = std::chrono::steady_clock::now();
-            elapsed_time = std::chrono::duration_cast<std::chrono::fractional_seconds>(
-                now - start_time
-            ).count();
         }
     }
 
