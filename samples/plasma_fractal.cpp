@@ -105,21 +105,21 @@ sdl2::diamond_square_image_generator::generate(int width, int height)
 }
 
 sdl2::image<sdl2::index8>
-sdl2::diamond_square_image_generator::generate(int width_and_height)
+sdl2::diamond_square_image_generator::generate(int square_size)
 {
-    int size = sdl2::next_power_of_two(width_and_height) + 1;
-    sdl2::image<index8> image(size, size);
+    int actual_size = sdl2::next_power_of_two(square_size) + 1;
+    sdl2::image<index8> image(actual_size, actual_size);
     int randomness = 256;
     std::uniform_int_distribution<int> random_number_distribution(0, randomness - 1);
 
     image(0, 0) = static_cast<uint8_t>(random_number_distribution(_random_number_engine));
-    image(size - 1, 0) = static_cast<uint8_t>(random_number_distribution(_random_number_engine));
-    image(0, size - 1) = static_cast<uint8_t>(random_number_distribution(_random_number_engine));
-    image(size - 1, size - 1) = static_cast<uint8_t>(random_number_distribution(_random_number_engine));
+    image(actual_size - 1, 0) = static_cast<uint8_t>(random_number_distribution(_random_number_engine));
+    image(0, actual_size - 1) = static_cast<uint8_t>(random_number_distribution(_random_number_engine));
+    image(actual_size - 1, actual_size - 1) = static_cast<uint8_t>(random_number_distribution(_random_number_engine));
 
     randomness /= 2;
 
-    for (int step_size = size - 1; step_size > 1; step_size /= 2)
+    for (int step_size = actual_size - 1; step_size > 1; step_size /= 2)
     {
         int half_step_size = step_size / 2;
 

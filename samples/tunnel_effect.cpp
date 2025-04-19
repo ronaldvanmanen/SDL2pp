@@ -69,16 +69,16 @@ sdl2::image<sdl2::transform> generate_transform_image(int square_size)
 {
     const double ratio = 32;
 
-    std::int32_t n = sdl2::next_power_of_two(square_size);
+    std::int32_t actual_size = sdl2::next_power_of_two(square_size);
 
-    sdl2::image<sdl2::transform> transform_image(n, n);
+    sdl2::image<sdl2::transform> transform_image(actual_size, actual_size);
 
-    for (std::int32_t y = 0; y < n; y++)
+    for (std::int32_t y = 0; y < actual_size; y++)
     {
-        for (std::int32_t x = 0; x < n; x++)
+        for (std::int32_t x = 0; x < actual_size; x++)
         {
-            auto angle = static_cast<std::int32_t>(0.5 * n * std::atan2(y - n / 2.0, x - n / 2.0) / std::numbers::pi);
-            auto distance = static_cast<std::int32_t>(ratio * n / std::sqrt((x - n / 2.0) * (x - n / 2.0) + (y - n / 2.0) * (y - n / 2.0))) % n;
+            auto angle = static_cast<std::int32_t>(0.5 * actual_size * std::atan2(y - actual_size / 2.0, x - actual_size / 2.0) / std::numbers::pi);
+            auto distance = static_cast<std::int32_t>(ratio * actual_size / std::sqrt((x - actual_size / 2.0) * (x - actual_size / 2.0) + (y - actual_size / 2.0) * (y - actual_size / 2.0))) % actual_size;
             transform_image(x, y) = sdl2::transform(angle, distance);
         }
     }
@@ -98,19 +98,19 @@ sdl2::image<sdl2::transform> generate_transform_image(sdl2::size size)
 
 sdl2::image<sdl2::argb8888> generate_xor_image(std::int32_t square_size)
 {
-    std::int32_t n = sdl2::next_power_of_two(square_size);
+    std::int32_t actual_size = sdl2::next_power_of_two(square_size);
 
-    sdl2::image<sdl2::argb8888> xor_image(n, n);
+    sdl2::image<sdl2::argb8888> xor_image(actual_size, actual_size);
 
-    for (std::int32_t y = 0; y < n; y++)
+    for (std::int32_t y = 0; y < actual_size; y++)
     {
-        for (std::int32_t x = 0; x < n; x++)
+        for (std::int32_t x = 0; x < actual_size; x++)
         {
             xor_image(x, y) = sdl2::argb8888(
                 0xFF,
                 0x00,
                 0x00,
-                (x * 256 / n) ^ (y * 256 / n)
+                (x * 256 / actual_size) ^ (y * 256 / actual_size)
             );
         }
     }
