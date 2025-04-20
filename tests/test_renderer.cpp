@@ -44,24 +44,24 @@ BOOST_AUTO_TEST_CASE(test_renderer_output_size)
     BOOST_TEST(test_renderer_output_size.height == 480);
 }
 
-BOOST_AUTO_TEST_CASE(test_renderer_set_draw_color)
+BOOST_AUTO_TEST_CASE(test_renderer_draw_color)
 {
-    sdl2::window test_window("test_renderer_set_draw_color", 640, 480, sdl2::window_flags::hidden);
+    sdl2::window test_window("test_renderer_draw_color", 640, 480, sdl2::window_flags::hidden);
     sdl2::renderer test_renderer(test_window);
     sdl2::color test_color(0xDE, 0xAD, 0xBE, 0xEF);
     
-    test_renderer.set_draw_color(test_color);
+    test_renderer.draw_color(test_color);
 
-    BOOST_TEST(test_color == test_renderer.get_draw_color());
+    BOOST_TEST(test_color == test_renderer.draw_color());
 }
 
-BOOST_AUTO_TEST_CASE(test_renderer_set_draw_blend_mode)
+BOOST_AUTO_TEST_CASE(test_renderer_draw_blend_mode)
 {
-    sdl2::window test_window("test_renderer_set_draw_blend_mode", 640, 480, sdl2::window_flags::hidden);
+    sdl2::window test_window("test_renderer_draw_blend_mode", 640, 480, sdl2::window_flags::hidden);
     sdl2::renderer test_renderer(test_window);
     sdl2::blend_mode test_mode = sdl2::blend_mode::blend;
     
-    test_renderer.set_draw_blend_mode(test_mode);
+    test_renderer.draw_blend_mode(test_mode);
 
-    BOOST_TEST(test_mode == test_renderer.get_draw_blend_mode());
+    BOOST_TEST(test_mode == test_renderer.draw_blend_mode());
 }

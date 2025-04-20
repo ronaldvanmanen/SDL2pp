@@ -64,13 +64,13 @@ namespace sdl2
 
         size output_size() const;
 
-        color get_draw_color() const;
+        color draw_color() const;
 
-        void set_draw_color(color const& draw_color);
+        void draw_color(color const& draw_color);
 
-        blend_mode get_draw_blend_mode() const;
+        blend_mode draw_blend_mode() const;
 
-        void set_draw_blend_mode(blend_mode mode);
+        void draw_blend_mode(blend_mode mode);
 
         void clear();
 

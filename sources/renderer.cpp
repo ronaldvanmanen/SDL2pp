@@ -67,7 +67,7 @@ sdl2::renderer::output_size() const
 }
 
 sdl2::color
-sdl2::renderer::get_draw_color() const
+sdl2::renderer::draw_color() const
 {
     std::uint8_t r, g, b, a;
     throw_last_error(
@@ -77,7 +77,7 @@ sdl2::renderer::get_draw_color() const
 }
 
 void
-sdl2::renderer::set_draw_color(sdl2::color const& draw_color)
+sdl2::renderer::draw_color(sdl2::color const& draw_color)
 {
     throw_last_error(
         SDL_SetRenderDrawColor(
@@ -87,7 +87,7 @@ sdl2::renderer::set_draw_color(sdl2::color const& draw_color)
 }
 
 sdl2::blend_mode
-sdl2::renderer::get_draw_blend_mode() const
+sdl2::renderer::draw_blend_mode() const
 {
     SDL_BlendMode mode;
     throw_last_error(
@@ -97,7 +97,7 @@ sdl2::renderer::get_draw_blend_mode() const
 }
 
 void
-sdl2::renderer::set_draw_blend_mode(sdl2::blend_mode mode)
+sdl2::renderer::draw_blend_mode(sdl2::blend_mode mode)
 {
     throw_last_error(
         SDL_SetRenderDrawBlendMode(_native_handle, static_cast<SDL_BlendMode>(mode)) < 0

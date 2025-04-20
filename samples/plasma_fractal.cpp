@@ -366,8 +366,8 @@ int main()
                 }
             );
 
-            renderer.set_draw_blend_mode(sdl2::blend_mode::none);
-            renderer.set_draw_color(sdl2::color::black);
+            renderer.draw_blend_mode(sdl2::blend_mode::none);
+            renderer.draw_color(sdl2::color::black);
             renderer.clear();
             renderer.copy(texture);
             renderer.present();
