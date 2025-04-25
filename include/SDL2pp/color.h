@@ -43,11 +43,6 @@ namespace sdl2
 
     public:
         std::uint8_t r, g, b, a;
-
-    protected:
-        friend bool operator==(color const& left, color const& right);
-
-        friend std::ostream& operator<<(std::ostream& os, color const& value);
     };
 
     bool operator==(color const& left, color const& right);

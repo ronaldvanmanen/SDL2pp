@@ -20,8 +20,6 @@
 
 #pragma once
 
-#include <boost/optional.hpp>
-
 #include "event.h"
 
 namespace sdl2
