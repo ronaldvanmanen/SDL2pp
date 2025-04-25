@@ -22,31 +22,14 @@
 
 #include <cstdint>
 
-#include <SDL2/SDL_events.h>
-
-#include "event_type.h"
+#include <SDL2/SDL_render.h>
 
 namespace sdl2
 {
-    class event
+    enum class texture_access : std::int32_t
     {
-    public:
-        event();
-
-        event_type type() const;
-
-        template<class Event>
-        Event as();
-
-        SDL_Event* native_handle();
-
-    private:
-        SDL_Event _native_handle;
+        static_access = SDL_TEXTUREACCESS_STATIC,
+        streaming_access = SDL_TEXTUREACCESS_STREAMING,
+        target_access = SDL_TEXTUREACCESS_TARGET
     };
-
-    template<class Event>
-    Event event::as()
-    {
-        return Event(_native_handle);
-    }
 }

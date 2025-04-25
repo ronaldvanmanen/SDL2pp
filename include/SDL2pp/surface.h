@@ -26,6 +26,7 @@
 #include "image.h"
 #include "palette.h"
 #include "pixel_format.h"
+#include "pixel_format_traits.h"
 #include "size.h"
 
 namespace sdl2

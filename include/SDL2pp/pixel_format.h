@@ -79,34 +79,4 @@ namespace sdl2
         nv21 = SDL_PIXELFORMAT_NV21,
         external_oes = SDL_PIXELFORMAT_EXTERNAL_OES
     };
-
-    enum class pixel_type : std::uint32_t
-    {
-        unknown = SDL_PIXELTYPE_UNKNOWN,
-        index1 = SDL_PIXELTYPE_INDEX1,
-        index2 = SDL_PIXELTYPE_INDEX2,
-        index4 = SDL_PIXELTYPE_INDEX4,
-        index8 = SDL_PIXELTYPE_INDEX8,
-        packed8 = SDL_PIXELTYPE_PACKED8,
-        packed16 = SDL_PIXELTYPE_PACKED16,
-        packed32 = SDL_PIXELTYPE_PACKED32,
-        array_u8 = SDL_PIXELTYPE_ARRAYU8,
-        array_u16 = SDL_PIXELTYPE_ARRAYU16,
-        array_u32 = SDL_PIXELTYPE_ARRAYU32,
-        array_f16 = SDL_PIXELTYPE_ARRAYF16,
-        array_f32 = SDL_PIXELTYPE_ARRAYF32,
-    };
-
-    template<typename TPixelFormat>
-    class pixel_format_traits
-    {
-    public:
-        static constexpr pixel_format format = TPixelFormat::format;
-
-        static constexpr pixel_type pixel_type = static_cast<pixel_type>(SDL_PIXELTYPE(static_cast<SDL_PixelFormatEnum>(format)));
-
-        static constexpr std::uint32_t bits_per_pixel = SDL_BITSPERPIXEL(static_cast<SDL_PixelFormatEnum>(format));
-
-        static constexpr std::uint32_t bytes_per_pixel = SDL_BYTESPERPIXEL(static_cast<SDL_PixelFormatEnum>(format));
-    };
 }

@@ -24,29 +24,11 @@
 
 #include <SDL2/SDL_events.h>
 
-#include "event_type.h"
-
 namespace sdl2
 {
-    class event
+    enum class key_state : uint32_t
     {
-    public:
-        event();
-
-        event_type type() const;
-
-        template<class Event>
-        Event as();
-
-        SDL_Event* native_handle();
-
-    private:
-        SDL_Event _native_handle;
+        released = SDL_RELEASED,
+        pressed = SDL_PRESSED
     };
-
-    template<class Event>
-    Event event::as()
-    {
-        return Event(_native_handle);
-    }
 }

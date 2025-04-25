@@ -18,35 +18,9 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#pragma once
+#include "SDL2pp/window_flags.h"
 
-#include <cstdint>
-
-#include <SDL2/SDL_events.h>
-
-#include "event_type.h"
-
-namespace sdl2
+sdl2::window_flags sdl2::operator|(sdl2::window_flags left, sdl2::window_flags right)
 {
-    class event
-    {
-    public:
-        event();
-
-        event_type type() const;
-
-        template<class Event>
-        Event as();
-
-        SDL_Event* native_handle();
-
-    private:
-        SDL_Event _native_handle;
-    };
-
-    template<class Event>
-    Event event::as()
-    {
-        return Event(_native_handle);
-    }
+    return static_cast<sdl2::window_flags>(static_cast<std::uint32_t>(left) | static_cast<std::uint32_t>(right));
 }

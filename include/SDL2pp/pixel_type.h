@@ -22,31 +22,24 @@
 
 #include <cstdint>
 
-#include <SDL2/SDL_events.h>
-
-#include "event_type.h"
+#include <SDL2/SDL_pixels.h>
 
 namespace sdl2
 {
-    class event
+    enum class pixel_type : std::uint32_t
     {
-    public:
-        event();
-
-        event_type type() const;
-
-        template<class Event>
-        Event as();
-
-        SDL_Event* native_handle();
-
-    private:
-        SDL_Event _native_handle;
+        unknown = SDL_PIXELTYPE_UNKNOWN,
+        index1 = SDL_PIXELTYPE_INDEX1,
+        index2 = SDL_PIXELTYPE_INDEX2,
+        index4 = SDL_PIXELTYPE_INDEX4,
+        index8 = SDL_PIXELTYPE_INDEX8,
+        packed8 = SDL_PIXELTYPE_PACKED8,
+        packed16 = SDL_PIXELTYPE_PACKED16,
+        packed32 = SDL_PIXELTYPE_PACKED32,
+        array_u8 = SDL_PIXELTYPE_ARRAYU8,
+        array_u16 = SDL_PIXELTYPE_ARRAYU16,
+        array_u32 = SDL_PIXELTYPE_ARRAYU32,
+        array_f16 = SDL_PIXELTYPE_ARRAYF16,
+        array_f32 = SDL_PIXELTYPE_ARRAYF32,
     };
-
-    template<class Event>
-    Event event::as()
-    {
-        return Event(_native_handle);
-    }
 }

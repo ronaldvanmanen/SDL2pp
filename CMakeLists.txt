@@ -32,11 +32,13 @@ add_library("${PROJECT_NAME}"
   "sources/index8.cpp"
   "sources/keyboard_event.cpp"
   "sources/palette.cpp"
+  "sources/renderer_flags.cpp"
   "sources/renderer.cpp"
   "sources/sdl.cpp"
   "sources/size.cpp"
   "sources/surface.cpp"
   "sources/texture.cpp"
+  "sources/window_flags.cpp"
   "sources/window.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

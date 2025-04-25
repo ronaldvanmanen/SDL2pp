@@ -20,26 +20,26 @@
 
 #pragma once
 
+namespace sdl2
+{
+    class renderer;
+}
+
 #include <cstdint>
 #include <utility>
 
 #include <SDL2/SDL_render.h>
 
-#include "SDL2pp/error.h"
-#include "SDL2pp/image.h"
-#include "SDL2pp/pixel_format.h"
-#include "SDL2pp/renderer.h"
-#include "SDL2pp/size.h"
+#include "error.h"
+#include "image.h"
+#include "pixel_format.h"
+#include "pixel_format_traits.h"
+#include "renderer.h"
+#include "size.h"
+#include "texture_access.h"
 
 namespace sdl2
 {
-    enum class texture_access : std::int32_t
-    {
-        static_access = SDL_TEXTUREACCESS_STATIC,
-        streaming_access = SDL_TEXTUREACCESS_STREAMING,
-        target_access = SDL_TEXTUREACCESS_TARGET
-    };
-
     class texture_base
     {
     protected:

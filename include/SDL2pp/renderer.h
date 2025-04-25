@@ -20,33 +20,26 @@
 
 #pragma once
 
-#include <cstdint>
-
-#include <SDL2/SDL_render.h>
-
 namespace sdl2
 {
     class texture_base;
 }
 
+#include <cstdint>
+
+#include <SDL2/SDL_render.h>
+
 #include "blend_mode.h"
 #include "color.h"
 #include "error.h"
 #include "pixel_format.h"
+#include "renderer_flags.h"
 #include "size.h"
+#include "texture.h"
 #include "window.h"
 
 namespace sdl2
 {
-    enum class renderer_flags : std::uint32_t
-    {
-        none = 0,
-        software = SDL_RENDERER_SOFTWARE,
-        accelerated = SDL_RENDERER_ACCELERATED,
-        present_vsync = SDL_RENDERER_PRESENTVSYNC,
-        target_texture = SDL_RENDERER_TARGETTEXTURE,
-    };
-
     class renderer
     {
     public:
@@ -83,6 +76,4 @@ namespace sdl2
     private:
         SDL_Renderer* _native_handle;
     };
-
-    renderer_flags operator|(renderer_flags left, renderer_flags right);
 }

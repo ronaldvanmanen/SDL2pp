@@ -134,8 +134,3 @@ SDL_Renderer* sdl2::renderer::native_handle()
 {
     return _native_handle;
 }
-
-sdl2::renderer_flags sdl2::operator|(sdl2::renderer_flags left, sdl2::renderer_flags right)
-{
-    return static_cast<sdl2::renderer_flags>(static_cast<std::uint32_t>(left) | static_cast<std::uint32_t>(right));
-}

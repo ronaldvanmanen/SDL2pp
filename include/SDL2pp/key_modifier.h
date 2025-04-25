@@ -24,29 +24,27 @@
 
 #include <SDL2/SDL_events.h>
 
-#include "event_type.h"
-
 namespace sdl2
 {
-    class event
+    enum class key_modifier : std::uint16_t
     {
-    public:
-        event();
+        none = KMOD_NONE,
+        lshift = KMOD_LSHIFT,
+        rshift = KMOD_RSHIFT,
+        lctrl = KMOD_LCTRL,
+        rctrl = KMOD_RCTRL,
+        lalt = KMOD_LALT,
+        ralt = KMOD_RALT,
+        lgui = KMOD_LGUI,
+        rgui = KMOD_RGUI,
+        num = KMOD_NUM,
+        caps = KMOD_CAPS,
+        mode = KMOD_MODE,
+        scroll = KMOD_SCROLL,
 
-        event_type type() const;
-
-        template<class Event>
-        Event as();
-
-        SDL_Event* native_handle();
-
-    private:
-        SDL_Event _native_handle;
+        ctrl = KMOD_CTRL,
+        shift = KMOD_SHIFT,
+        alt = KMOD_ALT,
+        gui = KMOD_GUI,
     };
-
-    template<class Event>
-    Event event::as()
-    {
-        return Event(_native_handle);
-    }
 }

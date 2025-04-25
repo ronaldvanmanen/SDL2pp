@@ -22,31 +22,23 @@
 
 #include <cstdint>
 
-#include <SDL2/SDL_events.h>
+#include <SDL2/SDL_pixels.h>
 
-#include "event_type.h"
+#include "pixel_format.h"
+#include "pixel_type.h"
 
 namespace sdl2
 {
-    class event
+    template<typename TPixelFormat>
+    class pixel_format_traits
     {
     public:
-        event();
+        static constexpr pixel_format format = TPixelFormat::format;
 
-        event_type type() const;
+        static constexpr pixel_type pixel_type = static_cast<pixel_type>(SDL_PIXELTYPE(static_cast<SDL_PixelFormatEnum>(format)));
 
-        template<class Event>
-        Event as();
+        static constexpr std::uint32_t bits_per_pixel = SDL_BITSPERPIXEL(static_cast<SDL_PixelFormatEnum>(format));
 
-        SDL_Event* native_handle();
-
-    private:
-        SDL_Event _native_handle;
+        static constexpr std::uint32_t bytes_per_pixel = SDL_BYTESPERPIXEL(static_cast<SDL_PixelFormatEnum>(format));
     };
-
-    template<class Event>
-    Event event::as()
-    {
-        return Event(_native_handle);
-    }
 }

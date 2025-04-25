@@ -22,31 +22,18 @@
 
 #include <cstdint>
 
-#include <SDL2/SDL_events.h>
-
-#include "event_type.h"
+#include <SDL2/SDL_render.h>
 
 namespace sdl2
 {
-    class event
+    enum class renderer_flags : std::uint32_t
     {
-    public:
-        event();
-
-        event_type type() const;
-
-        template<class Event>
-        Event as();
-
-        SDL_Event* native_handle();
-
-    private:
-        SDL_Event _native_handle;
+        none = 0,
+        software = SDL_RENDERER_SOFTWARE,
+        accelerated = SDL_RENDERER_ACCELERATED,
+        present_vsync = SDL_RENDERER_PRESENTVSYNC,
+        target_texture = SDL_RENDERER_TARGETTEXTURE,
     };
 
-    template<class Event>
-    Event event::as()
-    {
-        return Event(_native_handle);
-    }
+    renderer_flags operator|(renderer_flags left, renderer_flags right);
 }
