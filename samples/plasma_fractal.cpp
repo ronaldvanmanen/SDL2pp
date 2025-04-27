@@ -37,7 +37,7 @@
 #include "SDL2pp/surface.h"
 #include "SDL2pp/window.h"
 
-#include "math.h"
+#include "shared/math.h"
 
 void
 diamond_step(sdl2::image<sdl2::index8> &map, std::default_random_engine &random_number_engine, int center_x, int center_y, int distance, int randomness)

@@ -32,8 +32,8 @@
 #include "SDL2pp/texture.h"
 #include "SDL2pp/window.h"
 
-#include "math.h"
-#include "stopwatch.h"
+#include "shared/math.h"
+#include "shared/stopwatch.h"
 
 namespace sdl2
 {
