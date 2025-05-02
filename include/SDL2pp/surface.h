@@ -54,13 +54,13 @@ namespace sdl2
 
         SDL_Surface* native_handle();
 
+        void blit(surface_base & source);
+
     private:
         SDL_Surface* _native_handle;
 
         bool _free_handle;
     };
-
-    void blit(surface_base & source, surface_base & target);
 
     template<typename TPixelFormat>
     class surface : public surface_base

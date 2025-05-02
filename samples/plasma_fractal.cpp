@@ -257,6 +257,7 @@ int main()
         else
         {
             auto window_surface = sdl2::surface<sdl2::argb8888>(window);
+            window_surface.blit(plasma_surface);
             window.update_surface();
             renderer.present();
 

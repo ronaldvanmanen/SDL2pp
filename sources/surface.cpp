@@ -88,11 +88,11 @@ sdl2::surface_base::native_handle()
 }
 
 void
-sdl2::blit(sdl2::surface_base & source, sdl2::surface_base & target)
+sdl2::surface_base::blit(sdl2::surface_base & source)
 {
     auto source_handle = source.native_handle();
     auto source_rect = SDL_Rect { 0, 0, source_handle->w, source_handle->h };
-    auto target_handle = target.native_handle();
+    auto target_handle = this->native_handle();
     auto target_rect = SDL_Rect { 0, 0, target_handle->w, target_handle->h };
     throw_last_error(
         SDL_BlitSurface(source_handle, &source_rect, target_handle, &target_rect) < 0
