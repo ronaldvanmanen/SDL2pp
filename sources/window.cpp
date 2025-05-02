@@ -59,12 +59,6 @@ sdl2::window::~window()
     }
 }
 
-sdl2::surface_base
-sdl2::window::surface()
-{
-    return sdl2::surface_base(SDL_GetWindowSurface(_native_handle), false);
-}
-
 sdl2::size
 sdl2::window::size() const
 {

@@ -204,7 +204,6 @@ int main()
 {
     auto window = sdl2::window("Plasma Fractal", 640, 480, sdl2::window_flags::shown);
     auto renderer = sdl2::renderer(window, sdl2::renderer_flags::present_vsync);
-    auto window_surface = window.surface();
     auto window_size = window.size();
 
     auto random_device = std::random_device();
@@ -257,7 +256,7 @@ int main()
         }
         else
         {
-            sdl2::blit(plasma_surface, window_surface);
+            auto window_surface = sdl2::surface<sdl2::argb8888>(window);
             window.update_surface();
             renderer.present();
 

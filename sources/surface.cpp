@@ -35,6 +35,11 @@ sdl2::surface_base::surface_base(sdl2::size const& size, int depth)
     throw_last_error(_native_handle == nullptr);
 }
 
+sdl2::surface_base::surface_base(sdl2::window & window)
+: _native_handle(SDL_GetWindowSurface(window.native_handle()))
+, _free_handle(false)
+{ }
+
 sdl2::surface_base::surface_base(SDL_Surface * native_handle, bool free_handle)
 : _native_handle(native_handle)
 , _free_handle(free_handle)

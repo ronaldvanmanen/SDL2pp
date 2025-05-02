@@ -28,20 +28,24 @@
 #include "pixel_format.h"
 #include "pixel_format_traits.h"
 #include "size.h"
+#include "window.h"
 
 namespace sdl2
 {
     class surface_base
     {
-    public:
+    protected:
         surface_base(int width, int height, int depth);
 
         surface_base(size const& size, int depth);
+
+        surface_base(window & owner);
 
         surface_base(SDL_Surface * native_handle, bool free_handle);
 
         surface_base(surface_base const& other);
 
+    public:
         ~surface_base();
 
         surface_base& operator=(surface_base const& other) = delete;
@@ -66,7 +70,9 @@ namespace sdl2
 
         surface(int width, int height);
 
-        surface(surface_base const& other) = delete;
+        surface(window & owner);
+
+        surface(surface<TPixelFormat> const& other);
 
         surface& operator=(surface const& other) = delete;
 
@@ -82,6 +88,16 @@ namespace sdl2
     template<typename TPixelFormat>
     surface<TPixelFormat>::surface(int width, int height)
     : surface_base(width, height, pixel_format_traits<TPixelFormat>::bits_per_pixel)
+    { }
+
+    template<typename TPixelFormat>
+    surface<TPixelFormat>::surface(window & owner)
+    : surface_base(owner)
+    { }
+
+    template<typename TPixelFormat>
+    surface<TPixelFormat>::surface(surface<TPixelFormat> const& other)
+    : surface_base(other)
     { }
 
     template<typename TPixelFormat> template <typename CallbackFunction>
