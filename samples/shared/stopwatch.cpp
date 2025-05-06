@@ -20,6 +20,14 @@
 
 #include "stopwatch.h"
 
+sdl2::stopwatch
+sdl2::stopwatch::start_now()
+{
+    sdl2::stopwatch stopwatch;
+    stopwatch.start();
+    return stopwatch;
+}
+
 void
 sdl2::stopwatch::start()
 {

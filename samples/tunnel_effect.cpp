@@ -129,11 +129,9 @@ int main()
 
     auto source_image = generate_xor_image(renderer.output_size());
     auto transform_table = generate_transform_image(renderer.output_size());
-    auto stopwatch = sdl2::stopwatch();
-
-    stopwatch.start();
-
-    bool running = true;
+    
+    auto stopwatch = sdl2::stopwatch::start_now();
+    auto running = true;
     while (running)
     {
         sdl2::event event;

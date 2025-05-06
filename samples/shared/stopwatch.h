@@ -31,6 +31,8 @@ namespace sdl2
         using duration = std::chrono::steady_clock::duration;
 
     public:
+        static stopwatch start_now();
+
         void start();
 
         void stop();
