@@ -20,6 +20,8 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <SDL2/SDL_pixels.h>
+
 #include "SDL2pp/color.h"
 
 BOOST_AUTO_TEST_CASE(test_color_default_constructor)
@@ -40,4 +42,16 @@ BOOST_AUTO_TEST_CASE(test_color_component_constructor)
     BOOST_TEST(test_color.g == 0xAD);
     BOOST_TEST(test_color.b == 0xBE);
     BOOST_TEST(test_color.a == 0xEF);
+}
+
+BOOST_AUTO_TEST_CASE(test_color_compatibility)
+{
+    sdl2::color test_color(0xDE, 0xAD, 0xBE, 0xEF);
+
+    SDL_Color* ri_test_color = reinterpret_cast<SDL_Color*>(&test_color);
+
+    BOOST_TEST(ri_test_color->r == 0xDE);
+    BOOST_TEST(ri_test_color->g == 0xAD);
+    BOOST_TEST(ri_test_color->b == 0xBE);
+    BOOST_TEST(ri_test_color->a == 0xEF);
 }
