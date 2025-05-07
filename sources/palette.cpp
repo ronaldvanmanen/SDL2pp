@@ -111,12 +111,20 @@ sdl2::palette::operator=(std::vector<sdl2::color> const& colors)
 sdl2::palette::indexed_color
 sdl2::palette::operator[](std::size_t index)
 {
+    if (index >= size())
+    {
+        throw std::out_of_range("index must be less than size()");
+    }
     return sdl2::palette::indexed_color(this, index);
 }
 
 sdl2::palette::const_indexed_color
 sdl2::palette::operator[](std::size_t index) const
 {
+    if (index >= size())
+    {
+        throw std::out_of_range("index must be less than size()");
+    }
     return sdl2::palette::const_indexed_color(this, index);
 }
 
@@ -150,14 +158,8 @@ sdl2::palette::indexed_color::indexed_color(sdl2::palette::indexed_color && othe
 sdl2::palette::indexed_color&
 sdl2::palette::indexed_color::operator=(sdl2::color const& value)
 {
-    throw_last_error(
-        SDL_SetPaletteColors(
-            _owner->_native_handle,
-            reinterpret_cast<SDL_Color const*>(&value),
-            static_cast<int>(_index),
-            1
-        ) < 0
-    );
+    sdl2::set_palette_colors(_owner->_native_handle, &value, _index, 1);
+
     return *this;
 }
 

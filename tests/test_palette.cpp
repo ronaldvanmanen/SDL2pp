@@ -38,16 +38,15 @@ BOOST_AUTO_TEST_CASE(test_palette_initializer_list_constructor)
     BOOST_TEST(test_palette[1] == sdl2::color::black);
 }
 
-BOOST_AUTO_TEST_CASE(test_palette_access_operator)
+BOOST_AUTO_TEST_CASE(test_palette_subscript_operator)
 {
-    sdl2::palette test_palette(3);
-    
-    test_palette[0] = sdl2::color::red;
-    test_palette[1] = sdl2::color::green;
-    test_palette[2] = sdl2::color::blue;
+    sdl2::palette test_palette(2);
 
-    BOOST_TEST(3 == test_palette.size());
-    BOOST_TEST(test_palette[0] == sdl2::color::red);
-    BOOST_TEST(test_palette[1] == sdl2::color::green);
-    BOOST_TEST(test_palette[2] == sdl2::color::blue);
+    test_palette[0] = sdl2::color::white;
+    test_palette[1] = sdl2::color::black;
+
+    BOOST_REQUIRE_THROW(test_palette[2], std::out_of_range);
+    
+    BOOST_TEST(test_palette[0] == sdl2::color::white);
+    BOOST_TEST(test_palette[1] == sdl2::color::black);
 }
