@@ -25,15 +25,18 @@
 std::ostream&
 sdl2::operator<<(std::ostream& stream, sdl2::blend_mode const& value)
 {
+    #define RETURN(X) return stream << #X;
+    #define CASE(X) case X: RETURN(X)
+    #define DEFAULT(X) default: RETURN(X);
+
     switch (value)
     {
-        case sdl2::blend_mode::none: stream << "none"; break;
-        case sdl2::blend_mode::blend: stream << "blend"; break;
-        case sdl2::blend_mode::additive: stream << "additive"; break;
-        case sdl2::blend_mode::modulate: stream << "modulate"; break;
-        case sdl2::blend_mode::multiply: stream << "multiply"; break;
-        case sdl2::blend_mode::invalid: stream << "invalid";  break;
+        CASE(sdl2::blend_mode::none)
+        CASE(sdl2::blend_mode::blend)
+        CASE(sdl2::blend_mode::additive)
+        CASE(sdl2::blend_mode::modulate)
+        CASE(sdl2::blend_mode::multiply)
+        CASE(sdl2::blend_mode::invalid)
+        DEFAULT(sdl2::blend_mode::invalid)
     }
-
-    return stream;
 }

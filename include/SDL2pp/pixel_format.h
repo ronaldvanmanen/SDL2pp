@@ -21,6 +21,7 @@
 #pragma once
 
 #include <cstdint>
+#include <iostream>
 
 #include <SDL2/SDL_pixels.h>
 
@@ -79,4 +80,6 @@ namespace sdl2
         nv21 = SDL_PIXELFORMAT_NV21,
         external_oes = SDL_PIXELFORMAT_EXTERNAL_OES
     };
+
+    std::ostream& operator<<(std::ostream& stream, pixel_format const& value);
 }
