@@ -1,4 +1,5 @@
 {
+    "cmake.ctest.debugLaunchTarget": "(Windows) Launch ctest",
     "files.associations": {
         "ostream": "cpp",
         "utility": "cpp",
