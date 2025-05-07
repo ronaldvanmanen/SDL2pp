@@ -18,46 +18,14 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#pragma once
+#include "SDL2pp/pixel_format_details.h"
 
-#include <cstdint>
-#include <vector>
+sdl2::pixel_format_details::pixel_format_details(sdl2::surface_base & owner)
+: _native_handle(owner.native_handle()->format)
+{ }
 
-#include "SDL2/SDL_pixels.h"
-
-#include "color.h"
-#include "pixel_format_details.h"
-
-namespace sdl2
+SDL_PixelFormat*
+sdl2::pixel_format_details::native_handle()
 {
-    class palette
-    {
-    public:
-        palette(SDL_Palette *native_handle, bool free_handle);
-
-        palette(std::size_t size);
-
-        palette(std::initializer_list<sdl2::color> colors);
-
-        palette(pixel_format_details & owner);
-
-        palette(palette const& other) = delete;
-
-        palette(palette && other);
-
-        ~palette();
-
-        palette operator=(palette const& other) = delete;
-
-        color const& operator[](std::size_t index) const;
-
-        void update(std::vector<sdl2::color> const& colors);
-
-        std::size_t size() const;
-
-    private:
-        SDL_Palette* _native_handle;
-
-        bool _free_handle;
-    };
+    return _native_handle;
 }

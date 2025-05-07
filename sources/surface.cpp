@@ -75,12 +75,6 @@ sdl2::surface_base::~surface_base()
     }
 }
 
-sdl2::palette
-sdl2::surface_base::palette()
-{
-    return sdl2::palette(_native_handle->format->palette, false);
-}
-
 SDL_Surface*
 sdl2::surface_base::native_handle()
 {

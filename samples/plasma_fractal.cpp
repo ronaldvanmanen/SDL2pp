@@ -32,6 +32,7 @@
 #include "SDL2pp/index8.h"
 #include "SDL2pp/keyboard_event.h"
 #include "SDL2pp/palette.h"
+#include "SDL2pp/pixel_format_details.h"
 #include "SDL2pp/renderer.h"
 #include "SDL2pp/size.h"
 #include "SDL2pp/surface.h"
@@ -209,8 +210,9 @@ int main()
 
     auto random_device = std::random_device();
     auto random_number_engine = std::default_random_engine(0);
-    auto plasma_surface = generate_diamond_square_image(random_number_engine, window_size);
-    auto plasma_palette = plasma_surface.palette();
+    auto plasma_surface = generate_diamond_square_image(random_number_engine, window.size());
+    auto plasma_surface_format = sdl2::pixel_format_details(plasma_surface);
+    auto plasma_palette = sdl2::palette(plasma_surface_format);
     auto plasma_colors = std::vector<sdl2::color>(256);
 
     for (std::uint8_t i = 0; i < 32; ++i)

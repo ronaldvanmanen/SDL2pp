@@ -31,6 +31,11 @@ sdl2::palette::palette(std::size_t size)
 , _free_handle(true)
 { }
 
+sdl2::palette::palette(sdl2::pixel_format_details & owner)
+: _native_handle(owner.native_handle()->palette)
+, _free_handle(false)
+{ }
+
 sdl2::palette::palette(std::initializer_list<color> colors)
 : _native_handle(SDL_AllocPalette(static_cast<int>(colors.size())))
 , _free_handle(true)

@@ -21,43 +21,21 @@
 #pragma once
 
 #include <cstdint>
-#include <vector>
 
-#include "SDL2/SDL_pixels.h"
+#include <SDL2/SDL_pixels.h>
 
-#include "color.h"
-#include "pixel_format_details.h"
+#include "surface.h"
 
 namespace sdl2
 {
-    class palette
+    class pixel_format_details
     {
     public:
-        palette(SDL_Palette *native_handle, bool free_handle);
+        pixel_format_details(surface_base & owner);
 
-        palette(std::size_t size);
-
-        palette(std::initializer_list<sdl2::color> colors);
-
-        palette(pixel_format_details & owner);
-
-        palette(palette const& other) = delete;
-
-        palette(palette && other);
-
-        ~palette();
-
-        palette operator=(palette const& other) = delete;
-
-        color const& operator[](std::size_t index) const;
-
-        void update(std::vector<sdl2::color> const& colors);
-
-        std::size_t size() const;
+        SDL_PixelFormat* native_handle();
 
     private:
-        SDL_Palette* _native_handle;
-
-        bool _free_handle;
+        SDL_PixelFormat* _native_handle;
     };
 }

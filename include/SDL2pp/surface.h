@@ -24,7 +24,6 @@
 
 #include "error.h"
 #include "image.h"
-#include "palette.h"
 #include "pixel_format.h"
 #include "pixel_format_traits.h"
 #include "size.h"
@@ -49,8 +48,6 @@ namespace sdl2
         ~surface_base();
 
         surface_base& operator=(surface_base const& other) = delete;
-
-        palette palette();
 
         SDL_Surface* native_handle();
 
