@@ -37,23 +37,29 @@ namespace sdl2
 
         palette(std::size_t size);
 
-        palette(std::initializer_list<sdl2::color> colors);
-
         palette(pixel_format_details & owner);
 
-        palette(palette const& other) = delete;
+        palette(std::initializer_list<color> colors);
+
+        palette(std::vector<color> const& colors);
+
+        palette(palette const& other);
 
         palette(palette && other);
 
         ~palette();
 
-        palette operator=(palette const& other) = delete;
+        palette& operator=(std::initializer_list<color> colors);
+        
+        palette& operator=(std::vector<color> const& colors);
+
+        palette& operator=(palette const& other) = delete;
 
         color const& operator[](std::size_t index) const;
 
-        void update(std::vector<sdl2::color> const& colors);
-
         std::size_t size() const;
+
+        SDL_Palette* native_handle();
 
     private:
         SDL_Palette* _native_handle;

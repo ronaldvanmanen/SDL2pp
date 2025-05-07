@@ -18,13 +18,30 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
+#include <utility>
+
 #include "SDL2pp/error.h"
 #include "SDL2pp/palette.h"
 
-sdl2::palette::palette(SDL_Palette *native_handle, bool free_handle)
-: _native_handle(native_handle)
-, _free_handle(free_handle)
-{ }
+namespace sdl2
+{
+    void set_palette_colors(SDL_Palette * palette, SDL_Color const* colors, int first_color, int num_colors)
+    {
+        throw_last_error(
+            SDL_SetPaletteColors(palette, colors, first_color, num_colors) < 0
+        );
+    }
+
+    void set_palette_colors(SDL_Palette * palette, color const* colors, std::size_t first_color, std::size_t num_colors)
+    {
+        set_palette_colors(
+            palette,
+            reinterpret_cast<SDL_Color const*>(colors),
+            static_cast<int>(first_color),
+            static_cast<int>(num_colors)
+        );
+    }
+}
 
 sdl2::palette::palette(std::size_t size)
 : _native_handle(SDL_AllocPalette(static_cast<int>(size)))
@@ -40,16 +57,31 @@ sdl2::palette::palette(std::initializer_list<color> colors)
 : _native_handle(SDL_AllocPalette(static_cast<int>(colors.size())))
 , _free_handle(true)
 {
-    SDL_SetPaletteColors(
-        _native_handle,
-        reinterpret_cast<SDL_Color const*>(colors.begin()),
-        0,
-        static_cast<int>(colors.size()));
+    set_palette_colors(_native_handle, colors.begin(), 0, colors.size());
+}
+
+sdl2::palette::palette(std::vector<color> const& colors)
+: _native_handle(SDL_AllocPalette(static_cast<int>(colors.size())))
+, _free_handle(true)
+{
+    set_palette_colors(_native_handle, &colors[0], 0, colors.size());
+}
+
+sdl2::palette::palette(sdl2::palette const& other)
+: _native_handle(SDL_AllocPalette(static_cast<int>(other.size())))
+, _free_handle(true)
+{
+    set_palette_colors(_native_handle, other._native_handle->colors, 0, other._native_handle->ncolors);
 }
 
 sdl2::palette::palette(sdl2::palette && other)
 : _native_handle(std::exchange(other._native_handle, nullptr))
 , _free_handle(std::exchange(other._free_handle, false))
+{ }
+
+sdl2::palette::palette(SDL_Palette *native_handle, bool free_handle)
+: _native_handle(native_handle)
+, _free_handle(free_handle)
 { }
 
 sdl2::palette::~palette()
@@ -60,10 +92,32 @@ sdl2::palette::~palette()
     }
 } 
 
-sdl2::color const&
+sdl2::palette&
+sdl2::palette::operator=(std::initializer_list<sdl2::color> colors)
+{
+    set_palette_colors(_native_handle, colors.begin(), 0, colors.size());
+
+    return *this;
+}
+
+sdl2::palette&
+sdl2::palette::operator=(std::vector<sdl2::color> const& colors)
+{
+    set_palette_colors(_native_handle, &colors[0], 0, colors.size());
+
+    return *this;
+}
+
+sdl2::palette::indexed_color
+sdl2::palette::operator[](std::size_t index)
+{
+    return sdl2::palette::indexed_color(this, index);
+}
+
+sdl2::palette::const_indexed_color
 sdl2::palette::operator[](std::size_t index) const
 {
-    return reinterpret_cast<sdl2::color*>(_native_handle->colors)[index];
+    return sdl2::palette::const_indexed_color(this, index);
 }
 
 std::size_t
@@ -72,15 +126,111 @@ sdl2::palette::size() const
     return _native_handle->ncolors;
 }
 
-void
-sdl2::palette::update(std::vector<sdl2::color> const& colors)
+SDL_Palette*
+sdl2::palette::native_handle()
+{
+    return _native_handle;
+}
+
+sdl2::palette::indexed_color::indexed_color(sdl2::palette * owner, std::size_t index)
+: _owner(owner)
+, _index(index)
+{ }
+
+sdl2::palette::indexed_color::indexed_color(sdl2::palette::indexed_color const& other)
+: _owner(other._owner)
+, _index(other._index)
+{ }
+
+sdl2::palette::indexed_color::indexed_color(sdl2::palette::indexed_color && other)
+: _owner(std::exchange(other._owner, nullptr))
+, _index(std::exchange(other._index, -1))
+{ }
+
+sdl2::palette::indexed_color&
+sdl2::palette::indexed_color::operator=(sdl2::color const& value)
 {
     throw_last_error(
         SDL_SetPaletteColors(
-            _native_handle,
-            reinterpret_cast<SDL_Color const*>(&colors[0]),
-            0,
-            static_cast<int>(colors.size())
+            _owner->_native_handle,
+            reinterpret_cast<SDL_Color const*>(&value),
+            static_cast<int>(_index),
+            1
         ) < 0
     );
+    return *this;
+}
+
+sdl2::color const&
+sdl2::palette::indexed_color::get() const
+{
+    return reinterpret_cast<sdl2::color const&>(_owner->_native_handle->colors[_index]);
+}
+
+sdl2::palette::indexed_color::operator sdl2::color const&() const
+{
+    return get();
+}
+
+sdl2::palette::const_indexed_color::const_indexed_color(sdl2::palette const * owner, std::size_t index)
+: _owner(owner)
+, _index(index)
+{ }
+
+sdl2::palette::const_indexed_color::const_indexed_color(sdl2::palette::const_indexed_color const& other)
+: _owner(other._owner)
+, _index(other._index)
+{ }
+
+sdl2::color const&
+sdl2::palette::const_indexed_color::get() const
+{
+    return reinterpret_cast<sdl2::color const&>(_owner->_native_handle->colors[_index]);
+}
+
+sdl2::palette::const_indexed_color::operator sdl2::color const&() const
+{
+    return get();
+}
+
+bool
+sdl2::operator==(sdl2::palette::indexed_color const& left, sdl2::palette::indexed_color const& right)
+{
+    return left.get() == right.get();
+}
+
+bool
+sdl2::operator!=(sdl2::palette::indexed_color const& left, sdl2::palette::indexed_color const& right)
+{
+    return !(left == right);
+}
+
+bool
+sdl2::operator==(sdl2::palette::indexed_color const& left, sdl2::color const& right)
+{
+    return left.get() == right;
+}
+
+bool
+sdl2::operator!=(sdl2::palette::indexed_color const& left, sdl2::color const& right)
+{
+    return !(left == right);
+}
+
+bool
+sdl2::operator==(sdl2::color const& left, sdl2::palette::indexed_color const& right)
+{
+    return left == right.get();
+}
+
+bool
+sdl2::operator!=(sdl2::color const& left, sdl2::palette::indexed_color const& right)
+{
+    return !(left == right);
+}
+
+std::ostream&
+sdl2::operator<<(std::ostream& stream, sdl2::palette::indexed_color const& value)
+{
+    return stream << value.get();
 }

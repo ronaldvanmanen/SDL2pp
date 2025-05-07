@@ -229,8 +229,7 @@ int main()
         plasma_colors[i + 224] = sdl2::color(hi, 0, hi, 255);
     }
 
-    plasma_palette.update(plasma_colors);
-
+    plasma_palette = plasma_colors;
 
     auto stopwatch = sdl2::stopwatch::start_now();
     auto reverse_rotation = false;
@@ -281,7 +280,7 @@ int main()
                 rotate_left(plasma_colors);
             }
 
-            plasma_palette.update(plasma_colors);
+            plasma_palette = plasma_colors;
         }
     }
 

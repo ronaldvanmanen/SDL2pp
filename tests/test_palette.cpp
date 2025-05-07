@@ -31,8 +31,9 @@ BOOST_AUTO_TEST_CASE(test_palette_size_constructor)
 
 BOOST_AUTO_TEST_CASE(test_palette_initializer_list_constructor)
 {
-    sdl2::palette test_palette({ sdl2::color::white, sdl2::color::black });
+    sdl2::palette test_palette { sdl2::color::white, sdl2::color::black };
+
     BOOST_TEST(2 == test_palette.size());
-    BOOST_TEST(sdl2::color::white == test_palette[0]);
-    BOOST_TEST(sdl2::color::black == test_palette[1]);
+    BOOST_TEST(test_palette[0] == sdl2::color::white);
+    BOOST_TEST(test_palette[1] == sdl2::color::black);
 }
