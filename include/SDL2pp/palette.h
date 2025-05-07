@@ -21,6 +21,7 @@
 #pragma once
 
 #include <cstdint>
+#include <iostream>
 #include <vector>
 
 #include "SDL2/SDL_pixels.h"
@@ -33,8 +34,11 @@ namespace sdl2
     class palette
     {
     public:
-        palette(SDL_Palette *native_handle, bool free_handle);
+        class indexed_color;
 
+        class const_indexed_color;
+
+    public:
         palette(std::size_t size);
 
         palette(pixel_format_details & owner);
@@ -47,15 +51,19 @@ namespace sdl2
 
         palette(palette && other);
 
+        palette(SDL_Palette *native_handle, bool free_handle);
+
         ~palette();
 
         palette& operator=(std::initializer_list<color> colors);
-        
+
         palette& operator=(std::vector<color> const& colors);
 
         palette& operator=(palette const& other) = delete;
 
-        color const& operator[](std::size_t index) const;
+        indexed_color operator[](std::size_t index);
+
+        const_indexed_color operator[](std::size_t index) const;
 
         std::size_t size() const;
 
@@ -66,4 +74,56 @@ namespace sdl2
 
         bool _free_handle;
     };
+
+    class palette::indexed_color
+    {
+    public:
+        indexed_color(palette * owner, std::size_t index);
+
+        indexed_color(indexed_color const& other);
+
+        indexed_color(indexed_color && other);
+
+        indexed_color& operator=(color const & value);
+
+        color const& get() const;
+
+        operator color const&() const;
+
+    private:
+        palette * _owner;
+
+        std::size_t _index;
+    };
+
+    class palette::const_indexed_color
+    {
+    public:
+        const_indexed_color(palette const* owner, std::size_t index);
+
+        const_indexed_color(const_indexed_color const& other);
+
+        color const& get() const;
+
+        operator color const&() const;
+
+    private:
+        palette const * _owner;
+
+        std::size_t _index;
+    };
+
+    bool operator==(palette::indexed_color const& left, palette::indexed_color const& right);
+
+    bool operator!=(palette::indexed_color const& left, palette::indexed_color const& right);
+
+    bool operator==(palette::indexed_color const& left, color const& right);
+
+    bool operator!=(palette::indexed_color const& left, color const& right);
+
+    bool operator==(color const& left, palette::indexed_color const& right);
+
+    bool operator!=(color const& left, palette::indexed_color const& right);
+
+    std::ostream& operator<<(std::ostream& stream, palette::indexed_color const& value);
 }

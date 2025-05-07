@@ -26,6 +26,12 @@ const sdl2::color sdl2::color::black(0, 0, 0, 255);
 
 const sdl2::color sdl2::color::white(255, 255, 255, 255);
 
+const sdl2::color sdl2::color::red(255, 0, 0, 255);
+
+const sdl2::color sdl2::color::green(0, 255, 0, 255);
+
+const sdl2::color sdl2::color::blue(0, 0, 255, 255);
+
 sdl2::color::color()
 : r(0), g(0), b(0), a(0)
 { }

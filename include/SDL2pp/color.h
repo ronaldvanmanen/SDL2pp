@@ -32,6 +32,12 @@ namespace sdl2
 
         static const color white;
 
+        static const color red;
+
+        static const color green;
+
+        static const color blue;
+
     public:
         color();
         
