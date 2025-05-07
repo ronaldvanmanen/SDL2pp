@@ -38,6 +38,7 @@
 #include "SDL2pp/window.h"
 
 #include "shared/math.h"
+#include "shared/stopwatch.h"
 
 void
 diamond_step(sdl2::image<sdl2::index8> &map, std::default_random_engine &random_number_engine, int center_x, int center_y, int distance, int randomness)
@@ -203,8 +204,8 @@ void rotate_right(std::vector<sdl2::color> & palette)
 int main()
 {
     auto window = sdl2::window("Plasma Fractal", 640, 480, sdl2::window_flags::shown);
-    auto renderer = sdl2::renderer(window, sdl2::renderer_flags::present_vsync);
-    auto window_size = window.size();
+
+    auto event_queue = sdl2::event_queue();
 
     auto random_device = std::random_device();
     auto random_number_engine = std::default_random_engine(0);
@@ -228,10 +229,10 @@ int main()
 
     plasma_palette.update(plasma_colors);
 
-    sdl2::event_queue event_queue;
 
-    bool reverse_rotation = false;
-    bool running = true;
+    auto stopwatch = sdl2::stopwatch::start_now();
+    auto reverse_rotation = false;
+    auto running = true;
     while (running)
     {
         sdl2::event event;
@@ -259,7 +260,15 @@ int main()
             auto window_surface = sdl2::surface<sdl2::argb8888>(window);
             window_surface.blit(plasma_surface);
             window.update_surface();
-            renderer.present();
+
+            auto elapsed_seconds = stopwatch.elapsed_seconds();
+            const auto refresh_rate = 1.0 / 60.0;
+            if (elapsed_seconds < refresh_rate)
+            {
+                continue;
+            }
+
+            stopwatch.reset();
 
             if (reverse_rotation)
             {

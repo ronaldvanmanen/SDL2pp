@@ -47,6 +47,13 @@ sdl2::stopwatch::stop()
     _running = false;
 }
 
+void
+sdl2::stopwatch::reset()
+{
+    _start_time = std::chrono::steady_clock::now();
+    _elapsed_time = std::chrono::steady_clock::duration::zero();
+}
+
 sdl2::stopwatch::duration
 sdl2::stopwatch::elapsed()
 {

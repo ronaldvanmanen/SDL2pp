@@ -37,6 +37,8 @@ namespace sdl2
 
         void stop();
 
+        void reset();
+
         duration elapsed();
 
         double elapsed_seconds();
