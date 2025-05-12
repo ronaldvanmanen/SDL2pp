@@ -20,15 +20,15 @@
 
 #include "SDL2pp/argb8888.h"
 
-const sdl2::argb8888 sdl2::argb8888::black(255, 0, 0, 0);
+const sdl2::argb8888 sdl2::argb8888::black(255_a8, 0_r8, 0_g8, 0_b8);
 
-const sdl2::argb8888 sdl2::argb8888::white(255, 255, 255, 255);
+const sdl2::argb8888 sdl2::argb8888::white(255_a8, 255_r8, 255_g8, 255_b8);
 
 sdl2::argb8888::argb8888()
-: argb8888(0, 0, 0, 0)
+: argb8888(0_a8, 0_r8, 0_g8, 0_b8)
 { }
 
-sdl2::argb8888::argb8888(std::uint8_t a, std::uint8_t r, std::uint8_t g, std::uint8_t b)
+sdl2::argb8888::argb8888(sdl2::a8 a, sdl2::r8 r, sdl2::g8 g, sdl2::b8 b)
 : b(b), r(r), g(g), a(a)
 { }
 
@@ -47,4 +47,29 @@ sdl2::argb8888::operator=(argb8888 const& other)
         a = other.a;
     }
     return *this;
+}
+
+bool
+sdl2::operator==(argb8888 const& left, argb8888 const& right)
+{
+    return left.b == right.b && left.r == right.r && left.g == right.g && left.a == right.a;
+}
+
+bool
+sdl2::operator!=(argb8888 const& left, argb8888 const& right)
+{
+    return !(left == right);
+}
+
+std::ostream&
+sdl2::operator<<(std::ostream& stream, argb8888 const& value)
+{
+    return stream
+        << static_cast<unsigned int>(value.a)
+        << ','
+        << static_cast<unsigned int>(value.r)
+        << ','
+        << static_cast<unsigned int>(value.g)
+        << ','
+        << static_cast<unsigned int>(value.b);
 }

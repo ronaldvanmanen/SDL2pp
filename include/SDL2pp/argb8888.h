@@ -22,7 +22,11 @@
 
 #include <cstdint>
 
+#include "a8.h"
+#include "b8.h"
+#include "g8.h"
 #include "pixel_format.h"
+#include "r8.h"
 
 namespace sdl2
 {
@@ -38,13 +42,22 @@ namespace sdl2
     public:
         argb8888();
 
-        argb8888(std::uint8_t a, std::uint8_t r, std::uint8_t g, std::uint8_t b);
+        argb8888(sdl2::a8 a, sdl2::r8 r, sdl2::g8 g, sdl2::b8 b);
 
         argb8888(argb8888 const& other);
 
         argb8888& operator=(argb8888 const& other);
 
     public:
-        std::uint8_t b, g, r, a;
+        sdl2::b8 b;
+        sdl2::g8 g;
+        sdl2::r8 r;
+        sdl2::a8 a;
     };
+
+    bool operator==(argb8888 const& left, argb8888 const& right);
+
+    bool operator!=(argb8888 const& left, argb8888 const& right);
+
+    std::ostream& operator<<(std::ostream& stream, argb8888 const& value);
 }

@@ -41,6 +41,8 @@
 #include "shared/math.h"
 #include "shared/stopwatch.h"
 
+using sdl2::operator""_px;
+
 void
 diamond_step(sdl2::image<sdl2::index8> &map, std::default_random_engine &random_number_engine, int center_x, int center_y, int distance, int randomness)
 {
@@ -136,8 +138,8 @@ square_step(sdl2::image<sdl2::index8> &map, std::default_random_engine &random_n
 sdl2::surface<sdl2::index8>
 generate_diamond_square_image(std::default_random_engine &random_number_engine, int square_size)
 {
-    int actual_size = sdl2::next_power_of_two(square_size) + 1;
-    sdl2::surface<sdl2::index8> surface(actual_size, actual_size);
+    auto actual_size = sdl2::size(sdl2::next_power_of_two(square_size) + 1);
+    auto surface = sdl2::surface<sdl2::index8>(actual_size);
     surface.with_lock([&random_number_engine](sdl2::image<sdl2::index8> & image)
     {
         const auto image_width = image.width();
@@ -204,7 +206,7 @@ void rotate_right(std::vector<sdl2::color> & palette)
 
 int main()
 {
-    auto window = sdl2::window("Plasma Fractal", 640, 480, sdl2::window_flags::shown);
+    auto window = sdl2::window("Plasma Fractal", 640_px, 480_px, sdl2::window_flags::shown);
 
     auto event_queue = sdl2::event_queue();
 

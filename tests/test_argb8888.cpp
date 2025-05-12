@@ -24,6 +24,11 @@
 
 #include "SDL2pp/argb8888.h"
 
+using sdl2::operator""_a8;
+using sdl2::operator""_r8;
+using sdl2::operator""_g8;
+using sdl2::operator""_b8;
+
 BOOST_AUTO_TEST_CASE(test_argb8888_traits)
 {
     BOOST_TEST(sdl2::argb8888::format == sdl2::pixel_format::argb8888);
@@ -41,7 +46,7 @@ BOOST_AUTO_TEST_CASE(test_argb8888_default_constructor)
 
 BOOST_AUTO_TEST_CASE(test_argb8888_component_constructor)
 {
-    sdl2::argb8888 test_color(0xDE, 0xAD, 0xBE, 0xEF);
+    sdl2::argb8888 test_color(0xDE_a8, 0xAD_r8, 0xBE_g8, 0xEF_b8);
 
     BOOST_TEST(test_color.a == 0xDE);
     BOOST_TEST(test_color.r == 0xAD);
@@ -51,7 +56,7 @@ BOOST_AUTO_TEST_CASE(test_argb8888_component_constructor)
 
 BOOST_AUTO_TEST_CASE(test_argb8888_copy_constructor)
 {
-    sdl2::argb8888 temp_color(0xDE, 0xAD, 0xBE, 0xEF);
+    sdl2::argb8888 temp_color(0xDE_a8, 0xAD_r8, 0xBE_g8, 0xEF_b8);
 
     sdl2::argb8888 test_color(temp_color);
 
@@ -65,7 +70,7 @@ BOOST_AUTO_TEST_CASE(test_argb8888_assignment_operator)
 {
     sdl2::argb8888 test_color;
     
-    test_color = sdl2::argb8888(0xDE, 0xAD, 0xBE, 0xEF);
+    test_color = sdl2::argb8888(0xDE_a8, 0xAD_r8, 0xBE_g8, 0xEF_b8);
 
     BOOST_TEST(test_color.a == 0xDE);
     BOOST_TEST(test_color.r == 0xAD);

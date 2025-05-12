@@ -24,6 +24,7 @@
 
 #include "error.h"
 #include "image.h"
+#include "length.h"
 #include "pixel_format.h"
 #include "pixel_format_traits.h"
 #include "size.h"
@@ -34,24 +35,24 @@ namespace sdl2
     class surface_base
     {
     protected:
-        surface_base(int width, int height, int depth);
+        surface_base(length width, length height, sdl2::bit_depth depth);
 
-        surface_base(size const& size, int depth);
+        surface_base(sdl2::size const& size, sdl2::bit_depth depth);
 
-        surface_base(window & owner);
+        surface_base(sdl2::window & owner);
+
+        surface_base(sdl2::surface_base const& other);
 
         surface_base(SDL_Surface * native_handle, bool free_handle);
-
-        surface_base(surface_base const& other);
 
     public:
         ~surface_base();
 
-        surface_base& operator=(surface_base const& other) = delete;
+        surface_base& operator=(sdl2::surface_base const& other) = delete;
 
         SDL_Surface* native_handle();
 
-        void blit(surface_base & source);
+        void blit(sdl2::surface_base & source);
 
     private:
         SDL_Surface* _native_handle;
@@ -63,28 +64,28 @@ namespace sdl2
     class surface : public surface_base
     {
     public:
-        surface(size const& size);
+        surface(sdl2::size const& size);
 
-        surface(int width, int height);
+        surface(length width, length height);
 
-        surface(window & owner);
+        surface(sdl2::window & owner);
 
-        surface(surface<TPixelFormat> const& other);
+        surface(sdl2::surface<TPixelFormat> const& other);
 
-        surface& operator=(surface const& other) = delete;
+        surface<TPixelFormat>& operator=(surface<TPixelFormat> const& other) = delete;
 
         template<typename CallbackFunction>
         void with_lock(CallbackFunction callback);
     };
 
     template<typename TPixelFormat>
-    surface<TPixelFormat>::surface(size const& size)
-    : surface_base(size, pixel_format_traits<TPixelFormat>::bits_per_pixel)
+    surface<TPixelFormat>::surface(sdl2::size const& size)
+    : surface_base(size, pixel_format_traits<TPixelFormat>::bits_per_pixel())
     { }
 
     template<typename TPixelFormat>
-    surface<TPixelFormat>::surface(int width, int height)
-    : surface_base(width, height, pixel_format_traits<TPixelFormat>::bits_per_pixel)
+    surface<TPixelFormat>::surface(length width, length height)
+    : surface_base(width, height, pixel_format_traits<TPixelFormat>::bits_per_pixel())
     { }
 
     template<typename TPixelFormat>

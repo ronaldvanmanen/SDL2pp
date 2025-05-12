@@ -63,7 +63,6 @@ namespace sdl2
     , _pitch(pitch)
     { }
 
-
     template<typename TPixelFormat>
     std::int32_t
     image<TPixelFormat>::width() const

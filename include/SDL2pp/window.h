@@ -25,6 +25,7 @@
 
 #include <SDL2/SDL_video.h>
 
+#include "length.h"
 #include "size.h"
 #include "window_flags.h"
 
@@ -33,9 +34,9 @@ namespace sdl2
     class window
     {
     public:
-        window(std::string const& title, std::int32_t width, std::int32_t height);
+        window(std::string const& title, length width, length height);
 
-        window(std::string const& title, std::int32_t width, std::int32_t height, window_flags flags);
+        window(std::string const& title, length width, length height, window_flags flags);
 
         window(window const& other) = delete;
 
@@ -43,7 +44,7 @@ namespace sdl2
 
         ~window();
 
-        window operator=(window const& other) = delete;
+        window& operator=(window const& other) = delete;
 
         size size() const;
 

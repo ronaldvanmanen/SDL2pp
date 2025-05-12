@@ -35,6 +35,8 @@
 #include "shared/math.h"
 #include "shared/stopwatch.h"
 
+using sdl2::operator""_px;
+
 namespace sdl2
 {
     struct transform
@@ -78,9 +80,14 @@ sdl2::image<sdl2::transform> generate_transform_image(int square_size)
     return transform_image;
 }
 
-sdl2::image<sdl2::transform> generate_transform_image(std::int32_t width, std::int32_t height)
+sdl2::image<sdl2::transform> generate_transform_image(sdl2::length width, sdl2::length height)
 {
-    return generate_transform_image(std::max(width, height));
+    return generate_transform_image(
+        std::max(
+            static_cast<std::int32_t>(width),
+            static_cast<std::int32_t>(height)
+        )
+    );
 }
 
 sdl2::image<sdl2::transform> generate_transform_image(sdl2::size size)
@@ -99,10 +106,10 @@ sdl2::image<sdl2::argb8888> generate_xor_image(std::int32_t square_size)
         for (std::int32_t x = 0; x < actual_size; x++)
         {
             xor_image(x, y) = sdl2::argb8888(
-                0xFF,
-                0x00,
-                0x00,
-                (x * 256 / actual_size) ^ (y * 256 / actual_size)
+                sdl2::a8(0xFF),
+                sdl2::r8(0x00),
+                sdl2::g8(0x00),
+                sdl2::b8((x * 256 / actual_size) ^ (y * 256 / actual_size))
             );
         }
     }
@@ -110,9 +117,14 @@ sdl2::image<sdl2::argb8888> generate_xor_image(std::int32_t square_size)
     return xor_image;
 }
 
-sdl2::image<sdl2::argb8888> generate_xor_image(std::int32_t width, std::int32_t height)
+sdl2::image<sdl2::argb8888> generate_xor_image(sdl2::length width, sdl2::length height)
 {
-    return generate_xor_image(std::max(width, height));
+    return generate_xor_image(
+        std::max(
+            static_cast<std::int32_t>(width),
+            static_cast<std::int32_t>(height)
+        )
+    );
 }
 
 sdl2::image<sdl2::argb8888> generate_xor_image(sdl2::size const& size)
@@ -122,7 +134,7 @@ sdl2::image<sdl2::argb8888> generate_xor_image(sdl2::size const& size)
 
 int main()
 {
-    auto window = sdl2::window("Tunnel Effect", 640, 480, sdl2::window_flags::shown | sdl2::window_flags::resizable);
+    auto window = sdl2::window("Tunnel Effect", 640_px, 480_px, sdl2::window_flags::shown | sdl2::window_flags::resizable);
     auto renderer = sdl2::renderer(window, sdl2::renderer_flags::accelerated | sdl2::renderer_flags::present_vsync);
     auto texture = sdl2::texture<sdl2::argb8888>(renderer, sdl2::texture_access::streaming_access, renderer.output_size());
     auto event_queue = sdl2::event_queue();
@@ -149,10 +161,10 @@ int main()
             texture.with_lock(
                 [&source_image, &transform_table, &stopwatch](sdl2::image<sdl2::argb8888> &screen_image)
                 {
-                    const auto screen_width = screen_image.width();
-                    const auto screen_height = screen_image.height();
-                    const auto source_width = source_image.width();
-                    const auto source_height = source_image.height();
+                    const auto screen_width = static_cast<std::int32_t>(screen_image.width());
+                    const auto screen_height = static_cast<std::int32_t>(screen_image.height());
+                    const auto source_width = static_cast<std::int32_t>(source_image.width());
+                    const auto source_height = static_cast<std::int32_t>(source_image.height());
  
                     const auto elapsed_time = stopwatch.elapsed_seconds();
                     const auto shift_x = static_cast<std::int32_t>(screen_width * elapsed_time);

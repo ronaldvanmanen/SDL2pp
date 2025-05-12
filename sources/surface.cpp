@@ -21,14 +21,14 @@
 #include "SDL2pp/error.h"
 #include "SDL2pp/surface.h"
 
-sdl2::surface_base::surface_base(int width, int height, int depth)
+sdl2::surface_base::surface_base(length width, sdl2::length height, sdl2::bit_depth depth)
 : _native_handle(SDL_CreateRGBSurface(0, width, height, depth, 0, 0, 0, 0))
 , _free_handle(true)
 {
     throw_last_error(_native_handle == nullptr);
 }
 
-sdl2::surface_base::surface_base(sdl2::size const& size, int depth)
+sdl2::surface_base::surface_base(sdl2::size const& size, sdl2::bit_depth depth)
 : _native_handle(SDL_CreateRGBSurface(0, size.width, size.height, depth, 0, 0, 0, 0))
 , _free_handle(true)
 {

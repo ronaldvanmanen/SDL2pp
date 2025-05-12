@@ -23,20 +23,20 @@
 #include "SDL2pp/argb8888.h"
 #include "SDL2pp/renderer.h"
 #include "SDL2pp/texture.h"
+#include "SDL2pp/window.h"
+
+using sdl2::operator""_px;
 
 BOOST_AUTO_TEST_CASE(test_texture_constructors)
 {
     sdl2::window test_window(
         "test_renderer_constructors",
-        640,
-        480,
+        640_px,
+        480_px,
         sdl2::window_flags::hidden
     );
 
-    sdl2::renderer test_renderer(
-        test_window,
-        sdl2::renderer_flags::accelerated | sdl2::renderer_flags::present_vsync
-    );
+    sdl2::renderer test_renderer(test_window);
 
     BOOST_REQUIRE_NO_THROW(
         sdl2::texture<sdl2::argb8888> test_texture(test_renderer, sdl2::texture_access::streaming_access, test_renderer.output_size())

@@ -18,42 +18,14 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "SDL2pp/display_mode.h"
+#include "SDL2pp/length.h"
 
-namespace sdl2
+sdl2::length sdl2::operator""_px(unsigned long long value) 
 {
-    SDL_DisplayMode get_window_display_mode(window & window)
-    { 
-        SDL_DisplayMode display_mode;
-        SDL_GetWindowDisplayMode(window.native_handle(), &display_mode);
-        return display_mode;
-    }
+    return sdl2::length(static_cast<std::int32_t>(value));
 }
 
-sdl2::display_mode::display_mode(sdl2::window & window)
-: _native_handle(get_window_display_mode(window))
-{}
-
-sdl2::pixel_format
-sdl2::display_mode::format() const
+sdl2::length sdl2::operator""_px(long double value) 
 {
-    return static_cast<sdl2::pixel_format>(_native_handle.format);
-}
-        
-sdl2::length
-sdl2::display_mode::width() const
-{
-    return length(_native_handle.w);
-}
-
-sdl2::length
-sdl2::display_mode::height() const
-{
-    return sdl2::length(_native_handle.h);
-}
-
-sdl2::hertz
-sdl2::display_mode::refresh_rate() const
-{
-    return sdl2::hertz(_native_handle.refresh_rate);
+    return sdl2::length(static_cast<std::int32_t>(value));
 }

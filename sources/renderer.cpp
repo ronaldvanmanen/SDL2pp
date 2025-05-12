@@ -63,7 +63,7 @@ sdl2::renderer::output_size() const
     sdl2::throw_last_error(
         SDL_GetRendererOutputSize(_native_handle, &width, &height) < 0
     );
-    return sdl2::size(width, height);
+    return sdl2::size(length(width), sdl2::length(height));
 }
 
 sdl2::color

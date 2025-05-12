@@ -23,9 +23,11 @@
 #include "SDL2pp/index8.h"
 #include "SDL2pp/surface.h"
 
+using sdl2::operator""_px;
+
 BOOST_AUTO_TEST_CASE(test_surface_constructors)
 {
     BOOST_REQUIRE_NO_THROW(
-        sdl2::surface<sdl2::index8> test_surface(512, 384)
+        sdl2::surface<sdl2::index8> test_surface(512_px, 384_px)
     );
 }

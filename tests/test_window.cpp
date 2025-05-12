@@ -22,13 +22,15 @@
 
 #include "SDL2pp/window.h"
 
+using sdl2::operator""_px;
+
 BOOST_AUTO_TEST_CASE(test_window_constructors)
 {
     BOOST_REQUIRE_NO_THROW(
-        sdl2::window window("test_window_constructor", 640, 480)
+        sdl2::window test_window("test_window_constructor", 640_px, 480_px)
     );
 
     BOOST_REQUIRE_NO_THROW(
-        sdl2::window window("test_window_constructor", 640, 480, sdl2::window_flags::hidden)
+        sdl2::window test_window("test_window_constructor", 640_px, 480_px, sdl2::window_flags::hidden)
     );
 }

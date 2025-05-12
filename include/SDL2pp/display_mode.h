@@ -24,6 +24,8 @@
 
 #include <SDL2/SDL_video.h>
 
+#include "hertz.h"
+#include "length.h"
 #include "pixel_format.h"
 #include "window.h"
 
@@ -36,11 +38,11 @@ namespace sdl2
         
         pixel_format format() const;
         
-        std::int32_t width() const;
+        length width() const;
 
-        std::int32_t height() const;
+        length height() const;
 
-        std::int32_t refresh_rate() const;
+        hertz refresh_rate() const;
     
     private:
         SDL_DisplayMode _native_handle;

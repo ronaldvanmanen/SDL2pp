@@ -22,9 +22,11 @@
 
 #include "SDL2pp/renderer.h"
 
+using sdl2::operator""_px;
+
 BOOST_AUTO_TEST_CASE(test_renderer_constructors)
 {
-    sdl2::window test_window("test_renderer_constructors", 640, 480, sdl2::window_flags::hidden);
+    sdl2::window test_window("test_renderer_constructors", 640_px, 480_px, sdl2::window_flags::hidden);
 
     BOOST_REQUIRE_NO_THROW(
         sdl2::renderer test_renderer(test_window);
@@ -37,7 +39,7 @@ BOOST_AUTO_TEST_CASE(test_renderer_constructors)
 
 BOOST_AUTO_TEST_CASE(test_renderer_output_size)
 {
-    sdl2::window test_window("test_renderer_constructors", 640, 480, sdl2::window_flags::hidden);
+    sdl2::window test_window("test_renderer_constructors", 640_px, 480_px, sdl2::window_flags::hidden);
     sdl2::renderer test_renderer(test_window);
     sdl2::size test_renderer_output_size = test_renderer.output_size();
     BOOST_TEST(test_renderer_output_size.width == 640);
@@ -46,7 +48,7 @@ BOOST_AUTO_TEST_CASE(test_renderer_output_size)
 
 BOOST_AUTO_TEST_CASE(test_renderer_draw_color)
 {
-    sdl2::window test_window("test_renderer_draw_color", 640, 480, sdl2::window_flags::hidden);
+    sdl2::window test_window("test_renderer_draw_color", 640_px, 480_px, sdl2::window_flags::hidden);
     sdl2::renderer test_renderer(test_window);
     sdl2::color test_color(0xDE, 0xAD, 0xBE, 0xEF);
     
@@ -57,7 +59,7 @@ BOOST_AUTO_TEST_CASE(test_renderer_draw_color)
 
 BOOST_AUTO_TEST_CASE(test_renderer_draw_blend_mode)
 {
-    sdl2::window test_window("test_renderer_draw_blend_mode", 640, 480, sdl2::window_flags::hidden);
+    sdl2::window test_window("test_renderer_draw_blend_mode", 640_px, 480_px, sdl2::window_flags::hidden);
     sdl2::renderer test_renderer(test_window);
     sdl2::blend_mode test_mode = sdl2::blend_mode::blend;
     

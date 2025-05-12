@@ -22,12 +22,18 @@
 
 #include <cstdint>
 
+#include "length.h"
+
 namespace sdl2
 {
     struct size
     {
-        size(std::int32_t width, std::int32_t height);
+        explicit size(std::int32_t square_size);
 
-        std::int32_t width, height;
+        size(length width, length height);
+
+        length width;
+        
+        length height;
     };
 }
