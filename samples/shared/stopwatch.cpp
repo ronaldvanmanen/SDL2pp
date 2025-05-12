@@ -28,11 +28,17 @@ sdl2::stopwatch::start_now()
     return stopwatch;
 }
 
+sdl2::stopwatch::stopwatch()
+: _start_time(time_point::min())
+, _elapsed_time(duration::zero())
+, _running(false)
+{ }
+
 void
 sdl2::stopwatch::start()
 {
     if (_running) return;
-    _start_time = std::chrono::steady_clock::now();
+    _start_time = clock::now();
     _running = true;
 }
 
@@ -41,7 +47,7 @@ sdl2::stopwatch::stop()
 {
     if (!_running) return;
     
-    auto end_time = std::chrono::steady_clock::now();
+    auto end_time = clock::now();
     auto lap_time = end_time - _start_time;
     _elapsed_time += lap_time;
     _running = false;
@@ -50,8 +56,8 @@ sdl2::stopwatch::stop()
 void
 sdl2::stopwatch::reset()
 {
-    _start_time = std::chrono::steady_clock::now();
-    _elapsed_time = std::chrono::steady_clock::duration::zero();
+    _start_time = clock::now();
+    _elapsed_time = duration::zero();
 }
 
 sdl2::stopwatch::duration
@@ -60,7 +66,7 @@ sdl2::stopwatch::elapsed()
     auto elapsed_time = _elapsed_time;
     if (_running)
     {
-        auto now = std::chrono::steady_clock::now();
+        auto now = clock::now();
         auto lap_time = now - _start_time;
         elapsed_time += lap_time;
     }

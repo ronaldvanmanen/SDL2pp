@@ -26,12 +26,14 @@ namespace sdl2
     class stopwatch
     {
     public:
-        using time_point = std::chrono::steady_clock::time_point;
-
-        using duration = std::chrono::steady_clock::duration;
+        using clock = std::chrono::steady_clock;
+        using time_point = clock::time_point;
+        using duration = clock::duration;
 
     public:
         static stopwatch start_now();
+
+        stopwatch();
 
         void start();
 
