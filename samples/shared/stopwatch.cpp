@@ -80,3 +80,9 @@ sdl2::elapsed_seconds(sdl2::stopwatch &stopwatch)
         sdl2::fractional_seconds
     >(stopwatch.elapsed());
 }
+
+sdl2::time<double>
+sdl2::elapsed_time(sdl2::stopwatch &s)
+{
+    return sdl2::time<double>(sdl2::elapsed_seconds(s).count() * sdl2::seconds);
+}

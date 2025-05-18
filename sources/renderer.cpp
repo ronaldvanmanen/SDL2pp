@@ -56,14 +56,14 @@ sdl2::renderer::~renderer()
     }
 }
 
-sdl2::size
+sdl2::size_2d<std::int32_t>
 sdl2::renderer::output_size() const
 {
     int width, height;
     sdl2::throw_last_error(
         SDL_GetRendererOutputSize(_native_handle, &width, &height) < 0
     );
-    return sdl2::size(length(width), sdl2::length(height));
+    return sdl2::size_2d<std::int32_t>(width * px, height * px);
 }
 
 sdl2::color

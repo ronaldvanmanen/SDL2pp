@@ -21,6 +21,8 @@
 #include <chrono>
 #include <cstdint>
 
+#include "SDL2pp/time.h"
+
 namespace sdl2
 {
     class stopwatch
@@ -54,4 +56,6 @@ namespace sdl2
     using fractional_seconds = std::chrono::duration<double>;
 
     fractional_seconds elapsed_seconds(stopwatch &s);
+
+    time<double> elapsed_time(stopwatch &s);
 }

@@ -1,7 +1,8 @@
 {
-    "dependencies": [
-      "boost-optional",
-      "boost-test",
-      "sdl2"
-    ]
-  }
+  "dependencies": [
+    "boost-optional",
+    "boost-test",
+    "boost-units",
+    "sdl2"
+  ]
+}

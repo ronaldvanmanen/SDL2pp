@@ -27,6 +27,9 @@ namespace sdl2
 
 #include <cstdint>
 
+#include <boost/units/quantity.hpp>
+#include <boost/units/systems/si/length.hpp>
+
 #include <SDL2/SDL_render.h>
 
 #include "blend_mode.h"
@@ -55,7 +58,7 @@ namespace sdl2
 
         renderer& operator=(renderer const& other) = delete;
 
-        size output_size() const;
+        size_2d<std::int32_t> output_size() const;
 
         color draw_color() const;
 

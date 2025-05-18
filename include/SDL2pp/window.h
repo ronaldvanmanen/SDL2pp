@@ -34,9 +34,9 @@ namespace sdl2
     class window
     {
     public:
-        window(std::string const& title, length width, length height);
+        window(std::string const& title, length<std::int32_t> width, length<std::int32_t> height);
 
-        window(std::string const& title, length width, length height, window_flags flags);
+        window(std::string const& title, length<std::int32_t> width, length<std::int32_t> height, window_flags flags);
 
         window(window const& other) = delete;
 
@@ -46,7 +46,7 @@ namespace sdl2
 
         window& operator=(window const& other) = delete;
 
-        size size() const;
+        size_2d<std::int32_t> size() const;
 
         void update_surface();
 

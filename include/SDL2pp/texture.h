@@ -28,12 +28,15 @@ namespace sdl2
 #include <cstdint>
 #include <utility>
 
+#include <boost/units/quantity.hpp>
+#include <boost/units/systems/si/length.hpp>
+
 #include <SDL2/SDL_render.h>
 
 #include "error.h"
 #include "image.h"
-#include "pixel_format.h"
 #include "pixel_format_traits.h"
+#include "pixel_format.h"
 #include "renderer.h"
 #include "size.h"
 #include "texture_access.h"
@@ -43,7 +46,7 @@ namespace sdl2
     class texture_base
     {
     protected:
-        texture_base(renderer const& owner, pixel_format format, texture_access access, std::int32_t width, std::int32_t height);
+        texture_base(renderer const& owner, pixel_format format, texture_access access, length<int32_t> width, length<int32_t> height);
 
         texture_base(texture_base const& other) = delete;
 
@@ -62,9 +65,9 @@ namespace sdl2
     class texture : public texture_base
     {
     public:
-        texture(renderer const& owner, texture_access access, std::int32_t width, std::int32_t height);
+        texture(renderer const& owner, texture_access access, length<std::int32_t> width, length<std::int32_t> height);
 
-        texture(renderer const& owner, texture_access access, size const& size);
+        texture(renderer const& owner, texture_access access, size_2d<std::int32_t> const& size);
 
         texture(texture<TPixelFormat> const& other) = delete;
 
@@ -77,17 +80,17 @@ namespace sdl2
     };
 
     template<typename TPixelFormat>
-    texture<TPixelFormat>::texture(renderer const& owner, texture_access access, std::int32_t width, std::int32_t height)
+    texture<TPixelFormat>::texture(renderer const& owner, texture_access access, length<std::int32_t> width, length<std::int32_t> height)
     : texture_base(owner, pixel_format_traits<TPixelFormat>::format, access, width, height)
     { }
 
     template<typename TPixelFormat>
-    texture<TPixelFormat>::texture(renderer const& owner, texture_access access, size const& size)
+    texture<TPixelFormat>::texture(renderer const& owner, texture_access access, size_2d<std::int32_t> const& size)
     : texture_base(owner, pixel_format_traits<TPixelFormat>::format, access, size.width, size.height)
     { }
 
     template<typename TPixelFormat>
-    texture<TPixelFormat>::texture(sdl2::texture<TPixelFormat>&& other)
+    texture<TPixelFormat>::texture(texture<TPixelFormat>&& other)
     : _native_handle(std::exchange(other._native_handle, nullptr))
     { }
 
@@ -108,8 +111,8 @@ namespace sdl2
 
         image<TPixelFormat> locked_texture(
             static_cast<TPixelFormat*>(pixels),
-            width,
-            height,
+            width * px,
+            height * px,
             pitch / sizeof(TPixelFormat)
         );
 

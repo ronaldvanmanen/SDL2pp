@@ -22,21 +22,33 @@
 
 namespace sdl2
 {
-    SDL_Texture* create_texture(sdl2::renderer const& owner, sdl2::pixel_format format, sdl2::texture_access access, std::int32_t width, std::int32_t height)
+    SDL_Texture* create_texture(
+        sdl2::renderer const& owner,
+        sdl2::pixel_format format,
+        sdl2::texture_access access,
+        sdl2::length<std::int32_t> width,
+        sdl2::length<std::int32_t> height
+    )
     {
         SDL_Texture* native_handle = SDL_CreateTexture(
             const_cast<sdl2::renderer&>(owner).native_handle(),
             static_cast<std::uint32_t>(format),
             static_cast<std::int32_t>(access),
-            width,
-            height
+            quantity_cast<std::int32_t>(width),
+            quantity_cast<std::int32_t>(height)
         );
         throw_last_error(native_handle == nullptr);
         return native_handle;
     }
 }
 
-sdl2::texture_base::texture_base(sdl2::renderer const& owner, sdl2::pixel_format format, sdl2::texture_access access, std::int32_t width, std::int32_t height)
+sdl2::texture_base::texture_base(
+    sdl2::renderer const& owner,
+    sdl2::pixel_format format,
+    sdl2::texture_access access,
+    sdl2::length<std::int32_t> width,
+    sdl2::length<std::int32_t> height
+)
 : _native_handle(sdl2::create_texture(owner, format, access, width, height))
 { }
 

@@ -20,20 +20,32 @@
 
 #pragma once
 
-#include <cstdint>
-
 #include "length.h"
 
 namespace sdl2
 {
-    struct size
+    template<typename Y>
+    struct size_2d
     {
-        explicit size(std::int32_t square_size);
+    public:
+        explicit size_2d(length<Y> width_and_height);
 
-        size(length width, length height);
+        size_2d(length<Y> width, length<Y> height);
 
-        length width;
+        length<Y> width;
         
-        length height;
+        length<Y> height;
     };
+
+    template<typename Y>
+    size_2d<Y>::size_2d(length<Y> width_and_height)
+    : width(width_and_height)
+    , height(width_and_height)
+    { }
+
+    template<typename Y>
+    size_2d<Y>::size_2d(length<Y> width, length<Y> height)
+    : width(width)
+    , height(height)
+    { }
 }

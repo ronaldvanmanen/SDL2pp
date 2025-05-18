@@ -22,15 +22,21 @@
 
 #include <cstdint>
 
+#include <boost/units/quantity.hpp>
+#include <boost/units/systems/si/frequency.hpp>
+
 #include <SDL2/SDL_video.h>
 
-#include "hertz.h"
 #include "length.h"
 #include "pixel_format.h"
 #include "window.h"
 
 namespace sdl2
 {
+    typedef boost::units::quantity<
+        boost::units::si::frequency, std::int32_t
+    > display_rate;
+
     class display_mode
     {
     public:
@@ -38,11 +44,11 @@ namespace sdl2
         
         pixel_format format() const;
         
-        length width() const;
+        length<std::int32_t> width() const;
 
-        length height() const;
+        length<std::int32_t> height() const;
 
-        hertz refresh_rate() const;
+        display_rate refresh_rate() const;
     
     private:
         SDL_DisplayMode _native_handle;

@@ -23,6 +23,8 @@
 #include <cstdint>
 #include <numbers>
 
+#include <boost/units/cmath.hpp>
+
 #include "SDL2pp/argb8888.h"
 #include "SDL2pp/color.h"
 #include "SDL2pp/event_queue.h"
@@ -35,81 +37,95 @@
 #include "shared/math.h"
 #include "shared/stopwatch.h"
 
-using sdl2::operator""_px;
+using namespace std;
+using namespace sdl2;
 
-namespace sdl2
+struct displacement
 {
-    struct transform
-    {
-        transform();
+    displacement()
+    : displacement(0, 0)
+    {}
 
-        transform(std::int32_t angle, std::int32_t distance);
+    displacement(length<int32_t> x, length<int32_t> y)
+    : x(x), y(y)
+    { }
 
-        std::int32_t angle;
+    length<int32_t> x;
 
-        std::int32_t distance;
-    };
-}
+    length<int32_t> y;
+};
 
-sdl2::transform::transform()
-: sdl2::transform(0, 0)
-{}
-
-sdl2::transform::transform(std::int32_t angle, std::int32_t distance)
-: angle(angle), distance(distance)
-{ }
-
-sdl2::image<sdl2::transform> generate_transform_image(int square_size)
+length<double> calc_distance(length<double> width, length<double> height, offset<double> x, offset<double> y)
 {
+    // distance = int(ratio * texHeight / sqrt((x - w / 2.0) * (x - w / 2.0) + (y - h / 2.0) * (y - h / 2.0))) % texHeight;
     const double ratio = 32;
-
-    std::int32_t actual_size = sdl2::next_power_of_two(square_size);
-
-    sdl2::image<sdl2::transform> transform_image(actual_size, actual_size);
-
-    for (std::int32_t y = 0; y < actual_size; y++)
-    {
-        for (std::int32_t x = 0; x < actual_size; x++)
-        {
-            auto angle = static_cast<std::int32_t>(0.5 * actual_size * std::atan2(y - actual_size / 2.0, x - actual_size / 2.0) / std::numbers::pi);
-            auto distance = static_cast<std::int32_t>(ratio * actual_size / std::sqrt((x - actual_size / 2.0) * (x - actual_size / 2.0) + (y - actual_size / 2.0) * (y - actual_size / 2.0))) % actual_size;
-            transform_image(x, y) = sdl2::transform(angle, distance);
-        }
-    }
-
-    return transform_image;
-}
-
-sdl2::image<sdl2::transform> generate_transform_image(sdl2::length width, sdl2::length height)
-{
-    return generate_transform_image(
-        std::max(
-            static_cast<std::int32_t>(width),
-            static_cast<std::int32_t>(height)
+    return length<double>::from_value(
+        fmod(
+            ratio * height / boost::units::sqrt(
+                boost::units::pow<2>(x - width / 2.0) +
+                boost::units::pow<2>(y - height / 2.0)
+            ),
+            boost::units::quantity_cast<double>(height)
         )
     );
 }
 
-sdl2::image<sdl2::transform> generate_transform_image(sdl2::size size)
+length<double> calc_angle(length<double> width, length<double> height, offset<double> x, offset<double> y)
 {
-    return generate_transform_image(size.width, size.height);
+    // angle = (unsigned int)(0.5 * texWidth * atan2(y - h / 2.0, x - w / 2.0) / 3.1416);
+    return length<double>::from_value(
+        boost::units::quantity_cast<double>(
+            0.5 * width * boost::units::atan2(y - height / 2.0, x - width / 2.0) / numbers::pi
+        )
+    );
 }
 
-sdl2::image<sdl2::argb8888> generate_xor_image(std::int32_t square_size)
+image<displacement> generate_displacement_image(length<int32_t> square_size)
 {
-    std::int32_t actual_size = sdl2::next_power_of_two(square_size);
+    length<int32_t> actual_size = next_power_of_two(square_size);
 
-    sdl2::image<sdl2::argb8888> xor_image(actual_size, actual_size);
+    image<displacement> displacement_image(actual_size, actual_size);
 
-    for (std::int32_t y = 0; y < actual_size; y++)
+    for (offset<int32_t> y = 0; y < actual_size; y += 1.0*px)
     {
-        for (std::int32_t x = 0; x < actual_size; x++)
+        for (offset<int32_t> x = 0; x < actual_size; x += 1.0*px)
         {
-            xor_image(x, y) = sdl2::argb8888(
-                sdl2::a8(0xFF),
-                sdl2::r8(0x00),
-                sdl2::g8(0x00),
-                sdl2::b8((x * 256 / actual_size) ^ (y * 256 / actual_size))
+            auto displace_x = length<int32_t>(calc_distance(actual_size, actual_size, x, y));
+            auto displace_y = length<int32_t>(calc_angle(actual_size, actual_size, x, y));
+            displacement_image(x, y) = displacement(displace_x, displace_y);
+        }
+    }
+
+    return displacement_image;
+}
+
+image<displacement> generate_displacement_image(length<int32_t> width, length<int32_t> height)
+{
+    return generate_displacement_image(
+        max(width, height)
+    );
+}
+
+image<displacement> generate_displacement_image(size_2d<int32_t> size)
+{
+    return generate_displacement_image(size.width, size.height);
+}
+
+image<argb8888> generate_xor_image(length<int32_t> square_size)
+{
+    length<int32_t> actual_size = next_power_of_two(square_size);
+
+    image<argb8888> xor_image(actual_size, actual_size);
+
+    for (offset<int32_t> y = 0; y < actual_size; y += 1*px)
+    {
+        for (offset<int32_t> x = 0; x < actual_size; x += 1*px)
+        {
+            xor_image(x, y) = argb8888(
+                a8(0xFF),
+                r8(0x00),
+                g8(0x00),
+                b8((x * 256 / actual_size) ^ (y * 256 / actual_size))
             );
         }
     }
@@ -117,82 +133,83 @@ sdl2::image<sdl2::argb8888> generate_xor_image(std::int32_t square_size)
     return xor_image;
 }
 
-sdl2::image<sdl2::argb8888> generate_xor_image(sdl2::length width, sdl2::length height)
+image<argb8888> generate_xor_image(length<int32_t> width, length<int32_t> height)
 {
-    return generate_xor_image(
-        std::max(
-            static_cast<std::int32_t>(width),
-            static_cast<std::int32_t>(height)
-        )
-    );
+    return generate_xor_image(max(width, height));
 }
 
-sdl2::image<sdl2::argb8888> generate_xor_image(sdl2::size const& size)
+image<argb8888> generate_xor_image(size_2d<int32_t> const& size)
 {
     return generate_xor_image(size.width, size.height);
 }
 
+length<int32_t> power_of_two_mod(length<int32_t> x, length<int32_t> y)
+{
+    const auto x_value = boost::units::quantity_cast<int32_t>(x);
+    const auto y_value = boost::units::quantity_cast<int32_t>(y);
+    return length<int32_t>::from_value(x_value & (y_value - 1));
+}
+
 int main()
 {
-    auto window = sdl2::window("Tunnel Effect", 640_px, 480_px, sdl2::window_flags::shown | sdl2::window_flags::resizable);
-    auto renderer = sdl2::renderer(window, sdl2::renderer_flags::accelerated | sdl2::renderer_flags::present_vsync);
-    auto texture = sdl2::texture<sdl2::argb8888>(renderer, sdl2::texture_access::streaming_access, renderer.output_size());
-    auto event_queue = sdl2::event_queue();
+    auto main_window = window("Tunnel Effect", 800*px, 600*px, window_flags::shown | window_flags::resizable);
+    auto screen_renderer = renderer(main_window, renderer_flags::accelerated | renderer_flags::present_vsync);
+    auto screen_texture = texture<argb8888>(screen_renderer, texture_access::streaming_access, screen_renderer.output_size());
+    auto main_event_queue = event_queue();
 
-    auto source_image = generate_xor_image(renderer.output_size());
-    auto transform_table = generate_transform_image(renderer.output_size());
+    auto source_image = generate_xor_image(screen_renderer.output_size());
+    auto displacement_table = generate_displacement_image(screen_renderer.output_size());
     
-    auto stopwatch = sdl2::stopwatch::start_now();
+    auto stopwatch = stopwatch::start_now();
     auto running = true;
     while (running)
     {
-        sdl2::event event;
-        if (event_queue.poll(event))
+        event poll_event;
+        if (main_event_queue.poll(poll_event))
         {
-            switch (event.type())
+            switch (poll_event.type())
             {
-                case sdl2::event_type::quit:
+                case event_type::quit:
                     running = false;
                     break;
             }
         }
         else
         {
-            texture.with_lock(
-                [&source_image, &transform_table, &stopwatch](sdl2::image<sdl2::argb8888> &screen_image)
+            screen_texture.with_lock(
+                [&source_image, &displacement_table, &stopwatch](image<argb8888> &screen_image)
                 {
-                    const auto screen_width = static_cast<std::int32_t>(screen_image.width());
-                    const auto screen_height = static_cast<std::int32_t>(screen_image.height());
-                    const auto source_width = static_cast<std::int32_t>(source_image.width());
-                    const auto source_height = static_cast<std::int32_t>(source_image.height());
+                    const auto screen_width = screen_image.width();
+                    const auto screen_height = screen_image.height();
+                    const auto source_width = source_image.width();
+                    const auto source_height = source_image.height();
  
-                    const auto elapsed_time = stopwatch.elapsed_seconds();
-                    const auto shift_x = static_cast<std::int32_t>(screen_width * elapsed_time);
-                    const auto shift_y = static_cast<std::int32_t>(screen_height * elapsed_time / 4);
-                    const auto look_x = (source_width - screen_width) / 2;
-                    const auto look_y = (source_height - screen_height) / 2;
-                    const auto shift_look_x = shift_x + look_x;
-                    const auto shift_look_y = shift_y + look_y;
+                    const auto time = elapsed_time(stopwatch);
+                    const auto speed_x = length<double>(source_width) / second;
+                    const auto speed_y = length<double>(source_height) * 0.25 / second;
+                    const auto shift_x = length<int32_t>(speed_x * time);
+                    const auto shift_y = length<int32_t>(speed_y * time);
+                    const auto offset_x = (source_width - screen_width) / 2;
+                    const auto offset_y = (source_height - screen_height) / 2;
     
-                    for (auto y = 0; y < screen_image.height(); ++y)
+                    for (auto screen_y = 0*px; screen_y < screen_height; screen_y += 1*px)
                     {
-                        for (auto x = 0; x < screen_image.width(); ++x)
+                        for (auto screen_x = 0*px; screen_x < screen_width; screen_x += 1*px)
                         {
-                            const auto transform = transform_table(x + look_x, y + look_y);
-                            const auto source_x = (transform.distance + shift_look_x) & (source_width - 1);
-                            const auto source_y = (transform.angle + shift_look_y) & (source_height - 1);
-    
-                            screen_image(x, y) = source_image(source_x, source_y);
+                            const auto displacement = displacement_table(screen_x + offset_x, screen_y + offset_y);
+                            const auto source_x = power_of_two_mod(displacement.x + shift_x, source_width);
+                            const auto source_y = power_of_two_mod(displacement.y + shift_y, source_height);
+                            screen_image(screen_x, screen_y) = source_image(source_x, source_y);
                         }
                     }
                 }
             );
 
-            renderer.draw_blend_mode(sdl2::blend_mode::none);
-            renderer.draw_color(sdl2::color::black);
-            renderer.clear();
-            renderer.copy(texture);
-            renderer.present();
+            screen_renderer.draw_blend_mode(blend_mode::none);
+            screen_renderer.draw_color(color::black);
+            screen_renderer.clear();
+            screen_renderer.copy(screen_texture);
+            screen_renderer.present();
         }
     }
 

@@ -20,6 +20,11 @@
 
 #pragma once
 
+#include <cstdint>
+
+#include <boost/units/quantity.hpp>
+#include <boost/units/systems/si/length.hpp>
+
 #include <SDL2/SDL_surface.h>
 
 #include "error.h"
@@ -35,24 +40,24 @@ namespace sdl2
     class surface_base
     {
     protected:
-        surface_base(length width, length height, sdl2::bit_depth depth);
+        surface_base(length<std::int32_t> width, length<std::int32_t> height, bit_depth depth);
 
-        surface_base(sdl2::size const& size, sdl2::bit_depth depth);
+        surface_base(size_2d<std::int32_t> const& size, sdl2::bit_depth depth);
 
-        surface_base(sdl2::window & owner);
+        surface_base(window & owner);
 
-        surface_base(sdl2::surface_base const& other);
+        surface_base(surface_base const& other);
 
         surface_base(SDL_Surface * native_handle, bool free_handle);
 
     public:
         ~surface_base();
 
-        surface_base& operator=(sdl2::surface_base const& other) = delete;
+        surface_base& operator=(surface_base const& other) = delete;
 
         SDL_Surface* native_handle();
 
-        void blit(sdl2::surface_base & source);
+        void blit(surface_base & source);
 
     private:
         SDL_Surface* _native_handle;
@@ -64,13 +69,13 @@ namespace sdl2
     class surface : public surface_base
     {
     public:
-        surface(sdl2::size const& size);
+        surface(length<std::int32_t> width, length<std::int32_t> height);
 
-        surface(length width, length height);
+        surface(size_2d<std::int32_t> const& size);
 
-        surface(sdl2::window & owner);
+        surface(window & owner);
 
-        surface(sdl2::surface<TPixelFormat> const& other);
+        surface(surface<TPixelFormat> const& other);
 
         surface<TPixelFormat>& operator=(surface<TPixelFormat> const& other) = delete;
 
@@ -79,13 +84,13 @@ namespace sdl2
     };
 
     template<typename TPixelFormat>
-    surface<TPixelFormat>::surface(sdl2::size const& size)
-    : surface_base(size, pixel_format_traits<TPixelFormat>::bits_per_pixel())
+    surface<TPixelFormat>::surface(length<std::int32_t> width, length<std::int32_t> height)
+    : surface_base(width, height, pixel_format_traits<TPixelFormat>::bits_per_pixel())
     { }
 
     template<typename TPixelFormat>
-    surface<TPixelFormat>::surface(length width, length height)
-    : surface_base(width, height, pixel_format_traits<TPixelFormat>::bits_per_pixel())
+    surface<TPixelFormat>::surface(size_2d<std::int32_t> const& size)
+    : surface_base(size, pixel_format_traits<TPixelFormat>::bits_per_pixel())
     { }
 
     template<typename TPixelFormat>
@@ -115,8 +120,8 @@ namespace sdl2
 
         image<TPixelFormat> locked_texture(
             static_cast<TPixelFormat*>(native_handle->pixels),
-            native_handle->w,
-            native_handle->h,
+            native_handle->w * px,
+            native_handle->h * px,
             native_handle->pitch / sizeof(TPixelFormat)
         );
 

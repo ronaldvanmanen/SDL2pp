@@ -20,16 +20,24 @@
 
 #pragma once
 
-#include <cstdint>
-#include <limits>
-#include <complex>
-#include "quantity.h"
+#include <boost/units/quantity.hpp>
+#include <boost/units/static_constant.hpp>
+#include <boost/units/physical_dimensions/length.hpp>
+
+#include "pixel_base_unit.h"
+#include "system_of_units.h"
 
 namespace sdl2
 {
-    SDL2PP_QUANTITY_DECL(length, std::int32_t)
+    typedef boost::units::unit<boost::units::length_dimension, system_of_units> unit_of_length;
 
-    sdl2::length operator""_px(unsigned long long value);
+    template<typename Y>
+    using length = boost::units::quantity<unit_of_length, Y>;
 
-    sdl2::length operator""_px(long double value);
+    template<typename Y>
+    using offset = boost::units::quantity<unit_of_length, Y>;
+
+    BOOST_UNITS_STATIC_CONSTANT(px, unit_of_length);
+    BOOST_UNITS_STATIC_CONSTANT(pixel, unit_of_length);
+    BOOST_UNITS_STATIC_CONSTANT(pixels, unit_of_length);
 }
