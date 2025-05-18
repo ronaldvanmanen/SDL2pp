@@ -40,20 +40,20 @@ sdl2::display_mode::format() const
     return static_cast<sdl2::pixel_format>(_native_handle.format);
 }
         
-sdl2::length
+sdl2::length<std::int32_t>
 sdl2::display_mode::width() const
 {
-    return length(_native_handle.w);
+    return _native_handle.w * px;
 }
 
-sdl2::length
+sdl2::length<std::int32_t>
 sdl2::display_mode::height() const
 {
-    return sdl2::length(_native_handle.h);
+    return _native_handle.h * px;
 }
 
-sdl2::hertz
+sdl2::display_rate
 sdl2::display_mode::refresh_rate() const
 {
-    return sdl2::hertz(_native_handle.refresh_rate);
+    return _native_handle.refresh_rate * boost::units::si::hertz;
 }

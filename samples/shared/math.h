@@ -20,7 +20,33 @@
 
 #include <cstdint>
 
+#include <boost/units/quantity.hpp>
+
 namespace sdl2
 {
+    bool is_power_of_two(std::int32_t value);
+
+    template<typename Unit>
+    inline
+    bool
+    is_power_of_two(boost::units::quantity<Unit, std::int32_t> value)
+    {
+        return is_power_of_two(
+            boost::units::quantity_cast<std::int32_t>(value)
+        );
+    }
+
     std::int32_t next_power_of_two(std::int32_t value);
+
+    template<typename Unit>
+    inline
+    boost::units::quantity<Unit, std::int32_t>
+    next_power_of_two(boost::units::quantity<Unit, std::int32_t> value)
+    {
+        return boost::units::quantity<Unit, std::int32_t>::from_value(
+            next_power_of_two(
+                boost::units::quantity_cast<std::int32_t>(value)
+            )
+        );
+    }
 }

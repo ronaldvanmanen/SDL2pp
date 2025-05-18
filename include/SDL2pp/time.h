@@ -18,14 +18,22 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "SDL2pp/hertz.h"
+#pragma once
 
-sdl2::hertz sdl2::operator""_hz(unsigned long long value) 
-{
-    return sdl2::hertz(static_cast<std::int32_t>(value));
-}
+#include <boost/units/quantity.hpp>
+#include <boost/units/static_constant.hpp>
+#include <boost/units/physical_dimensions/time.hpp>
 
-sdl2::hertz sdl2::operator""_hz(long double value) 
+#include "second_base_unit.h"
+#include "system_of_units.h"
+
+namespace sdl2
 {
-    return sdl2::hertz(static_cast<std::int32_t>(value));
+    typedef boost::units::unit<boost::units::time_dimension, system_of_units> unit_of_time;
+
+    template<typename Y>
+    using time = boost::units::quantity<unit_of_time, Y>;
+
+    BOOST_UNITS_STATIC_CONSTANT(second, unit_of_time);
+    BOOST_UNITS_STATIC_CONSTANT(seconds, unit_of_time);
 }

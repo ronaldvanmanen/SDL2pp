@@ -22,41 +22,48 @@
 
 #include <cstdint>
 
+#include "length.h"
+
 namespace sdl2
 {
     template<typename TPixelFormat>
     class image
     {
     public:
-        image(std::int32_t width, std::int32_t height);
+        image(length<std::int32_t> width, length<std::int32_t> height);
 
-        image(TPixelFormat* pixels, std::int32_t width, std::int32_t height, std::int32_t pitch);
+        image(TPixelFormat* pixels, length<std::int32_t> width, length<std::int32_t> height, std::int32_t pitch);
 
-        std::int32_t width() const;
+        length<std::int32_t> width() const;
 
-        std::int32_t height() const;
+        length<std::int32_t> height() const;
 
-        TPixelFormat& operator()(std::int32_t x, std::int32_t y);
+        TPixelFormat& operator()(offset<int32_t> x, offset<int32_t> y);
 
-        TPixelFormat const& operator()(std::int32_t x, std::int32_t y) const;
+        TPixelFormat const& operator()(offset<int32_t> x, offset<int32_t> y) const;
 
     private:
         TPixelFormat* _pixels;
 
+        length<std::int32_t> _width;
+
+        length<std::int32_t> _height;
+
         std::int32_t _pitch;
-
-        std::int32_t _width;
-
-        std::int32_t _height;
     };
 
     template<typename TPixelFormat>
-    image<TPixelFormat>::image(std::int32_t width, std::int32_t height)
-    : image(new TPixelFormat[height * width], width, height, width)
+    image<TPixelFormat>::image(length<std::int32_t> width, length<std::int32_t> height)
+    : image(
+        new TPixelFormat[boost::units::quantity_cast<std::size_t>(height * width)],
+        width,
+        height,
+        boost::units::quantity_cast<std::int32_t>(width)
+    )
     {}
 
     template<typename TPixelFormat>
-    image<TPixelFormat>::image(TPixelFormat* pixels, std::int32_t width, std::int32_t height, std::int32_t pitch)
+    image<TPixelFormat>::image(TPixelFormat* pixels, length<std::int32_t> width, length<std::int32_t> height, std::int32_t pitch)
     : _pixels(pixels)
     , _width(width)
     , _height(height)
@@ -64,14 +71,14 @@ namespace sdl2
     { }
 
     template<typename TPixelFormat>
-    std::int32_t
+    length<std::int32_t>
     image<TPixelFormat>::width() const
     {
         return _width;
     }
 
     template<typename TPixelFormat>
-    std::int32_t
+    length<std::int32_t>
     image<TPixelFormat>::height() const
     {
         return _height;
@@ -79,15 +86,19 @@ namespace sdl2
 
     template<typename TPixelFormat>
     TPixelFormat&
-    image<TPixelFormat>::operator()(std::int32_t x, std::int32_t y)
+    image<TPixelFormat>::operator()(offset<int32_t> x, offset<int32_t> y)
     {
-        return _pixels[y * _pitch + x];
+        return _pixels[
+            boost::units::quantity_cast<std::size_t>(y * _pitch + x)
+        ];
     }
 
     template<typename TPixelFormat>
     TPixelFormat const&
-    image<TPixelFormat>::operator()(std::int32_t x, std::int32_t y) const
+    image<TPixelFormat>::operator()(offset<int32_t> x, offset<int32_t> y) const
     {
-        return _pixels[y * _pitch + x];
+        return _pixels[
+            boost::units::quantity_cast<std::size_t>(y * _pitch + x)
+        ];
     }
 }

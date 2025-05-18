@@ -20,16 +20,21 @@
 
 #pragma once
 
-#include <cstdint>
-#include <limits>
-#include <complex>
-#include "quantity.h"
+#include <boost/units/base_unit.hpp>
+#include <boost/units/physical_dimensions/time.hpp>
 
 namespace sdl2
 {
-    SDL2PP_QUANTITY_DECL(hertz, std::int32_t)
+    struct second_base_unit : public boost::units::base_unit<second_base_unit, boost::units::time_dimension, 2>
+    {
+        static std::string name()
+        {
+            return("second");
+        }
 
-    sdl2::hertz operator""_hz(unsigned long long value);
-
-    sdl2::hertz operator""_hz(long double value);
+        static std::string symbol()
+        {
+            return("s");
+        }
+    };
 }

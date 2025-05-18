@@ -18,14 +18,23 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "SDL2pp/size.h"
+#pragma once
 
-sdl2::size::size(std::int32_t square_size)
-: width(length(square_size))
-, height(sdl2::length(square_size))
-{ }
+#include <boost/units/base_unit.hpp>
+#include <boost/units/physical_dimensions/length.hpp>
 
-sdl2::size::size(length width, sdl2::length height)
-: width(width)
-, height(height)
-{ }
+namespace sdl2
+{
+    struct pixel_base_unit : public boost::units::base_unit<pixel_base_unit, boost::units::length_dimension, 1>
+    {
+        static std::string name()
+        {
+            return("pixel");
+        }
+
+        static std::string symbol()
+        {
+            return("px");
+        }
+    };
+}

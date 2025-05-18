@@ -23,15 +23,15 @@
 
 namespace sdl2
 {
-    SDL_Window* create_window(std::string const& title, length width, sdl2::length height, sdl2::window_flags flags)
+    SDL_Window* create_window(std::string const& title, sdl2::length<std::int32_t> width, sdl2::length<std::int32_t> height, sdl2::window_flags flags)
     {
         SDL_Window* native_handle =
             SDL_CreateWindow(
                 title.c_str(),
                 SDL_WINDOWPOS_UNDEFINED,
                 SDL_WINDOWPOS_UNDEFINED,
-                width,
-                height,
+                quantity_cast<std::int32_t>(width),
+                quantity_cast<std::int32_t>(height),
                 static_cast<std::uint32_t>(flags)
             );
         sdl2::throw_last_error(native_handle == nullptr);        
@@ -39,11 +39,11 @@ namespace sdl2
     }
 }
 
-sdl2::window::window(std::string const& title, length width, sdl2::length height)
+sdl2::window::window(std::string const& title, sdl2::length<std::int32_t> width, sdl2::length<std::int32_t> height)
 : _native_handle(sdl2::create_window(title, width, height, sdl2::window_flags::none))
 { }
 
-sdl2::window::window(std::string const& title, length width, sdl2::length height, sdl2::window_flags flags)
+sdl2::window::window(std::string const& title, sdl2::length<std::int32_t> width, sdl2::length<std::int32_t> height, sdl2::window_flags flags)
 : _native_handle(sdl2::create_window(title, width, height, flags))
 { }
 
@@ -59,12 +59,15 @@ sdl2::window::~window()
     }
 }
 
-sdl2::size
+sdl2::size_2d<std::int32_t>
 sdl2::window::size() const
 {
     int width, height;
     SDL_GetWindowSize(_native_handle, &width, &height);
-    return sdl2::size(length(width), sdl2::length(height));
+    return sdl2::size_2d<std::int32_t>(
+        width * px,
+        height * px
+    );
 }
 
 void

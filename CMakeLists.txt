@@ -30,16 +30,13 @@ add_library("${PROJECT_NAME}"
   "sources/error.cpp"
   "sources/event_queue.cpp"
   "sources/event.cpp"
-  "sources/hertz.cpp"
   "sources/index8.cpp"
   "sources/keyboard_event.cpp"
-  "sources/length.cpp"
   "sources/palette.cpp"
-  "sources/pixel_format.cpp"
   "sources/pixel_format_details.cpp"
+  "sources/pixel_format.cpp"
   "sources/renderer_flags.cpp"
   "sources/renderer.cpp"
-  "sources/size.cpp"
   "sources/surface.cpp"
   "sources/texture.cpp"
   "sources/window_flags.cpp"
@@ -50,9 +47,13 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
 endif()
 
 find_package(boost_optional REQUIRED CONFIG)
+find_package(boost_units REQUIRED CONFIG)
+
 target_link_libraries("${PROJECT_NAME}"
   PRIVATE
-  Boost::optional)
+  Boost::optional
+  Boost::units
+)
 
 find_package(SDL2 CONFIG REQUIRED)
 target_link_libraries("${PROJECT_NAME}"

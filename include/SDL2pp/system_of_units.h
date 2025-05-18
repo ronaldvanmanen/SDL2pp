@@ -18,14 +18,16 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "SDL2pp/length.h"
+#pragma once
 
-sdl2::length sdl2::operator""_px(unsigned long long value) 
-{
-    return sdl2::length(static_cast<std::int32_t>(value));
-}
+#include <cstdint>
 
-sdl2::length sdl2::operator""_px(long double value) 
+#include <boost/units/make_system.hpp>
+
+#include "pixel_base_unit.h"
+#include "second_base_unit.h"
+
+namespace sdl2
 {
-    return sdl2::length(static_cast<std::int32_t>(value));
+    typedef boost::units::make_system<pixel_base_unit, second_base_unit>::type system_of_units;
 }
