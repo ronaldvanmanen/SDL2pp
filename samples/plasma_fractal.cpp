@@ -262,9 +262,9 @@ int main()
             window_surface.blit(plasma_surface);
             window.update_surface();
 
-            auto elapsed_seconds = stopwatch.elapsed_seconds();
-            const auto refresh_rate = 1.0 / 60.0;
-            if (elapsed_seconds < refresh_rate)
+            static const auto refresh_rate = fractional_seconds(1.0 / 60.0);
+            const auto elapsed = elapsed_seconds(stopwatch);
+            if (elapsed < refresh_rate)
             {
                 continue;
             }

@@ -43,8 +43,6 @@ namespace sdl2
 
         duration elapsed();
 
-        double elapsed_seconds();
-
     private:
         time_point _start_time;
 
@@ -52,4 +50,8 @@ namespace sdl2
 
         bool _running;
     };
+
+    using fractional_seconds = std::chrono::duration<double>;
+
+    fractional_seconds elapsed_seconds(stopwatch &s);
 }

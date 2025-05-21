@@ -73,10 +73,10 @@ sdl2::stopwatch::elapsed()
     return elapsed_time;
 }
 
-double
-sdl2::stopwatch::elapsed_seconds()
+sdl2::fractional_seconds
+sdl2::elapsed_seconds(sdl2::stopwatch &stopwatch)
 {
     return std::chrono::duration_cast<
-        std::chrono::duration<double>
-    >(elapsed()).count();
+        sdl2::fractional_seconds
+    >(stopwatch.elapsed());
 }
