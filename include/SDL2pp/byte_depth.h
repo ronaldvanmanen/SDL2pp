@@ -21,11 +21,10 @@
 #pragma once
 
 #include <cstdint>
-#include <limits>
 
-#include "quantity.h"
+#include "integer.h"
 
 namespace sdl2
 {
-    SDL2PP_QUANTITY_DECL(byte_depth, std::uint32_t)
+    SDL2PP_INTEGER_DECL(byte_depth, std::uint32_t)
 }

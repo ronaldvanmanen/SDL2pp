@@ -21,13 +21,12 @@
 #pragma once
 
 #include <cstdint>
-#include <limits>
 
-#include "quantity.h"
+#include "integer.h"
 
 namespace sdl2
 {
-    SDL2PP_QUANTITY_DECL(g8, std::uint8_t)
+    SDL2PP_INTEGER_DECL(g8, std::uint8_t)
 
     inline
     sdl2::g8 operator""_g8(unsigned long long value) 

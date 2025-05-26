@@ -22,33 +22,33 @@
 
 #include <cstdint>
 
-#define SDL2PP_QUANTITY_DECL(NAME, BASE)           \
-    struct NAME##_tag {};                          \
-    using NAME = sdl2::quantity<NAME##_tag, BASE>;
+#define SDL2PP_INTEGER_DECL(NAME, BASE_TYPE)            \
+    struct NAME##_tag {};                               \
+    using NAME = sdl2::integer<NAME##_tag, BASE_TYPE>;
 
 namespace sdl2
 {
     template<typename Tag, typename T>
-    class quantity
+    class integer
     {
     public:
-        explicit quantity(T value);
+        explicit integer(T value);
 
-        quantity(quantity<Tag, T> const& other);
+        integer(integer<Tag, T> const& other);
 
-        quantity<Tag, T> & operator=(quantity<Tag, T> const& other);
+        integer<Tag, T> & operator=(integer<Tag, T> const& other);
 
-        quantity<Tag, T> & operator+=(quantity<Tag, T> const& other);
+        integer<Tag, T> & operator+=(integer<Tag, T> const& other);
 
-        quantity<Tag, T> & operator-=(quantity<Tag, T> const& other);
+        integer<Tag, T> & operator-=(integer<Tag, T> const& other);
 
-        quantity<Tag, T> & operator++();
+        integer<Tag, T> & operator++();
 
-        quantity<Tag, T> operator++(int);
+        integer<Tag, T> operator++(int);
 
-        quantity<Tag, T> & operator--();
+        integer<Tag, T> & operator--();
 
-        quantity<Tag, T> operator--(int);
+        integer<Tag, T> operator--(int);
 
         operator T() const;
 
@@ -57,54 +57,54 @@ namespace sdl2
     };
 
     template<typename Tag, typename T>
-    bool operator==(quantity<Tag, T> const& left, quantity<Tag, T> const& right)
+    bool operator==(integer<Tag, T> const& left, integer<Tag, T> const& right)
     {
         return static_cast<T>(left) == static_cast<T>(right);
     }
 
     template<typename Tag, typename T>
-    bool operator!=(quantity<Tag, T> const& left, quantity<Tag, T> const& right)
+    bool operator!=(integer<Tag, T> const& left, integer<Tag, T> const& right)
     {
         return !(left == right);
     }
 
     template<typename Tag, typename T>
-    bool operator<(quantity<Tag, T> const& left, quantity<Tag, T> const& right)
+    bool operator<(integer<Tag, T> const& left, integer<Tag, T> const& right)
     {
         return static_cast<T>(left) < static_cast<T>(right);
     }
 
     template<typename Tag, typename T>
-    bool operator>(quantity<Tag, T> const& left, quantity<Tag, T> const& right)
+    bool operator>(integer<Tag, T> const& left, integer<Tag, T> const& right)
     {
         return right < left;
     }
 
     template<typename Tag, typename T>
-    bool operator<=(quantity<Tag, T> const& left, quantity<Tag, T> const& right)
+    bool operator<=(integer<Tag, T> const& left, integer<Tag, T> const& right)
     {
         return !(right < left);
     }
 
     template<typename Tag, typename T>
-    bool operator>=(quantity<Tag, T> const& left, quantity<Tag, T> const& right)
+    bool operator>=(integer<Tag, T> const& left, integer<Tag, T> const& right)
     {
         return !(left < right);
     }
 
     template<typename Tag, typename T>
-    quantity<Tag, T>::quantity(T value)
+    integer<Tag, T>::integer(T value)
     : _value(value)
     { }
 
     template<typename Tag, typename T>
-    quantity<Tag, T>::quantity(quantity<Tag, T> const& other)
+    integer<Tag, T>::integer(integer<Tag, T> const& other)
     : _value(other._value)
     { }
 
     template<typename Tag, typename T>
-    quantity<Tag, T> &
-    quantity<Tag, T>::operator=(quantity<Tag, T> const& other)
+    integer<Tag, T> &
+    integer<Tag, T>::operator=(integer<Tag, T> const& other)
     {
         if (*this != other)
         {
@@ -114,53 +114,53 @@ namespace sdl2
     }
 
     template<typename Tag, typename T>
-    quantity<Tag, T> &
-    quantity<Tag, T>::operator+=(quantity<Tag, T> const& other)
+    integer<Tag, T> &
+    integer<Tag, T>::operator+=(integer<Tag, T> const& other)
     {
         _value += other._value;
         return *this;
     }
 
     template<typename Tag, typename T>
-    quantity<Tag, T> &
-    quantity<Tag, T>::operator-=(quantity<Tag, T> const& other)
+    integer<Tag, T> &
+    integer<Tag, T>::operator-=(integer<Tag, T> const& other)
     {
         _value -= other._value;
         return *this;
     }
 
     template<typename Tag, typename T>
-    quantity<Tag, T> &
-    quantity<Tag, T>::operator++()
+    integer<Tag, T> &
+    integer<Tag, T>::operator++()
     {
         ++_value;
         return *this;
     }
 
     template<typename Tag, typename T>
-    quantity<Tag, T>
-    quantity<Tag, T>::operator++(int)
+    integer<Tag, T>
+    integer<Tag, T>::operator++(int)
     {
-        return quantity<Tag, T>(_value++);
+        return integer<Tag, T>(_value++);
     }
 
     template<typename Tag, typename T>
-    quantity<Tag, T> &
-    quantity<Tag, T>::operator--()
+    integer<Tag, T> &
+    integer<Tag, T>::operator--()
     {
         --_value;
         return *this;
     }
 
     template<typename Tag, typename T>
-    quantity<Tag, T>
-    quantity<Tag, T>::operator--(int)
+    integer<Tag, T>
+    integer<Tag, T>::operator--(int)
     {
-        return quantity<Tag, T>(_value--);
+        return integer<Tag, T>(_value--);
     }
 
     template<typename Tag, typename T>
-    quantity<Tag, T>::operator T() const
+    integer<Tag, T>::operator T() const
     {
         return _value;
     }
