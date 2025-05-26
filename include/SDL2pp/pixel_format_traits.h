@@ -24,9 +24,8 @@
 
 #include <SDL2/SDL_pixels.h>
 
-#include "bit_depth.h"
-#include "byte_depth.h"
-#include "quantity.h"
+#include "pixel_bit_depth.h"
+#include "pixel_byte_depth.h"
 #include "pixel_format.h"
 #include "pixel_type.h"
 
@@ -40,14 +39,18 @@ namespace sdl2
 
         static constexpr sdl2::pixel_type pixel_type = static_cast<sdl2::pixel_type>(SDL_PIXELTYPE(static_cast<SDL_PixelFormatEnum>(format)));
 
-        static constexpr sdl2::bit_depth bits_per_pixel() noexcept
+        static constexpr sdl2::pixel_bit_depth bits_per_pixel() noexcept
         {
-            return static_cast<sdl2::bit_depth>(SDL_BITSPERPIXEL(static_cast<SDL_PixelFormatEnum>(format)));
+            return static_cast<sdl2::pixel_bit_depth>(
+                SDL_BITSPERPIXEL(static_cast<SDL_PixelFormatEnum>(format))
+            );
         }
 
-        static constexpr sdl2::byte_depth bytes_per_pixel() noexcept
+        static constexpr sdl2::pixel_byte_depth bytes_per_pixel() noexcept
         {
-            return static_cast<sdl2::byte_depth>(SDL_BYTESPERPIXEL(static_cast<SDL_PixelFormatEnum>(format)));
+            return static_cast<sdl2::pixel_byte_depth>(
+                SDL_BYTESPERPIXEL(static_cast<SDL_PixelFormatEnum>(format))
+            );
         }
     };
 }

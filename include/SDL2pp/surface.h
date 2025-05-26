@@ -40,9 +40,9 @@ namespace sdl2
     class surface_base
     {
     protected:
-        surface_base(length<std::int32_t> width, length<std::int32_t> height, bit_depth depth);
+        surface_base(length<std::int32_t> width, length<std::int32_t> height, pixel_bit_depth depth);
 
-        surface_base(size_2d<std::int32_t> const& size, sdl2::bit_depth depth);
+        surface_base(size_2d<std::int32_t> const& size, sdl2::pixel_bit_depth depth);
 
         surface_base(window & owner);
 

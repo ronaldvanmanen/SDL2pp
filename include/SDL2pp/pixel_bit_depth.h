@@ -21,10 +21,11 @@
 #pragma once
 
 #include <cstdint>
+#include <limits>
 
 #include "integer.h"
 
 namespace sdl2
 {
-    SDL2PP_INTEGER_DECL(byte_depth, std::uint32_t)
+    SDL2PP_INTEGER_DECL(pixel_bit_depth, std::uint32_t)
 }

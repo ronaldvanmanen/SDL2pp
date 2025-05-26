@@ -23,7 +23,7 @@
 
 namespace sdl2
 {
-    SDL_Surface* create_surface(sdl2::length<std::int32_t> width, sdl2::length<std::int32_t> height, sdl2::bit_depth depth)
+    SDL_Surface* create_surface(sdl2::length<std::int32_t> width, sdl2::length<std::int32_t> height, sdl2::pixel_bit_depth depth)
     {
         SDL_Surface* native_handle = SDL_CreateRGBSurface(
             0,
@@ -41,14 +41,14 @@ namespace sdl2
 }
 
 
-sdl2::surface_base::surface_base(sdl2::length<std::int32_t> width, sdl2::length<std::int32_t> height, sdl2::bit_depth depth)
+sdl2::surface_base::surface_base(sdl2::length<std::int32_t> width, sdl2::length<std::int32_t> height, sdl2::pixel_bit_depth depth)
 : _native_handle(sdl2::create_surface(width, height, depth))
 , _free_handle(true)
 {
     throw_last_error(_native_handle == nullptr);
 }
 
-sdl2::surface_base::surface_base(sdl2::size_2d<std::int32_t> const& size, sdl2::bit_depth depth)
+sdl2::surface_base::surface_base(sdl2::size_2d<std::int32_t> const& size, sdl2::pixel_bit_depth depth)
 : _native_handle(sdl2::create_surface(size.width, size.height, depth))
 , _free_handle(true)
 {
