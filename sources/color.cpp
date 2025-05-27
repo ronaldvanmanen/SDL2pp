@@ -58,15 +58,9 @@ sdl2::color::operator=(color const& other)
 }
 
 bool
-sdl2::operator==(color const& left, color const& right)
+sdl2::color::operator==(color const& other) const
 {
-    return left.r == right.r && left.g == right.g && left.b == right.b && left.a == right.a;
-}
-
-bool
-sdl2::operator!=(color const& left, color const& right)
-{
-    return !(left == right);
+    return r == other.r && g == other.g && b == other.b && a == other.a;
 }
 
 std::ostream&

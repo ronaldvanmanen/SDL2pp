@@ -22,11 +22,14 @@
 
 #include <cstdint>
 
+#include <boost/operators.hpp>
+
 #include "pixel_format.h"
 
 namespace sdl2
 {
     class alignas(alignof(std::uint8_t)) index8
+    : public boost::operators<index8>
     {
     public:
         static constexpr pixel_format format = pixel_format::index8;
@@ -40,13 +43,17 @@ namespace sdl2
 
         index8& operator=(index8 const& other);
 
-        index8 operator++();
+        index8& operator+=(index8 const& other);
 
-        index8 operator++(int);
+        index8& operator-=(index8 const& other);
 
-        index8 operator--();
+        index8& operator++();
 
-        index8 operator--(int);
+        index8& operator--();
+
+        bool operator==(index8 const& other) const;
+
+        bool operator<(index8 const& other) const;
 
         operator std::uint8_t() const;
 

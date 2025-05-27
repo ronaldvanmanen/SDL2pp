@@ -23,9 +23,11 @@
 #include <iostream>
 #include <cstdint>
 
+#include <boost/operators.hpp>
+
 namespace sdl2
 {
-    class color
+    class color : boost::equality_comparable<color>
     {
     public:
         static const color black;
@@ -47,13 +49,11 @@ namespace sdl2
 
         color& operator=(color const& other);
 
+        bool operator==(color const& other) const;
+
     public:
         std::uint8_t r, g, b, a;
     };
-
-    bool operator==(color const& left, color const& right);
-
-    bool operator!=(color const& left, color const& right);
 
     std::ostream& operator<<(std::ostream& stream, color const& value);
 }

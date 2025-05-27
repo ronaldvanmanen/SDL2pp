@@ -48,11 +48,13 @@ endif()
 
 find_package(boost_optional REQUIRED CONFIG)
 find_package(boost_units REQUIRED CONFIG)
+find_package(boost_utility CONFIG REQUIRED)
 
 target_link_libraries("${PROJECT_NAME}"
   PRIVATE
   Boost::optional
   Boost::units
+  Boost::utility
 )
 
 find_package(SDL2 CONFIG REQUIRED)

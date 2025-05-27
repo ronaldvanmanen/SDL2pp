@@ -20,17 +20,21 @@
 
 #pragma once
 
+#include <boost/operators.hpp>
+
 #include "length.h"
 
 namespace sdl2
 {
     template<typename Y>
-    struct size_2d
+    struct size_2d : boost::equality_comparable<size_2d<Y>>
     {
     public:
         explicit size_2d(length<Y> width_and_height);
 
         size_2d(length<Y> width, length<Y> height);
+
+        bool operator==(size_2d<Y> const& other) const;
 
         length<Y> width;
         
@@ -48,4 +52,11 @@ namespace sdl2
     : width(width)
     , height(height)
     { }
+
+    template<typename Y>
+    bool
+    size_2d<Y>::operator==(size_2d<Y> const& other) const
+    {
+        return width == other.width && height == other.height;
+    }
 }

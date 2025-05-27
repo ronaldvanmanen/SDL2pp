@@ -50,15 +50,9 @@ sdl2::argb8888::operator=(argb8888 const& other)
 }
 
 bool
-sdl2::operator==(argb8888 const& left, argb8888 const& right)
+sdl2::argb8888::operator==(argb8888 const& other) const
 {
-    return left.b == right.b && left.r == right.r && left.g == right.g && left.a == right.a;
-}
-
-bool
-sdl2::operator!=(argb8888 const& left, argb8888 const& right)
-{
-    return !(left == right);
+    return b == other.b && r == other.r && g == other.g && a == other.a;
 }
 
 std::ostream&

@@ -22,6 +22,8 @@
 
 #include <cstdint>
 
+#include <boost/operators.hpp>
+
 #define SDL2PP_INTEGER_DECL(NAME, BASE_TYPE)            \
     struct NAME##_tag {};                               \
     using NAME = sdl2::integer<NAME##_tag, BASE_TYPE>;
@@ -29,68 +31,32 @@
 namespace sdl2
 {
     template<typename Tag, typename T>
-    class integer
+    class integer : boost::operators<integer<Tag, T>>
     {
     public:
         explicit integer(T value);
 
         integer(integer<Tag, T> const& other);
 
-        integer<Tag, T> & operator=(integer<Tag, T> const& other);
+        integer<Tag, T>& operator=(integer<Tag, T> const& other);
 
-        integer<Tag, T> & operator+=(integer<Tag, T> const& other);
+        integer<Tag, T>& operator+=(integer<Tag, T> const& other);
 
-        integer<Tag, T> & operator-=(integer<Tag, T> const& other);
+        integer<Tag, T>& operator-=(integer<Tag, T> const& other);
 
-        integer<Tag, T> & operator++();
+        integer<Tag, T>& operator++();
 
-        integer<Tag, T> operator++(int);
+        integer<Tag, T>& operator--();
 
-        integer<Tag, T> & operator--();
+        bool operator==(integer<Tag, T> const& other) const;
 
-        integer<Tag, T> operator--(int);
+        bool operator<(integer<Tag, T> const& other) const;
 
         operator T() const;
 
     private:
         T _value;
     };
-
-    template<typename Tag, typename T>
-    bool operator==(integer<Tag, T> const& left, integer<Tag, T> const& right)
-    {
-        return static_cast<T>(left) == static_cast<T>(right);
-    }
-
-    template<typename Tag, typename T>
-    bool operator!=(integer<Tag, T> const& left, integer<Tag, T> const& right)
-    {
-        return !(left == right);
-    }
-
-    template<typename Tag, typename T>
-    bool operator<(integer<Tag, T> const& left, integer<Tag, T> const& right)
-    {
-        return static_cast<T>(left) < static_cast<T>(right);
-    }
-
-    template<typename Tag, typename T>
-    bool operator>(integer<Tag, T> const& left, integer<Tag, T> const& right)
-    {
-        return right < left;
-    }
-
-    template<typename Tag, typename T>
-    bool operator<=(integer<Tag, T> const& left, integer<Tag, T> const& right)
-    {
-        return !(right < left);
-    }
-
-    template<typename Tag, typename T>
-    bool operator>=(integer<Tag, T> const& left, integer<Tag, T> const& right)
-    {
-        return !(left < right);
-    }
 
     template<typename Tag, typename T>
     integer<Tag, T>::integer(T value)
@@ -138,13 +104,6 @@ namespace sdl2
     }
 
     template<typename Tag, typename T>
-    integer<Tag, T>
-    integer<Tag, T>::operator++(int)
-    {
-        return integer<Tag, T>(_value++);
-    }
-
-    template<typename Tag, typename T>
     integer<Tag, T> &
     integer<Tag, T>::operator--()
     {
@@ -153,10 +112,17 @@ namespace sdl2
     }
 
     template<typename Tag, typename T>
-    integer<Tag, T>
-    integer<Tag, T>::operator--(int)
+    bool
+    integer<Tag, T>::operator==(integer<Tag, T> const& other) const
     {
-        return integer<Tag, T>(_value--);
+        return _value == other._value;
+    }
+
+    template<typename Tag, typename T>
+    bool
+    integer<Tag, T>::operator<(integer<Tag, T> const& other) const
+    {
+        return _value < other._value;
     }
 
     template<typename Tag, typename T>

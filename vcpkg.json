@@ -3,6 +3,7 @@
     "boost-optional",
     "boost-test",
     "boost-units",
+    "boost-utility",
     "sdl2"
   ]
 }

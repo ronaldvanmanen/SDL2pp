@@ -22,6 +22,8 @@
 
 #include <cstdint>
 
+#include <boost/operators.hpp>
+
 #include "a8.h"
 #include "b8.h"
 #include "g8.h"
@@ -31,6 +33,7 @@
 namespace sdl2
 {
     class alignas(alignof(std::uint32_t)) argb8888
+    : public boost::equality_comparable<argb8888>
     {
     public:
         static constexpr pixel_format format = pixel_format::argb8888;
@@ -48,16 +51,14 @@ namespace sdl2
 
         argb8888& operator=(argb8888 const& other);
 
+        bool operator==(argb8888 const& other) const;
+
     public:
         sdl2::b8 b;
         sdl2::g8 g;
         sdl2::r8 r;
         sdl2::a8 a;
     };
-
-    bool operator==(argb8888 const& left, argb8888 const& right);
-
-    bool operator!=(argb8888 const& left, argb8888 const& right);
 
     std::ostream& operator<<(std::ostream& stream, argb8888 const& value);
 }

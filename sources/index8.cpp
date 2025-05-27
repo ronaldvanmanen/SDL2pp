@@ -42,28 +42,44 @@ sdl2::index8::operator=(sdl2::index8 const& other)
     return *this;    
 }
 
-sdl2::index8
+sdl2::index8&
+sdl2::index8::operator+=(sdl2::index8 const& other)
+{
+    _value += other._value;
+    return *this;    
+}
+
+sdl2::index8&
+sdl2::index8::operator-=(sdl2::index8 const& other)
+{
+    _value += other._value;
+    return *this;    
+}
+
+sdl2::index8&
 sdl2::index8::operator++()
 {
-    return index8(++_value);
+    ++_value;
+    return *this;
 }
 
-sdl2::index8
-sdl2::index8::operator++(int)
-{
-    return index8(_value++);
-}
-
-sdl2::index8
+sdl2::index8&
 sdl2::index8::operator--()
 {
-    return index8(--_value);
+    --_value;
+    return *this;
 }
 
-sdl2::index8
-sdl2::index8::operator--(int)
+bool
+sdl2::index8::operator==(sdl2::index8 const& other) const
 {
-    return index8(_value--);
+    return _value == other._value;
+}
+
+bool
+sdl2::index8::operator<(sdl2::index8 const& other) const
+{
+    return _value < other._value;
 }
 
 sdl2::index8::operator std::uint8_t() const
