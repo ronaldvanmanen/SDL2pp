@@ -1,6 +1,8 @@
 {
   "dependencies": [
     "boost-optional",
+    "boost-poly-collection",
+    "boost-qvm",
     "boost-test",
     "boost-units",
     "boost-utility",

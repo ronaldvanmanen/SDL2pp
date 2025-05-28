@@ -47,12 +47,14 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
 endif()
 
 find_package(boost_optional REQUIRED CONFIG)
+find_package(boost_qvm REQUIRED CONFIG)
 find_package(boost_units REQUIRED CONFIG)
 find_package(boost_utility CONFIG REQUIRED)
 
 target_link_libraries("${PROJECT_NAME}"
   PRIVATE
   Boost::optional
+  Boost::qvm
   Boost::units
   Boost::utility
 )

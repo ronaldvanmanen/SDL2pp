@@ -20,5 +20,26 @@ macro("add_sample" TARGET)
   target_link_libraries(${TARGET} PRIVATE SDL2pp)
 endmacro()
 
-add_sample("plasma_fractal" SOURCES "plasma_fractal.cpp" "shared/math.cpp" "shared/stopwatch.cpp")
-add_sample("tunnel_effect" SOURCES "tunnel_effect.cpp" "shared/math.cpp" "shared/stopwatch.cpp")
+find_package(boost_poly_collection REQUIRED CONFIG)
+
+add_sample("plasma_fractal"
+  SOURCES
+  "plasma_fractal.cpp"
+  "shared/math.cpp"
+  "shared/stopwatch.cpp")
+
+add_sample("sw_ray_tracer"
+  SOURCES
+  "sw_ray_tracer.cpp"
+  "shared/math.cpp"
+  "shared/stopwatch.cpp"
+)
+
+target_link_libraries("sw_ray_tracer" PRIVATE Boost::poly_collection)
+
+add_sample("tunnel_effect"
+  SOURCES
+  "tunnel_effect.cpp"
+  "shared/math.cpp"
+  "shared/stopwatch.cpp"
+)
