@@ -20,36 +20,20 @@
 
 #pragma once
 
-#include <cstdint>
+#include <SDL2/SDL_keyboard.h>
 
-#include <SDL2/SDL_events.h>
+#include "SDL2pp/keyboard.h"
 
-namespace sdl2
+sdl2::keyboard_state
+sdl2::keyboard::state()
 {
-    enum class key_modifier : std::uint16_t
-    {
-        none = KMOD_NONE,
+    int key_count;
+    auto key_states = SDL_GetKeyboardState(&key_count);
+    return sdl2::keyboard_state(key_states, key_count);
+}
 
-        left_shift = KMOD_LSHIFT,
-        right_shift = KMOD_RSHIFT,
-        left_ctrl = KMOD_LCTRL,
-        right_ctrl = KMOD_RCTRL,
-        left_alt = KMOD_LALT,
-        right_alt = KMOD_RALT,
-        left_gui = KMOD_LGUI,
-        right_gui = KMOD_RGUI,
-        num_lock = KMOD_NUM,
-        caps_lock = KMOD_CAPS,
-        mode = KMOD_MODE,
-        scroll_lock = KMOD_SCROLL,
-
-        ctrl = KMOD_CTRL,
-        shift = KMOD_SHIFT,
-        alt = KMOD_ALT,
-        gui = KMOD_GUI
-    };
-
-    key_modifier operator&(key_modifier left, key_modifier right);
-
-    key_modifier operator|(key_modifier left, key_modifier right);
+sdl2::key_modifier
+sdl2::keyboard::mod_state()
+{
+    return static_cast<sdl2::key_modifier>(SDL_GetModState());
 }

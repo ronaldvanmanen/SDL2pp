@@ -36,6 +36,7 @@
 #include "SDL2pp/event.h"
 #include "SDL2pp/image.h"
 #include "SDL2pp/keyboard_event.h"
+#include "SDL2pp/keyboard.h"
 #include "SDL2pp/renderer.h"
 #include "SDL2pp/texture.h"
 #include "SDL2pp/window.h"
@@ -652,41 +653,53 @@ int main()
                 case event_type::quit:
                     running = false;
                     break;
-
-                case event_type::key_down:
-                    auto key_event = event.as<keyboard_event>();
-                    switch (key_event.scan_code())
-                    {
-                        case scan_code::w:
-                            move_forward(camera, 1.0f);
-                            break;
-                        case scan_code::s:
-                            move_backward(camera, 1.0f);
-                            break;
-                        case scan_code::a:
-                            move_left(camera, 1.0f);
-                            break;
-                        case scan_code::d:
-                            move_right(camera, 1.0f);
-                            break;
-                        case scan_code::up:
-                            pitch(camera, -1.0f);
-                            break;
-                        case scan_code::down:
-                            pitch(camera, 1.0f);
-                            break;
-                        case scan_code::left:
-                            roll(camera, -1.0f);
-                            break;
-                        case scan_code::right:
-                            roll(camera, 1.0f);
-                            break;
-                    }
-                    break;
             }
         }
         else
         {
+            auto keyboard_state = keyboard::state();
+            auto key_mod_state = keyboard::mod_state();
+            auto num_lock_off = (key_mod_state & key_modifier::num_lock) != key_modifier::num_lock;
+            if (keyboard_state.pressed(scan_code::w))
+            {
+                move_forward(camera, 1.0f);
+            }
+
+            if (keyboard_state.pressed(scan_code::s))
+            {
+                move_backward(camera, 1.0f);
+            }
+
+            if (keyboard_state.pressed(scan_code::a))
+            {
+                move_left(camera, 1.0f);
+            }
+
+            if (keyboard_state.pressed(scan_code::d))
+            {
+                move_right(camera, 1.0f);
+            }
+
+            if (keyboard_state.pressed(scan_code::up) || num_lock_off && keyboard_state.pressed(scan_code::keypad_8))
+            {
+                pitch(camera, -1.0f);
+            }
+
+            if (keyboard_state.pressed(scan_code::down) || num_lock_off && keyboard_state.pressed(scan_code::keypad_2))
+            {
+                pitch(camera, 1.0f);
+            }
+
+            if (keyboard_state.pressed(scan_code::left) || num_lock_off && keyboard_state.pressed(scan_code::keypad_4))
+            {
+                roll(camera, -1.0f);
+            }
+
+            if (keyboard_state.pressed(scan_code::right) || num_lock_off && keyboard_state.pressed(scan_code::keypad_6))
+            {
+                roll(camera, 1.0f);
+            }
+
             texture.with_lock(
                 [&stopwatch, &world, &camera](image<argb8888> &screen)
                 {

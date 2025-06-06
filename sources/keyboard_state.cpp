@@ -18,38 +18,17 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#pragma once
-
 #include <cstdint>
 
-#include <SDL2/SDL_events.h>
+#include "SDL2pp/keyboard_state.h"
 
-namespace sdl2
+sdl2::keyboard_state::keyboard_state(std::uint8_t const* key_states, std::int32_t key_count)
+: _key_states(key_states)
+, _key_count(key_count)
+{}
+
+bool
+sdl2::keyboard_state::pressed(scan_code key) const
 {
-    enum class key_modifier : std::uint16_t
-    {
-        none = KMOD_NONE,
-
-        left_shift = KMOD_LSHIFT,
-        right_shift = KMOD_RSHIFT,
-        left_ctrl = KMOD_LCTRL,
-        right_ctrl = KMOD_RCTRL,
-        left_alt = KMOD_LALT,
-        right_alt = KMOD_RALT,
-        left_gui = KMOD_LGUI,
-        right_gui = KMOD_RGUI,
-        num_lock = KMOD_NUM,
-        caps_lock = KMOD_CAPS,
-        mode = KMOD_MODE,
-        scroll_lock = KMOD_SCROLL,
-
-        ctrl = KMOD_CTRL,
-        shift = KMOD_SHIFT,
-        alt = KMOD_ALT,
-        gui = KMOD_GUI
-    };
-
-    key_modifier operator&(key_modifier left, key_modifier right);
-
-    key_modifier operator|(key_modifier left, key_modifier right);
+    return _key_states[static_cast<int>(key)] == 1;
 }
