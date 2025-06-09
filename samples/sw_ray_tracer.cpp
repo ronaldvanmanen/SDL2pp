@@ -47,7 +47,42 @@
 using namespace std;
 using namespace sdl2;
 
-using vector3 = boost::qvm::vec<float, 3>;
+namespace boost { namespace qvm {
+
+template <class A,class B>
+BOOST_QVM_CONSTEXPR BOOST_QVM_INLINE_OPERATIONS
+typename lazy_enable_if_c<
+    is_vec<A>::value && vec_traits<A>::dim==3 && is_quat<B>::value, deduce_vec2<A,B,3>
+>::type
+operator*( A const & a, B const & b )
+{
+    typedef typename deduce_vec2<A,B,3>::type R;
+    typedef typename vec_traits<A>::scalar_type TA;
+    typedef typename quat_traits<B>::scalar_type TB;
+    
+    TA const x = vec_traits<A>::template read_element<0>(a);
+    TA const y = vec_traits<A>::template read_element<1>(a);
+    TA const z = vec_traits<A>::template read_element<2>(a);
+
+    TB const qw = quat_traits<B>::template read_element<0>(b);
+    TB const qx = quat_traits<B>::template read_element<1>(b);
+    TB const qy = quat_traits<B>::template read_element<2>(b);
+    TB const qz = quat_traits<B>::template read_element<3>(b);
+
+    R r;
+    write_vec_element<0>(r, x*(qx*qx+qw*qw-qy*qy- qz*qz) + y*(2*qx*qy- 2*qw*qz) + z*(2*qx*qz+ 2*qw*qy));
+    write_vec_element<1>(r, x*(2*qw*qz + 2*qx*qy) + y*(qw*qw - qx*qx+ qy*qy - qz*qz)+ z*(-2*qw*qx+ 2*qy*qz));
+    write_vec_element<2>(r, x*(-2*qw*qy+ 2*qx*qz) + y*(2*qw*qx+ 2*qy*qz)+ z*(qw*qw - qx*qx- qy*qy+ qz*qz));
+    return r;
+}
+
+namespace
+sfinae
+    {
+    using ::boost::qvm::operator*;
+    }
+
+} }
 
 inline
 float degrees_to_radians(float degrees)
@@ -55,15 +90,88 @@ float degrees_to_radians(float degrees)
     return degrees * std::numbers::pi_v<float> / 180.0f;
 }
 
+using vector3 = boost::qvm::vec<float, 3>;
+
+auto const& zero_vector = boost::qvm::zero_vec<float, 3>();
+
+auto const left_vector = vector3 { -1.0f, 0.0f, 0.0f };
+auto const right_vector = vector3 { 1.0f, 0.0f, 0.0f };
+auto const down_vector = vector3 { 0.0f, -1.0f, 0.0f };
+auto const up_vector = vector3 { 0.0f, 1.0f, 0.0f };
+auto const backward_vector = vector3 { 0.0f, 0.0f, -1.0f };
+auto const forward_vector = vector3 { 0.0f, 0.0f, 1.0f };
+
 inline
 float distance(vector3 const& value1, vector3 const& value2)
 {
-    return boost::qvm::mag(value1 - value2);
+    return mag(value1 - value2);
 }
 
 using matrix4x4 = boost::qvm::mat<float, 4, 4>;
 
+inline
+matrix4x4
+look_at_lh(vector3 const& eye, vector3 const& at, vector3 const& up)
+{
+    auto const zaxis = normalized(at - eye);
+    auto const xaxis = normalized(cross(up, zaxis));
+    auto const yaxis = cross(zaxis, xaxis);
+    auto result = matrix4x4();
+
+    write_mat_element<0, 0>(result, boost::qvm::vec_traits<vector3>::read_element<0>(xaxis));
+    write_mat_element<0, 1>(result, boost::qvm::vec_traits<vector3>::read_element<0>(yaxis));
+    write_mat_element<0, 2>(result, boost::qvm::vec_traits<vector3>::read_element<0>(zaxis));
+    
+    write_mat_element<1, 0>(result, boost::qvm::vec_traits<vector3>::read_element<1>(xaxis));
+    write_mat_element<1, 1>(result, boost::qvm::vec_traits<vector3>::read_element<1>(yaxis));
+    write_mat_element<1, 2>(result, boost::qvm::vec_traits<vector3>::read_element<1>(zaxis));
+    
+    write_mat_element<2, 0>(result, -boost::qvm::vec_traits<vector3>::read_element<2>(xaxis));
+    write_mat_element<2, 1>(result, -boost::qvm::vec_traits<vector3>::read_element<2>(yaxis));
+    write_mat_element<2, 2>(result, -boost::qvm::vec_traits<vector3>::read_element<2>(zaxis));
+
+    write_mat_element<0, 3>(result, -dot(xaxis, eye));
+    write_mat_element<1, 3>(result, -dot(yaxis, eye));
+    write_mat_element<2, 3>(result, -dot(zaxis, eye));
+    write_mat_element<3, 3>(result, 1.0f);
+
+    return result;
+}
+
+inline
+matrix4x4
+look_at_rh(vector3 const& eye, vector3 const& at, vector3 const& up)
+{
+    auto const zaxis = normalized(eye - at);
+    auto const xaxis = normalized(cross(up, zaxis));
+    auto const yaxis = cross(zaxis, xaxis);
+    auto result = matrix4x4();
+    write_mat_element<0, 0>(result, boost::qvm::vec_traits<vector3>::read_element<0>(xaxis));
+    write_mat_element<0, 1>(result, boost::qvm::vec_traits<vector3>::read_element<0>(yaxis));
+    write_mat_element<0, 2>(result, boost::qvm::vec_traits<vector3>::read_element<0>(zaxis));
+    
+    write_mat_element<1, 0>(result, boost::qvm::vec_traits<vector3>::read_element<1>(xaxis));
+    write_mat_element<1, 1>(result, boost::qvm::vec_traits<vector3>::read_element<1>(yaxis));
+    write_mat_element<1, 2>(result, boost::qvm::vec_traits<vector3>::read_element<1>(zaxis));
+    
+    write_mat_element<2, 0>(result, -boost::qvm::vec_traits<vector3>::read_element<2>(xaxis));
+    write_mat_element<2, 1>(result, -boost::qvm::vec_traits<vector3>::read_element<2>(yaxis));
+    write_mat_element<2, 2>(result, -boost::qvm::vec_traits<vector3>::read_element<2>(zaxis));
+    
+    write_mat_element<0, 3>(result, -dot(xaxis, eye));
+    write_mat_element<1, 3>(result, -dot(yaxis, eye));
+    write_mat_element<2, 3>(result, -dot(zaxis, eye));
+    write_mat_element<3, 3>(result, 1.0f);
+    return result;
+}
+
 using quaternion = boost::qvm::quat<float>;
+
+quaternion
+rotation(matrix4x4 const& a)
+{
+    return normalized(convert_to<quaternion>(del_row_col<3, 3>(a)));
+}
 
 class rgb96f
 {
@@ -148,16 +256,14 @@ const float ray::epsilon = 1e-2f;
 
 ray::ray(vector3 const& origin, vector3 const& direction)
 : origin(origin)
-, direction(direction)
+, direction(normalized(direction))
 { }
 
 ray
 transform_ray(ray const& ray, matrix4x4 const& matrix)
 {
-    auto transformed_origin = boost::qvm::transform_point(matrix, ray.origin);
-    auto transformed_direction = boost::qvm::normalized(
-        boost::qvm::transform_vector(matrix, ray.direction)
-    );
+    auto const transformed_origin = transform_point(matrix, ray.origin);
+    auto const transformed_direction = transform_vector(matrix, ray.direction);
     return ::ray(transformed_origin, transformed_direction);
 }
 
@@ -199,82 +305,132 @@ public:
     };
 
     float field_of_view = 90.0f;
+
+    void look_at_lh(vector3 const& eye, vector3 const& at, vector3 const& up);
+
+    void look_at_rh(vector3 const& eye, vector3 const& at, vector3 const& up);
+
+    void pitch(float degrees);
+
+    void yaw(float degrees);
+
+    void roll(float degrees);
+
+    void rotate(vector3 const& axis, float degrees);
+
+    void move_to(vector3 const& position);
+
+    void move(vector3 const& distance);
+
+    void move_left(float distance);
+
+    void move_right(float distance);
+
+    void move_up(float distance);
+
+    void move_down(float distance);
+
+    void move_forward(float distance);
+
+    void move_backward(float distance);
+
+    matrix4x4 view_matrix() const;
 };
 
 void
-rotate_x(perspective_camera &camera, float degrees)
+perspective_camera::look_at_lh(vector3 const& eye, vector3 const& at, vector3 const& up)
 {
-    boost::qvm::rotate_x(camera.orientation, degrees_to_radians(degrees));
+    auto const look_at_matrix = ::look_at_lh(eye, at, up);
+    orientation = rotation(look_at_matrix);
+    position = translation(look_at_matrix);
 }
 
 void
-rotate_y(perspective_camera &camera, float degrees)
+perspective_camera::look_at_rh(vector3 const& eye, vector3 const& at, vector3 const& up)
 {
-    boost::qvm::rotate_y(camera.orientation, degrees_to_radians(degrees));
+    auto const look_at_matrix = ::look_at_rh(eye, at, up);
+    orientation = rotation(look_at_matrix);
+    position = translation(look_at_matrix);
 }
 
 void
-rotate_z(perspective_camera &camera, float degrees)
+perspective_camera::pitch(float degrees)
 {
-    boost::qvm::rotate_z(camera.orientation, degrees_to_radians(degrees));
+    rotate(right_vector, degrees);
 }
 
 void
-move_to(perspective_camera &camera, vector3 const& position)
+perspective_camera::yaw(float degrees)
 {
-    camera.position = position;
+    rotate(up_vector, degrees);
 }
 
 void
-move_forward(perspective_camera &camera, float distance)
+perspective_camera::roll(float degrees)
 {
-    auto forward_vector = vector3 { 0.0f, 0.0f, 1.0f };
-    auto longitudinal_axis = camera.orientation * forward_vector;
-    camera.position += longitudinal_axis * distance;
+    rotate(forward_vector, degrees);
 }
 
 void
-move_backward(perspective_camera &camera, float distance)
+perspective_camera::rotate(vector3 const& axis, float degrees)
 {
-    move_forward(camera, -distance);
+    orientation = rot_quat(axis, -degrees_to_radians(degrees)) * orientation;
 }
 
 void
-move_right(perspective_camera &camera, float distance)
+perspective_camera::move_to(vector3 const& position)
 {
-    auto const right_vector = vector3 { 1.0f, 0.0f, 0.0f };
-    auto const lateral_axis = camera.orientation * right_vector;
-    camera.position += lateral_axis * distance;
+    this->position = position;
 }
 
 void
-pitch(perspective_camera &camera, float degrees)
+perspective_camera::move(vector3 const& distance)
 {
-    auto const right_vector = vector3 { 1.0f, 0.0f, 0.0f };
-    auto const pitch_axis = camera.orientation * right_vector;
-    boost::qvm::rotate(camera.orientation, pitch_axis, degrees_to_radians(degrees));
+    position += inverse(orientation) * -distance;
 }
 
 void
-roll(perspective_camera &camera, float degrees)
+perspective_camera::move_left(float distance)
 {
-    auto const down_vector = vector3 { 0.0f, -1.0f, 0.0f };
-    auto const yaw_axis = camera.orientation * down_vector;
-    boost::qvm::rotate(camera.orientation, yaw_axis, degrees_to_radians(degrees));
+    move(left_vector * distance);
 }
 
 void
-move_left(perspective_camera &camera, float distance)
+perspective_camera::move_right(float distance)
 {
-    move_right(camera, -distance);
+    move(right_vector * distance);
+}
+
+void
+perspective_camera::move_up(float distance)
+{
+    move(up_vector * distance);
+}
+
+void
+perspective_camera::move_down(float distance)
+{
+    move(down_vector * distance);
+}
+
+void
+perspective_camera::move_forward(float distance)
+{
+    move(forward_vector * distance);
+}
+
+void
+perspective_camera::move_backward(float distance)
+{
+    move(backward_vector * distance);
 }
 
 matrix4x4
-get_view_matrix(perspective_camera &camera)
+perspective_camera::view_matrix() const
 {
-    return boost::qvm::convert_to<matrix4x4>(
-        boost::qvm::inverse(camera.orientation)
-    ) * boost::qvm::translation_mat(-camera.position);
+    return inverse(
+        convert_to<matrix4x4>(orientation) * translation_mat(position)
+    );
 }
 
 float
@@ -282,7 +438,7 @@ get_focal_length(perspective_camera const& camera, length<std::int32_t> width, l
 {
     return quantity_cast<float>(width)
          / quantity_cast<float>(height)
-         / std::tan(camera.field_of_view * std::numbers::pi_v<float> / 180.0f / 2.0f);
+         / std::tan(degrees_to_radians(camera.field_of_view / 2.0f));
 }
 
 class point_light
@@ -307,7 +463,7 @@ protected:
 public:
     virtual vector3 normal_at(vector3 const& point) const = 0;
 
-    virtual optional<float> intersects_at(ray const& ray) const = 0;
+    virtual optional<float> hit_test(ray const& ray) const = 0;
 
 public:
     float ambient_coefficient = 1.0;
@@ -328,7 +484,7 @@ public:
 
     vector3 normal_at(vector3 const& point) const;
 
-    optional<float> intersects_at(ray const& ray) const;
+    optional<float> hit_test(ray const& ray) const;
 
 public:
     vector3 position;
@@ -345,29 +501,29 @@ sphere::sphere(vector3 const& position, float radius, rgb96f const& diffuse_colo
 vector3
 sphere::normal_at(vector3 const& point) const
 {
-    return boost::qvm::normalized((point - position) / radius);
+    return normalized((point - position) / radius);
 }
 
 optional<float>
-sphere::intersects_at(ray const& ray) const
+sphere::hit_test(ray const& ray) const
 {
-    auto v = position - ray.origin;
-    auto b = boost::qvm::dot(v, ray.direction);
-    auto discriminant = b * b - boost::qvm::dot(v, v) + radius * radius;
-    if (discriminant <= 0.0)
+    auto const v = position - ray.origin;
+    auto const b = dot(v, ray.direction);
+    auto const d = b * b - dot(v, v) + radius * radius;
+    if (d <= 0.0)
     {
         return nullopt;
     }
 
-    discriminant = std::sqrt(discriminant);
+    auto const discriminant = std::sqrt(d);
 
-    auto t2 = b + discriminant;
+    auto const t2 = b + discriminant;
     if (t2 <= ray::epsilon)
     {
         return nullopt;
     }
 
-    auto t1 = b - discriminant;
+    auto const t1 = b - discriminant;
     if (t1 > ray::epsilon)
     {
         return t1;
@@ -383,7 +539,7 @@ public:
 
     vector3 normal_at(vector3 const& point) const;
 
-    optional<float> intersects_at(ray const& ray) const;
+    optional<float> hit_test(ray const& ray) const;
 
 public:
     vector3 position;
@@ -394,7 +550,7 @@ public:
 plane::plane(vector3 const& position, vector3 const& normal, rgb96f const& diffuse_color)
 : primitive(diffuse_color)
 , position(position)
-, normal(boost::qvm::normalized(normal))
+, normal(normalized(normal))
 { }
 
 vector3
@@ -404,16 +560,16 @@ plane::normal_at(vector3 const& point) const
 }
 
 optional<float>
-plane::intersects_at(ray const& ray) const
+plane::hit_test(ray const& ray) const
 {
-    auto denominator = boost::qvm::dot(normal, ray.direction);
+    auto const denominator = dot(normal, ray.direction);
     if (denominator == 0.0)
     {
         return nullopt;
     }
 
-    auto numerator = -boost::qvm::dot(normal, ray.origin + position);
-    auto t = numerator / denominator;
+    auto const numerator = -dot(normal, ray.origin + position);
+    auto const t = numerator / denominator;
     if (t <= ray::epsilon)
     {
         return nullopt;
@@ -432,59 +588,60 @@ public:
     std::vector<point_light> lights;
 };
 
-struct intersection
+struct hit
 {
     primitive const& hit;
 
-    float hit_at;
+    float distance;
 
     ray const& hit_by;
 };
 
-optional<intersection>
-nearest_intersection(ray const& ray, world const& world)
+optional<hit>
+nearest_hit(ray const& ray, world const& world)
 {
-    auto nearest_distance = std::numeric_limits<float>::infinity();
-    auto nearest = world.objects.end();
+    auto nearest_object_distance = std::numeric_limits<float>::infinity();
+    auto nearest_object = world.objects.end();
     for (auto object_iterator = world.objects.begin(); object_iterator != world.objects.end(); ++object_iterator)
     {
-        auto distance = object_iterator->intersects_at(ray);
-        if (distance && distance < nearest_distance)
+        auto object_distance = object_iterator->hit_test(ray);
+        if (object_distance && object_distance < nearest_object_distance)
         {
-            nearest_distance = *distance;
-            nearest = object_iterator;
+            nearest_object_distance = *object_distance;
+            nearest_object = object_iterator;
         }
     }
 
-    if (nearest == world.objects.end())
+    if (nearest_object == world.objects.end())
     {
         return nullopt;
     }
-    return intersection { *nearest, nearest_distance, ray };
+
+    return hit { *nearest_object, nearest_object_distance, ray };
 }
 
 float
 shadow(ray const& ray, world const& world, float max_distance)
 {
-    auto nearest = nearest_intersection(ray, world);
-    if (!nearest || nearest->hit_at > (max_distance - ::ray::epsilon))
+    auto const nearest = nearest_hit(ray, world);
+    if (!nearest || nearest->distance > (max_distance - ::ray::epsilon))
     {
         return 1.0f;
     }
     return 0.0f;
 }
 
-rgb96f shade(world const& world, intersection const& intersection, int level, float weight)
+rgb96f shade(world const& world, hit const& hit, int level, float weight)
 {
     auto color = rgb96f::black;
-    auto& object = intersection.hit;
-    auto surface_point = intersection.hit_by.origin + intersection.hit_by.direction * intersection.hit_at;
-    auto surface_normal = intersection.hit.normal_at(surface_point);
+    auto& object = hit.hit;
+    auto surface_point = hit.hit_by.origin + hit.hit_by.direction * hit.distance;
+    auto surface_normal = hit.hit.normal_at(surface_point);
 
     for (auto& light : world.lights)
     {
-        auto light_vector = boost::qvm::normalized(light.position - surface_point);
-        auto illumination = boost::qvm::dot(surface_normal, light_vector);
+        auto light_vector = normalized(light.position - surface_point);
+        auto illumination = dot(surface_normal, light_vector);
         auto shadow_ray = ray(surface_point, light_vector);
         auto visibility = shadow(shadow_ray, world, std::abs(distance(surface_point, light.position)));
         if (illumination > 0.0f && visibility > 0.0f)
@@ -499,7 +656,7 @@ rgb96f shade(world const& world, intersection const& intersection, int level, fl
 
 rgb96f trace(ray const& ray, world const& world, int level, float weight)
 {
-    auto nearest = nearest_intersection(ray, world);
+    auto const nearest = nearest_hit(ray, world);
     if (nearest)
     {
         return shade(world, *nearest, level, weight);
@@ -541,13 +698,14 @@ int main()
     auto renderer = ::renderer(window, renderer_flags::accelerated | renderer_flags::present_vsync);
     auto texture = ::texture<argb8888>(renderer, texture_access::streaming_access, renderer.output_size());
     auto event_queue = ::event_queue();
-    
+
+    // Scene
     auto world = ::world
     {
         .ambient = rgb96f { .r = 0.55f, .g = 0.44f, .b = 0.47f }
     };
 
-    // Key light    
+    // Key light
     world.lights.push_back(
         point_light(
             vector3 { -300.0f, 350.0f, 10.0f },
@@ -568,7 +726,7 @@ int main()
     world.objects.insert(
         sphere(
             vector3 { 0.0f, 5.25f, 0.0f },
-            10.5f / 2.0f,
+            5.25f,
             rgb96f { 0.89f, 0.48f, 0.42f }
         )
     );
@@ -577,7 +735,7 @@ int main()
     world.objects.insert(
         sphere(
             vector3 { -3.5f, 1.6f, -6.7f },
-            3.2f / 2.0f,
+            1.6f,
             rgb96f { 0.95f, 0.93f, 0.31f }
         )
     );
@@ -585,7 +743,7 @@ int main()
     world.objects.insert(
         sphere(
             vector3 { 14.0f, 7.0f, 6.5f },
-            14.0f / 2.0f,
+            7.0f,
             rgb96f { 1.0f, 0.44f, 0.64f }
         )
     );
@@ -594,7 +752,7 @@ int main()
     world.objects.insert(
         sphere(
             vector3 { 8.2f, 3.5f, -6.5f },
-            7.0f / 2.0f,
+            3.5f,
             rgb96f { 0.89f, 0.48f, 0.42f }
         )
     );
@@ -603,7 +761,7 @@ int main()
     world.objects.insert(
         sphere(
             vector3 { -16.6f, 6.5f, 0.0f },
-            13.0f / 2.0f,
+            6.5f,
             rgb96f { 1.0f, 0.44f, 0.64f }
         )
     );
@@ -612,7 +770,7 @@ int main()
     world.objects.insert(
         sphere(
             vector3 { -9.5f, 3.0f, -6.0f },
-            6.0f / 2.0f,
+            3.0f,
             rgb96f { 1.0f, 0.44f, 0.64f }
         )
     );
@@ -621,7 +779,7 @@ int main()
     world.objects.insert(
         sphere(
             vector3 { -15.0f, 3.0f, 12.0f },
-            6.0f / 2.0f,
+            3.0f,
             rgb96f { 0.95f, 0.93f, 0.31f }
         )
     );
@@ -630,16 +788,24 @@ int main()
     world.objects.insert(
         sphere(
             vector3 { 40.0f, 10.0f, 175.0f },
-            20.0f / 2.0f,
+            10.0f,
             rgb96f { 0.18f, 0.31f, 0.68f }
         )
     );
 
     // Default camera
-    auto camera = perspective_camera();
-    move_to(camera, vector3 { 0.0f, 8.5f, -32.0f });
-    rotate_z(camera, 180.0f);
-    rotate_x(camera, 6.0f);
+    auto camera = perspective_camera
+    {
+        .field_of_view = 54.4f
+    };
+
+    camera.look_at_lh(
+        vector3 { 0.0f, 8.5f, -32.0f },
+        vector3 { 0.0f, 8.25f, 0.0f },
+        vector3 { 0.0f, 1.0f, 0.0f }
+    );
+
+    camera.pitch(6);
 
     auto stopwatch = stopwatch::start_now();
     auto running = true;
@@ -662,90 +828,86 @@ int main()
             auto num_lock_off = (key_mod_state & key_modifier::num_lock) != key_modifier::num_lock;
             if (keyboard_state.pressed(scan_code::w))
             {
-                move_forward(camera, 1.0f);
+                if (keyboard_state.pressed(scan_code::left_shift))
+                {
+                    camera.move_up(1.0f);                    
+                }
+                else
+                {
+                    camera.move_forward(1.0f);
+                }
             }
 
             if (keyboard_state.pressed(scan_code::s))
             {
-                move_backward(camera, 1.0f);
+                if (keyboard_state.pressed(scan_code::left_shift))
+                {
+                    camera.move_down(1.0f);                    
+                }
+                else
+                {
+                    camera.move_backward(1.0f);
+                }
             }
 
             if (keyboard_state.pressed(scan_code::a))
             {
-                move_left(camera, 1.0f);
+                camera.move_left(1.0f);
             }
 
             if (keyboard_state.pressed(scan_code::d))
             {
-                move_right(camera, 1.0f);
+                camera.move_right(1.0f);
             }
 
-            if (keyboard_state.pressed(scan_code::up) || num_lock_off && keyboard_state.pressed(scan_code::keypad_8))
+            if (keyboard_state.pressed(scan_code::up) || (num_lock_off && keyboard_state.pressed(scan_code::keypad_8)))
             {
-                pitch(camera, -1.0f);
+                camera.pitch(1.0f);
             }
 
-            if (keyboard_state.pressed(scan_code::down) || num_lock_off && keyboard_state.pressed(scan_code::keypad_2))
+            if (keyboard_state.pressed(scan_code::down) || (num_lock_off && keyboard_state.pressed(scan_code::keypad_2)))
             {
-                pitch(camera, 1.0f);
+                camera.pitch(-1.0f);
             }
 
-            if (keyboard_state.pressed(scan_code::left) || num_lock_off && keyboard_state.pressed(scan_code::keypad_4))
+            if (keyboard_state.pressed(scan_code::left) || (num_lock_off && keyboard_state.pressed(scan_code::keypad_4)))
             {
-                roll(camera, -1.0f);
+                camera.yaw(-1.0f);
             }
 
-            if (keyboard_state.pressed(scan_code::right) || num_lock_off && keyboard_state.pressed(scan_code::keypad_6))
+            if (keyboard_state.pressed(scan_code::right) || (num_lock_off && keyboard_state.pressed(scan_code::keypad_6)))
             {
-                roll(camera, 1.0f);
+                camera.yaw(1.0f);
             }
 
             texture.with_lock(
-                [&stopwatch, &world, &camera](image<argb8888> &screen)
+                [&stopwatch, &world, &camera](image<argb8888> &raster)
                 {
-                    auto const screen_width = screen.width();
-                    auto const screen_height = screen.height();
-                    auto const camera_focal_length = get_focal_length(camera, screen_width, screen_height);
-                    auto const camera_to_world_matrix = get_view_matrix(camera);
-                    auto const& camera_ray_origin = boost::qvm::zero_vec<float, 3>();
+                    auto const raster_width = raster.width();
+                    auto const raster_height = raster.height();
+                    auto const screen_left = camera.frustum.left;
+                    auto const screen_top = camera.frustum.top;
+                    auto const screen_width = camera.frustum.width();
+                    auto const screen_height = camera.frustum.height();
+                    auto const camera_focal_length = get_focal_length(camera, raster_width, raster_height);
+                    auto const camera_to_world_matrix = camera.view_matrix();
 
-                    auto const bottom_left = vector3
+                    for (auto raster_y = 0*px; raster_y < raster_height; raster_y += 1*px)
                     {
-                        camera.frustum.left,
-                        camera.frustum.bottom,
-                        -camera_focal_length
-                    };
-                    
-                    auto const delta_x = vector3
-                    {
-                        camera.frustum.width() / quantity_cast<float>(screen_width),
-                        0.0f,
-                        0.0f
-                    };
-
-                    auto const delta_y = vector3
-                    {
-                        0.0f,
-                        camera.frustum.height() / quantity_cast<float>(screen_height),
-                        0.0f
-                    };
-
-                    for (auto y = 0*px; y < screen_height; y += 1*px)
-                    {
-                        for (auto x = 0*px; x < screen_width; x += 1*px)
+                        for (auto raster_x = 0*px; raster_x < raster_width; raster_x += 1*px)
                         {
-                            auto const camera_ray_direction = boost::qvm::normalized(
-                                bottom_left
-                                + delta_x * (0.5f + quantity_cast<float>(x))
-                                + delta_y * (0.5f + quantity_cast<float>(y))
+                            auto const screen_x = screen_left + (0.5f + quantity_cast<float>(raster_x)) * screen_width / quantity_cast<float>(raster_width);
+                            auto const screen_y = screen_top - (0.5f + quantity_cast<float>(raster_y)) * screen_height / quantity_cast<float>(raster_height);
+                            auto const primary_ray_direction = normalized(
+                                vector3 { screen_x, screen_y, camera_focal_length }
                             );
 
-                            auto const primary_ray = ray(camera_ray_origin, camera_ray_direction);
+                            auto const primary_ray = transform_ray(
+                                ray(zero_vector, primary_ray_direction), camera_to_world_matrix
+                            );
 
-                            screen(x, y) = to_argb8888(
-                                trace(
-                                    transform_ray(primary_ray, camera_to_world_matrix), world, 0, 1.0f
-                                )
+                            raster(raster_x, raster_y) = to_argb8888(
+                                trace(primary_ray, world, 0, 1.0f)
                             );
                         }
                     }
