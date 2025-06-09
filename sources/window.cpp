@@ -71,6 +71,12 @@ sdl2::window::size() const
 }
 
 void
+sdl2::window::raise()
+{
+    SDL_RaiseWindow(_native_handle);
+}
+
+void
 sdl2::window::update_surface()
 {
     throw_last_error(SDL_UpdateWindowSurface(_native_handle) < 0);

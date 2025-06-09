@@ -37,6 +37,7 @@
 #include "SDL2pp/image.h"
 #include "SDL2pp/keyboard_event.h"
 #include "SDL2pp/keyboard.h"
+#include "SDL2pp/mouse.h"
 #include "SDL2pp/renderer.h"
 #include "SDL2pp/texture.h"
 #include "SDL2pp/window.h"
@@ -931,6 +932,14 @@ int main()
                 case event_type::quit:
                     running = false;
                     break;
+
+                case event_type::key_up:
+                    auto const key_event = event.as<keyboard_event>();
+                    if ((key_event.scan_code() == scan_code::m) && ((key_event.key_modifier() & key_modifier::left_ctrl) != key_modifier::none))
+                    {
+                        mouse::relative_mode(!mouse::relative_mode());
+                    }
+                    break;
             }
         }
         else
@@ -990,6 +999,13 @@ int main()
             if (keyboard_state.pressed(scan_code::right) || (num_lock_off && keyboard_state.pressed(scan_code::keypad_6)))
             {
                 camera.yaw(1.0f);
+            }
+
+            if (mouse::relative_mode())
+            {
+                auto const mouse_state = mouse::relative_state();
+                camera.yaw(mouse_state.x * 0.1f);
+                camera.pitch(mouse_state.y * 0.1f);
             }
 
             texture.with_lock(

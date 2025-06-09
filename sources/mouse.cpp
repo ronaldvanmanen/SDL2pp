@@ -20,41 +20,35 @@
 
 #pragma once
 
-#include <cstdint>
-#include <string>
+#include <SDL2/SDL_mouse.h>
 
-#include <SDL2/SDL_video.h>
+#include "SDL2pp/error.h"
+#include "SDL2pp/mouse.h"
 
-#include "length.h"
-#include "size.h"
-#include "window_flags.h"
-
-namespace sdl2
+bool
+sdl2::mouse::relative_mode()
 {
-    class window
-    {
-    public:
-        window(std::string const& title, length<std::int32_t> width, length<std::int32_t> height);
+    return SDL_TRUE == SDL_GetRelativeMouseMode();
+}
 
-        window(std::string const& title, length<std::int32_t> width, length<std::int32_t> height, window_flags flags);
+void
+sdl2::mouse::relative_mode(bool enabled)
+{
+    sdl2::throw_last_error(
+        SDL_SetRelativeMouseMode(enabled ? SDL_TRUE : SDL_FALSE) < 0
+    );
+}
 
-        window(window const& other) = delete;
+sdl2::mouse_state
+sdl2::mouse::relative_state()
+{
+    std::int32_t x, y;
+    std::uint32_t buttons = SDL_GetRelativeMouseState(&x, &y);
+    return mouse_state { x, y, buttons };
+}
 
-        window(window&& other);
-
-        ~window();
-
-        window& operator=(window const& other) = delete;
-
-        size_2d<std::int32_t> size() const;
-
-        void raise();
-
-        void update_surface();
-
-        SDL_Window* native_handle();
-
-    private:
-        SDL_Window* _native_handle;
-    };
+bool
+sdl2::mouse_state::pressed(std::uint32_t which) const
+{
+    return ((this->buttons & which) == which);
 }

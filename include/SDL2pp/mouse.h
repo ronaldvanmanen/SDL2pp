@@ -21,40 +21,28 @@
 #pragma once
 
 #include <cstdint>
-#include <string>
 
-#include <SDL2/SDL_video.h>
-
-#include "length.h"
-#include "size.h"
-#include "window_flags.h"
+#include "key_modifier.h"
+#include "keyboard_state.h"
 
 namespace sdl2
 {
-    class window
+    struct mouse_state
+    {
+        std::int32_t x;
+        std::int32_t y;
+        std::uint32_t buttons;
+
+        bool pressed(std::uint32_t which) const;
+    };
+
+    class mouse
     {
     public:
-        window(std::string const& title, length<std::int32_t> width, length<std::int32_t> height);
+        static bool relative_mode();
 
-        window(std::string const& title, length<std::int32_t> width, length<std::int32_t> height, window_flags flags);
+        static void relative_mode(bool enabled);
 
-        window(window const& other) = delete;
-
-        window(window&& other);
-
-        ~window();
-
-        window& operator=(window const& other) = delete;
-
-        size_2d<std::int32_t> size() const;
-
-        void raise();
-
-        void update_surface();
-
-        SDL_Window* native_handle();
-
-    private:
-        SDL_Window* _native_handle;
+        static mouse_state relative_state();
     };
 }
