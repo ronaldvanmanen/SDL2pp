@@ -47,6 +47,9 @@
 using namespace std;
 using namespace sdl2;
 
+static int const max_level = 5;
+static float const min_weight = 0.01f;
+
 namespace boost { namespace qvm {
 
 template <class A,class B>
@@ -87,7 +90,7 @@ sfinae
 inline
 float degrees_to_radians(float degrees)
 {
-    return degrees * std::numbers::pi_v<float> / 180.0f;
+    return degrees * numbers::pi_v<float> / 180.0f;
 }
 
 using vector3 = boost::qvm::vec<float, 3>;
@@ -101,10 +104,38 @@ auto const up_vector = vector3 { 0.0f, 1.0f, 0.0f };
 auto const backward_vector = vector3 { 0.0f, 0.0f, -1.0f };
 auto const forward_vector = vector3 { 0.0f, 0.0f, 1.0f };
 
-inline
-float distance(vector3 const& value1, vector3 const& value2)
+template <typename T>
+T sign(T val)
 {
-    return mag(value1 - value2);
+    auto const zero = static_cast<T>(0);
+    auto const result = static_cast<T>((zero < val) - (val < zero));
+    return result;
+}
+
+inline
+float distance(vector3 const& a, vector3 const& b)
+{
+    return mag(a - b);
+}
+
+vector3
+faceforward(vector3 const& n, vector3 const& i, vector3 const& n_ref)
+{
+    return sign(-dot(i, n_ref)) * n;
+}
+
+vector3
+reflect(vector3 const& i, vector3 const& n)
+{
+    return i - 2.0f * dot(i, n) * n;
+}
+
+vector3
+refract(vector3 const& i, vector3 const& n, float eta)
+{
+    float const i_dot_n = dot(i, n);
+    float const k = 1 - eta * eta * (1 - i_dot_n * i_dot_n);
+    return (k < 0.0f) ? vector3 { 0.0f, 0.0f, 0.0f } : eta * i - (eta * i_dot_n + sqrt(k)) * n;
 }
 
 using matrix4x4 = boost::qvm::mat<float, 4, 4>;
@@ -238,6 +269,16 @@ operator*(rgb96f const& color, float scalar)
     };
 }
 
+rgb96f
+operator*(float scalar, rgb96f const& color)
+{
+    return rgb96f {
+        .r = scalar * color.r,
+        .g = scalar * color.g,
+        .b = scalar * color.b,
+    };
+}
+
 class ray
 {
 public:
@@ -300,8 +341,8 @@ public:
         .right = 4.0f / 3.0f,
         .bottom = -1.0f,
         .top = 1.0f,
-        .near = std::numeric_limits<float>::epsilon(),
-        .far = std::numeric_limits<float>::infinity()
+        .near = numeric_limits<float>::epsilon(),
+        .far = numeric_limits<float>::infinity()
     };
 
     float field_of_view = 90.0f;
@@ -434,11 +475,11 @@ perspective_camera::view_matrix() const
 }
 
 float
-get_focal_length(perspective_camera const& camera, length<std::int32_t> width, length<std::int32_t> height)
+get_focal_length(perspective_camera const& camera, length<int32_t> width, length<int32_t> height)
 {
     return quantity_cast<float>(width)
          / quantity_cast<float>(height)
-         / std::tan(degrees_to_radians(camera.field_of_view / 2.0f));
+         / tan(degrees_to_radians(camera.field_of_view / 2.0f));
 }
 
 class point_light
@@ -455,32 +496,67 @@ point_light::point_light(vector3 const& position, rgb96f const& color)
 : position(position), color(color)
 { }
 
-class primitive
+struct surface
+{
+    float ambient_coefficient = 1.0f;
+
+    float diffuse_coefficient = 1.0f;
+
+    rgb96f diffuse_color = rgb96f::black;
+
+    float index_of_refraction = 0.0f;
+
+    float reflective_coefficient = 0.0f;
+
+    float transmissive_coefficient = 0.0f;
+
+    float specular_coefficient = 0.0f;
+
+    float specular_exponent = 0.0f;
+};
+
+class solid
 {
 protected:
-    primitive(rgb96f const& diffuse_color);
+    solid(surface const& surface);
 
 public:
     virtual vector3 normal_at(vector3 const& point) const = 0;
 
     virtual optional<float> hit_test(ray const& ray) const = 0;
 
-public:
-    float ambient_coefficient = 1.0;
+    float ambient_coefficient;
 
-    float diffuse_coefficient = 1.0;
+    float diffuse_coefficient;
 
-    rgb96f diffuse_color = rgb96f::black;
+    rgb96f diffuse_color;
+
+    float index_of_refraction;
+
+    float reflective_coefficient;
+
+    float transmissive_coefficient;
+
+    float specular_coefficient;
+
+    float specular_exponent;
 };
 
-primitive::primitive(rgb96f const& diffuse_color)
-: diffuse_color(diffuse_color)
+solid::solid(surface const& surface)
+: ambient_coefficient(surface.ambient_coefficient)
+, diffuse_coefficient(surface.diffuse_coefficient)
+, diffuse_color(surface.diffuse_color)
+, index_of_refraction(surface.index_of_refraction)
+, reflective_coefficient(surface.reflective_coefficient)
+, transmissive_coefficient(surface.transmissive_coefficient)
+, specular_coefficient(surface.specular_coefficient)
+, specular_exponent(surface.specular_exponent)
 { }
 
-class sphere : public primitive
+class sphere : public solid
 {
 public:
-    sphere(vector3 const& position, float radius, rgb96f const& diffuse_color);
+    sphere(vector3 const& position, float radius, surface const& surface);
 
     vector3 normal_at(vector3 const& point) const;
 
@@ -492,8 +568,8 @@ public:
     float radius;
 };
 
-sphere::sphere(vector3 const& position, float radius, rgb96f const& diffuse_color)
-: primitive(diffuse_color)
+sphere::sphere(vector3 const& position, float radius, surface const& surface)
+: solid(surface)
 , position(position)
 , radius(radius)
 { }
@@ -515,7 +591,7 @@ sphere::hit_test(ray const& ray) const
         return nullopt;
     }
 
-    auto const discriminant = std::sqrt(d);
+    auto const discriminant = sqrt(d);
 
     auto const t2 = b + discriminant;
     if (t2 <= ray::epsilon)
@@ -532,10 +608,10 @@ sphere::hit_test(ray const& ray) const
     return t2;
 }
 
-class plane : public primitive
+class plane : public solid
 {
 public:
-    plane(vector3 const& position, vector3 const& normal, rgb96f const& diffuse_color);
+    plane(vector3 const& position, vector3 const& normal, surface const& surface);
 
     vector3 normal_at(vector3 const& point) const;
 
@@ -547,8 +623,8 @@ public:
     vector3 normal;
 };
 
-plane::plane(vector3 const& position, vector3 const& normal, rgb96f const& diffuse_color)
-: primitive(diffuse_color)
+plane::plane(vector3 const& position, vector3 const& normal, surface const& surface)
+: solid(surface)
 , position(position)
 , normal(normalized(normal))
 { }
@@ -583,14 +659,14 @@ class world
 public:
     rgb96f ambient;
 
-    boost::base_collection<primitive> objects;
+    boost::base_collection<solid> objects;
 
-    std::vector<point_light> lights;
+    vector<point_light> lights;
 };
 
 struct hit
 {
-    primitive const& hit;
+    solid const& hit;
 
     float distance;
 
@@ -600,7 +676,7 @@ struct hit
 optional<hit>
 nearest_hit(ray const& ray, world const& world)
 {
-    auto nearest_object_distance = std::numeric_limits<float>::infinity();
+    auto nearest_object_distance = numeric_limits<float>::infinity();
     auto nearest_object = world.objects.end();
     for (auto object_iterator = world.objects.begin(); object_iterator != world.objects.end(); ++object_iterator)
     {
@@ -620,6 +696,91 @@ nearest_hit(ray const& ray, world const& world)
     return hit { *nearest_object, nearest_object_distance, ray };
 }
 
+rgb96f
+shade(world const& world, hit const& hit, int level, float weight);
+
+rgb96f
+trace(ray const& ray, world const& world, int level, float weight)
+{
+    auto const nearest = nearest_hit(ray, world);
+    if (nearest)
+    {
+        return shade(world, *nearest, level, weight);
+    }
+    return rgb96f::black;
+}
+
+rgb96f
+trace(ray const& ray, world const& world)
+{
+    return trace(ray, world, 0, 1.0f);
+}
+
+float
+shadow(ray const& ray, world const& world, float max_distance);
+
+rgb96f
+shade(world const& world, hit const& hit, int level, float weight)
+{
+    auto const& source = hit.hit_by;
+    auto const& target = hit.hit;
+    auto const surface_point = source.origin + source.direction * hit.distance;
+    auto const surface_normal = target.normal_at(surface_point);
+    auto const surface_normal_n = faceforward(surface_normal, source.direction, surface_normal);
+
+    // Ambient
+    auto color = target.ambient_coefficient * world.ambient;
+
+    for (auto const& light : world.lights)
+    {
+        auto const light_direction = normalized(light.position - surface_point);
+        auto const amount_of_illumination = dot(surface_normal, light_direction);
+        auto const shadow_ray = ray(surface_point, light_direction);
+        auto const visibility = shadow(shadow_ray, world, abs(distance(surface_point, light.position)));
+
+        if (amount_of_illumination > 0.0f && visibility > 0.0f)
+        {
+            // Diffuse
+            color += light.color * target.diffuse_coefficient * target.diffuse_color * amount_of_illumination;
+            // Specular
+            auto const h = normalized(light_direction + source.direction);
+            color += target.specular_coefficient * light.color * powf(
+                max(0.0f, dot(surface_normal_n, h)), target.specular_exponent
+            );
+        }
+    }
+
+    if (level < max_level)
+    {
+        // Reflection
+        auto const reflective_weight = target.reflective_coefficient * weight;
+        if (reflective_weight > min_weight)
+        {
+            auto const reflective_direction = reflect(source.direction, surface_normal_n);
+            auto const reflective_ray = ray(surface_point, reflective_direction);
+            color += target.reflective_coefficient * trace(
+                reflective_ray, world, level + 1, reflective_weight
+            );
+        }
+
+        // Transmission
+        auto const transmissive_weight = target.reflective_coefficient * weight;
+        if (transmissive_weight > min_weight)
+        {
+            vector3 transmission_direction = refract(source.direction, surface_normal_n, dot(surface_normal, source.direction) < 0.0f ? target.index_of_refraction : 1.0f / target.index_of_refraction);
+            if (mag(transmission_direction) != 0.0)
+            {
+                auto const transmission_ray = ray(surface_point, transmission_direction);
+                color += target.transmissive_coefficient * trace(
+                    transmission_ray, world, level + 1, transmissive_weight
+                );
+            }
+        }
+    }
+
+    return color;
+}
+
 float
 shadow(ray const& ray, world const& world, float max_distance)
 {
@@ -631,61 +792,28 @@ shadow(ray const& ray, world const& world, float max_distance)
     return 0.0f;
 }
 
-rgb96f shade(world const& world, hit const& hit, int level, float weight)
-{
-    auto color = rgb96f::black;
-    auto& object = hit.hit;
-    auto surface_point = hit.hit_by.origin + hit.hit_by.direction * hit.distance;
-    auto surface_normal = hit.hit.normal_at(surface_point);
-
-    for (auto& light : world.lights)
-    {
-        auto light_vector = normalized(light.position - surface_point);
-        auto illumination = dot(surface_normal, light_vector);
-        auto shadow_ray = ray(surface_point, light_vector);
-        auto visibility = shadow(shadow_ray, world, std::abs(distance(surface_point, light.position)));
-        if (illumination > 0.0f && visibility > 0.0f)
-        {
-            auto ambient_coefficient = object.ambient_coefficient;
-            auto diffuse_coefficient = object.diffuse_coefficient;
-            color += world.ambient * ambient_coefficient + light.color * diffuse_coefficient * object.diffuse_color * illumination;
-        }
-    }
-    return color;
-}
-
-rgb96f trace(ray const& ray, world const& world, int level, float weight)
-{
-    auto const nearest = nearest_hit(ray, world);
-    if (nearest)
-    {
-        return shade(world, *nearest, level, weight);
-    }
-    return rgb96f::black;
-}
-
 argb8888 to_argb8888(rgb96f const& color)
 {
     return argb8888(
         255_a8,
         static_cast<r8>(
-            static_cast<std::uint8_t>(
-                std::round(
-                    std::clamp(color.r, 0.0f, 1.0f) * 255.0f
+            static_cast<uint8_t>(
+                round(
+                    clamp(color.r, 0.0f, 1.0f) * 255.0f
                 )
             )
         ),
         static_cast<g8>(
-            static_cast<std::uint8_t>(
-                std::round(
-                    std::clamp(color.g, 0.0f, 1.0f) * 255.0f
+            static_cast<uint8_t>(
+                round(
+                    clamp(color.g, 0.0f, 1.0f) * 255.0f
                 )
             )
         ),
         static_cast<b8>(
-            static_cast<std::uint8_t>(
-                std::round(
-                    std::clamp(color.b, 0.0f, 1.0f) * 255.0f
+            static_cast<uint8_t>(
+                round(
+                    clamp(color.b, 0.0f, 1.0f) * 255.0f
                 )
             )
         )
@@ -702,14 +830,15 @@ int main()
     // Scene
     auto world = ::world
     {
-        .ambient = rgb96f { .r = 0.55f, .g = 0.44f, .b = 0.47f }
+        .ambient = rgb96f { .r = 0.55f, .g = 0.44f, .b = 0.47f },
+        .environment = rgb96f { .r = 0.62f, .g = 0.69f, .b = 0.96f }
     };
 
     // Key light
     world.lights.push_back(
         point_light(
             vector3 { -300.0f, 350.0f, 10.0f },
-            rgb96f { 0.70f, 0.689f, 0.6885f }
+            rgb96f { .r = 0.70f, .g = 0.689f, .b = 0.6885f }
         )
     );
 
@@ -718,7 +847,12 @@ int main()
         plane(
             vector3 { 0.0f, 0.0f, 0.0f },
             vector3 { 0.0f, 1.0f, 0.0f },
-            rgb96f { 0.5f, 0.5f, 0.5f }
+            surface {
+                .diffuse_color = rgb96f { .r = 1.0f, .g = 1.0f, .b = 1.0f },
+                .reflective_coefficient = 0.0f,
+                .specular_coefficient = 0.5f,
+                .specular_exponent = 0.8f,
+            }
         )
     );
 
@@ -727,7 +861,12 @@ int main()
         sphere(
             vector3 { 0.0f, 5.25f, 0.0f },
             5.25f,
-            rgb96f { 0.89f, 0.48f, 0.42f }
+            surface {
+                .diffuse_color = rgb96f { .r = 0.89f, .g = 0.48f, .b = 0.42f },
+                .reflective_coefficient = 0.15f,
+                .specular_coefficient = 1.0f,
+                .specular_exponent = 165.0f,
+            }
         )
     );
 
@@ -736,15 +875,26 @@ int main()
         sphere(
             vector3 { -3.5f, 1.6f, -6.7f },
             1.6f,
-            rgb96f { 0.95f, 0.93f, 0.31f }
+            surface {
+                .diffuse_color = rgb96f { .r = 0.95f, .g = 0.93f, .b = 0.31f },
+                .reflective_coefficient = 0.15f,
+                .specular_coefficient = 1.0f,
+                .specular_exponent = 165.0f,
+            }
         )
     );
+
     // Large back right pink sphere
     world.objects.insert(
         sphere(
             vector3 { 14.0f, 7.0f, 6.5f },
             7.0f,
-            rgb96f { 1.0f, 0.44f, 0.64f }
+            surface {
+                .diffuse_color = rgb96f { .r = 1.0f, .g = 0.44f, .b = 0.64f },
+                .reflective_coefficient = 0.15f,
+                .specular_coefficient = 1.0f,
+                .specular_exponent = 165.0f,
+            }
         )
     );
 
@@ -753,7 +903,12 @@ int main()
         sphere(
             vector3 { 8.2f, 3.5f, -6.5f },
             3.5f,
-            rgb96f { 0.89f, 0.48f, 0.42f }
+            surface {
+                .diffuse_color = rgb96f { .r = 0.89f, .g = 0.48f, .b = 0.42f },
+                .reflective_coefficient = 0.15f,
+                .specular_coefficient = 1.0f,
+                .specular_exponent = 165.0f,
+            }
         )
     );
 
@@ -762,7 +917,12 @@ int main()
         sphere(
             vector3 { -16.6f, 6.5f, 0.0f },
             6.5f,
-            rgb96f { 1.0f, 0.44f, 0.64f }
+            surface {
+                .diffuse_color = rgb96f { .r = 1.0f, .g = 0.44f, .b = 0.64f },
+                .reflective_coefficient = 0.15f,
+                .specular_coefficient = 1.0f,
+                .specular_exponent = 165.0f,
+            }
         )
     );
 
@@ -771,7 +931,12 @@ int main()
         sphere(
             vector3 { -9.5f, 3.0f, -6.0f },
             3.0f,
-            rgb96f { 1.0f, 0.44f, 0.64f }
+            surface {
+                .diffuse_color = rgb96f { .r = 1.0f, .g = 0.44f, .b = 0.64f },
+                .reflective_coefficient = 0.15f,
+                .specular_coefficient = 1.0f,
+                .specular_exponent = 165.0f,
+            }
         )
     );
 
@@ -780,7 +945,12 @@ int main()
         sphere(
             vector3 { -15.0f, 3.0f, 12.0f },
             3.0f,
-            rgb96f { 0.95f, 0.93f, 0.31f }
+            surface {
+                .diffuse_color = rgb96f { .r = 0.95f, .g = 0.93f, .b = 0.31f },
+                .reflective_coefficient = 0.15f,
+                .specular_coefficient = 1.0f,
+                .specular_exponent = 165.0f,
+            }
         )
     );
 
@@ -789,7 +959,12 @@ int main()
         sphere(
             vector3 { 40.0f, 10.0f, 175.0f },
             10.0f,
-            rgb96f { 0.18f, 0.31f, 0.68f }
+            surface {
+                .diffuse_color = rgb96f { .r = 0.18f, .g = 0.31f, .b = 0.68f },
+                .reflective_coefficient = 0.15f,
+                .specular_coefficient = 1.0f,
+                .specular_exponent = 165.0f,
+            }
         )
     );
 
@@ -896,8 +1071,10 @@ int main()
                     {
                         for (auto raster_x = 0*px; raster_x < raster_width; raster_x += 1*px)
                         {
-                            auto const screen_x = screen_left + (0.5f + quantity_cast<float>(raster_x)) * screen_width / quantity_cast<float>(raster_width);
-                            auto const screen_y = screen_top - (0.5f + quantity_cast<float>(raster_y)) * screen_height / quantity_cast<float>(raster_height);
+                            auto const ndc_x = (quantity_cast<float>(raster_x) + 0.5f) / quantity_cast<float>(raster_width);
+                            auto const ndc_y = (quantity_cast<float>(raster_y) + 0.5f) / quantity_cast<float>(raster_height);
+                            auto const screen_x = screen_left + ndc_x * screen_width;
+                            auto const screen_y = screen_top - ndc_y * screen_height;
                             auto const primary_ray_direction = normalized(
                                 vector3 { screen_x, screen_y, camera_focal_length }
                             );
@@ -907,7 +1084,7 @@ int main()
                             );
 
                             raster(raster_x, raster_y) = to_argb8888(
-                                trace(primary_ray, world, 0, 1.0f)
+                                trace(primary_ray, world)
                             );
                         }
                     }
