@@ -578,6 +578,8 @@ class world
 public:
     rgb96f ambient;
 
+    rgb96f environment;
+
     boost::base_collection<solid> objects;
 
     vector<point_light> lights;
@@ -626,7 +628,7 @@ trace(ray const& ray, world const& world, int level, float weight)
     {
         return shade(world, *nearest, level, weight);
     }
-    return rgb96f::black;
+    return world.environment;
 }
 
 rgb96f
