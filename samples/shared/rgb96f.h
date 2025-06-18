@@ -18,42 +18,33 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include <cstdint>
-#include <numbers>
-
-#include <boost/units/quantity.hpp>
-
 namespace sdl2
 {
-    bool is_power_of_two(std::int32_t value);
-
-    template<typename Unit>
-    inline
-    bool
-    is_power_of_two(boost::units::quantity<Unit, std::int32_t> value)
+    class rgb96f
     {
-        return is_power_of_two(
-            boost::units::quantity_cast<std::int32_t>(value)
-        );
-    }
+    public:
+        static const rgb96f black;
 
-    std::int32_t next_power_of_two(std::int32_t value);
+        static const rgb96f white;
 
-    template<typename Unit>
-    inline
-    boost::units::quantity<Unit, std::int32_t>
-    next_power_of_two(boost::units::quantity<Unit, std::int32_t> value)
-    {
-        return boost::units::quantity<Unit, std::int32_t>::from_value(
-            next_power_of_two(
-                boost::units::quantity_cast<std::int32_t>(value)
-            )
-        );
-    }
+    public:
+        bool operator==(rgb96f const& other) const;
 
-    inline
-    float degrees_to_radians(float degrees)
-    {
-        return degrees * std::numbers::pi_v<float> / 180.0f;
-    }
+        rgb96f& operator+=(rgb96f const& other);
+
+    public:
+        float r, g, b;
+    };
+
+    rgb96f
+    operator+(rgb96f const& left, rgb96f const& right);
+
+    rgb96f
+    operator*(rgb96f const& left, rgb96f const& right);
+
+    rgb96f
+    operator*(rgb96f const& color, float scalar);
+
+    rgb96f
+    operator*(float scalar, rgb96f const& color);
 }

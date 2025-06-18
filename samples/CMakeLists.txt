@@ -26,12 +26,14 @@ add_sample("plasma_fractal"
   SOURCES
   "plasma_fractal.cpp"
   "shared/math.cpp"
-  "shared/stopwatch.cpp")
+  "shared/stopwatch.cpp"
+)
 
 add_sample("sw_ray_tracer"
   SOURCES
   "sw_ray_tracer.cpp"
   "shared/math.cpp"
+  "shared/rgb96f.cpp"
   "shared/stopwatch.cpp"
 )
 

@@ -22,7 +22,6 @@
 #include <cmath>
 #include <cstdint>
 #include <limits>
-#include <numbers>
 #include <ranges>
 #include <set>
 #include <vector>
@@ -42,6 +41,7 @@
 #include "SDL2pp/window.h"
 
 #include "shared/math.h"
+#include "shared/rgb96f.h"
 #include "shared/stopwatch.h"
 
 using namespace std;
@@ -86,12 +86,6 @@ sfinae
     }
 
 } }
-
-inline
-float degrees_to_radians(float degrees)
-{
-    return degrees * numbers::pi_v<float> / 180.0f;
-}
 
 using vector3 = boost::qvm::vec<float, 3>;
 
@@ -202,81 +196,6 @@ quaternion
 rotation(matrix4x4 const& a)
 {
     return normalized(convert_to<quaternion>(del_row_col<3, 3>(a)));
-}
-
-class rgb96f
-{
-public:
-    static const rgb96f black;
-
-    static const rgb96f white;
-
-public:
-    bool operator==(rgb96f const& other) const;
-
-    rgb96f& operator+=(rgb96f const& other);
-
-public:
-    float r, g, b;
-};
-
-const rgb96f rgb96f::black { .r = 0.0, .g = 0.0, .b = 0.0 };
-
-const rgb96f rgb96f::white { .r= 1.0, .g = 1.0, .b = 1.0 };
-
-bool
-rgb96f::operator==(rgb96f const& other) const
-{
-    return r == other.r && g == other.g && b == other.b;
-}
-
-rgb96f&
-rgb96f::operator+=(rgb96f const& other)
-{
-    r += other.r;
-    g += other.g;
-    b += other.b;
-    return *this;
-}
-
-rgb96f
-operator+(rgb96f const& left, rgb96f const& right)
-{
-    return rgb96f {
-        .r = left.r + right.r,
-        .g = left.g + right.g,
-        .b = left.b + right.b,
-    };
-}
-
-rgb96f
-operator*(rgb96f const& left, rgb96f const& right)
-{
-    return rgb96f {
-        .r = left.r * right.r,
-        .g = left.g * right.g,
-        .b = left.b * right.b,
-    };
-}
-
-rgb96f
-operator*(rgb96f const& color, float scalar)
-{
-    return rgb96f {
-        .r = color.r * scalar,
-        .g = color.g * scalar,
-        .b = color.b * scalar,
-    };
-}
-
-rgb96f
-operator*(float scalar, rgb96f const& color)
-{
-    return rgb96f {
-        .r = scalar * color.r,
-        .g = scalar * color.g,
-        .b = scalar * color.b,
-    };
 }
 
 class ray
