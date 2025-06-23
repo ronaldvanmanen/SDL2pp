@@ -113,6 +113,7 @@
         "*.ipp": "cpp",
         "cfenv": "cpp",
         "cinttypes": "cpp",
-        "resumable": "cpp"
+        "resumable": "cpp",
+        "csignal": "cpp"
     }
 }
