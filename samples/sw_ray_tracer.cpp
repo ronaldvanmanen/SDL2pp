@@ -578,6 +578,12 @@ struct world
 {
     rgb96f ambient;
 
+    float min_depth;
+
+    float max_depth;
+
+    rgb96f depth_color;
+
     rgb96f environment;
 
     boost::base_collection<solid> objects;
@@ -703,6 +709,12 @@ shade(hit const& hit, world const& world, int level, float weight)
     return color;
 }
 
+rgb96f
+shade(hit const& hit, world const& world)
+{
+    return shade(hit, world, 0, 1.0f);
+}
+
 float
 shadow(ray const& ray, world const& world, float max_distance)
 {
@@ -753,6 +765,9 @@ int main()
     auto world = ::world
     {
         .ambient = rgb96f { .r = 0.55f, .g = 0.44f, .b = 0.47f },
+        .min_depth = 1.0f,
+        .max_depth = 298.0f,
+        .depth_color = rgb96f { .r = 0.86f, .g = 0.88f, .b = 0.95f },
         .environment = rgb96f { .r = 0.62f, .g = 0.69f, .b = 0.96f }
     };
 
@@ -1003,9 +1018,12 @@ int main()
                                 ray(zero_vector, primary_ray_direction), camera_to_world_matrix
                             );
 
-                            raster(raster_x, raster_y) = to_argb8888(
-                                trace(primary_ray, world)
-                            );
+                            auto const nearest_hit = find_nearest_hit(primary_ray, world);
+                            auto const shading_color = (nearest_hit) ? shade(*nearest_hit, world) : world.environment;
+                            auto const depth = (nearest_hit) ? clamp((nearest_hit->distance - world.min_depth) / (world.max_depth - world.min_depth), 0.0f, 1.0f) : 1.0f;
+                            auto const apparent_color = mix(shading_color, world.depth_color, depth);
+
+                            raster(raster_x, raster_y) = to_argb8888(apparent_color);
                         }
                     }
                 }

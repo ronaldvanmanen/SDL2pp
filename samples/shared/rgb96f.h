@@ -47,4 +47,11 @@ namespace sdl2
 
     rgb96f
     operator*(float scalar, rgb96f const& color);
+
+    inline
+    rgb96f
+    mix(rgb96f const& color0, rgb96f const& color1, float value)
+    {
+        return (1.0f - value) * color0 + value * color1;
+    }    
 }
