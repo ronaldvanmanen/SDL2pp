@@ -296,6 +296,10 @@ public:
 
     void move_backward(float distance);
 
+    void zoom_in(float amount);
+
+    void zoom_out(float amount);
+
     matrix4x4 view_matrix() const;
 };
 
@@ -385,6 +389,18 @@ void
 perspective_camera::move_backward(float distance)
 {
     move(backward_vector * distance);
+}
+
+void
+perspective_camera::zoom_in(float amount)
+{
+    field_of_view -= amount;
+}
+
+void
+perspective_camera::zoom_out(float amount)
+{
+    field_of_view += amount;
 }
 
 matrix4x4
@@ -999,6 +1015,16 @@ int main()
             if (keyboard_state.pressed(scan_code::right) || (num_lock_off && keyboard_state.pressed(scan_code::keypad_6)))
             {
                 camera.yaw(1.0f);
+            }
+
+            if (keyboard_state.pressed(scan_code::keypad_plus))
+            {
+                camera.zoom_in(1.0f);
+            }
+
+            if (keyboard_state.pressed(scan_code::keypad_minus))
+            {
+                camera.zoom_out(1.0f);
             }
 
             if (mouse::relative_mode())
