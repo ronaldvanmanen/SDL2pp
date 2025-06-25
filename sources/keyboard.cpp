@@ -32,8 +32,8 @@ sdl2::keyboard::state()
     return sdl2::keyboard_state(key_states, key_count);
 }
 
-sdl2::key_modifier
-sdl2::keyboard::mod_state()
+sdl2::key_modifier_set
+sdl2::keyboard::modifier_state()
 {
-    return static_cast<sdl2::key_modifier>(SDL_GetModState());
+    return key_modifier_set(static_cast<sdl2::key_modifier>(SDL_GetModState()));
 }

@@ -963,7 +963,9 @@ int main()
                 case event_type::key_up:
                 {
                     auto const key_event = event.as<keyboard_event>();
-                    if ((key_event.scan_code() == scan_code::m) && ((key_event.key_modifier() & key_modifier::left_ctrl) != key_modifier::none))
+                    auto const symbol = key_event.scan_code();
+                    auto const modifiers = key_event.key_modifiers();
+                    if (symbol == scan_code::m && modifiers == (key_modifier::left_ctrl | key_modifier::left_alt))
                     {
                         mouse::relative_mode(!mouse::relative_mode());
                     }
@@ -981,71 +983,75 @@ int main()
         }
         else
         {
-            auto keyboard_state = keyboard::state();
-            auto key_mod_state = keyboard::mod_state();
-            auto num_lock_off = (key_mod_state & key_modifier::num_lock) != key_modifier::num_lock;
-            if (keyboard_state.pressed(scan_code::w))
+            auto const keys = keyboard::state();
+            auto const key_modifiers = keyboard::modifier_state();
+            auto const num_lock = key_modifiers.test(key_modifier::num_lock);
+            auto const left_alt = key_modifiers.test(key_modifier::left_alt);
+            auto const left_ctrl = key_modifiers.test(key_modifier::left_ctrl);
+            auto const left_shift = key_modifiers.test(key_modifier::left_shift);
+
+            if (keys.pressed(scan_code::w))
             {
-                if (keyboard_state.pressed(scan_code::left_shift))
+                if (left_alt)
                 {
-                    camera.move_up(1.0f);                    
+                    camera.move_up(left_shift ? 2.0f : 1.0f);
                 }
                 else
                 {
-                    camera.move_forward(1.0f);
+                    camera.move_forward(left_shift ? 2.0f : 1.0f);
                 }
             }
-
-            if (keyboard_state.pressed(scan_code::s))
+            
+            if (keys.pressed(scan_code::s))
             {
-                if (keyboard_state.pressed(scan_code::left_shift))
+                if (left_alt)
                 {
-                    camera.move_down(1.0f);                    
+                    camera.move_down(left_shift ? 2.0f : 1.0f);
                 }
                 else
                 {
-                    camera.move_backward(1.0f);
+                    camera.move_backward(left_shift ? 2.0f : 1.0f);
                 }
             }
 
-            if (keyboard_state.pressed(scan_code::a))
+            if (keys.pressed(scan_code::a))
             {
-                camera.move_left(1.0f);
+                camera.move_left(left_shift ? 2.0f : 1.0f);
+            }
+            
+            if (keys.pressed(scan_code::d))
+            {
+                camera.move_right(left_shift ? 2.0f : 1.0f);
             }
 
-            if (keyboard_state.pressed(scan_code::d))
+            if (keys.pressed(scan_code::up) || keys.pressed(scan_code::keypad_8))
             {
-                camera.move_right(1.0f);
+                camera.pitch(left_shift ? 2.0f : 1.0f);
+            }
+            
+            if (keys.pressed(scan_code::down) || keys.pressed(scan_code::keypad_2))
+            {
+                camera.pitch(left_shift ? -2.0f : -1.0f);
             }
 
-            if (keyboard_state.pressed(scan_code::up) || (num_lock_off && keyboard_state.pressed(scan_code::keypad_8)))
+            if (keys.pressed(scan_code::left) || keys.pressed(scan_code::keypad_4))
             {
-                camera.pitch(1.0f);
+                camera.yaw(left_shift ? -2.0f : -1.0f);
             }
 
-            if (keyboard_state.pressed(scan_code::down) || (num_lock_off && keyboard_state.pressed(scan_code::keypad_2)))
+            if (keys.pressed(scan_code::right) || keys.pressed(scan_code::keypad_6))
             {
-                camera.pitch(-1.0f);
+                camera.yaw(left_shift ? 2.0f : 1.0f);
             }
 
-            if (keyboard_state.pressed(scan_code::left) || (num_lock_off && keyboard_state.pressed(scan_code::keypad_4)))
+            if (keys.pressed(scan_code::keypad_plus))
             {
-                camera.yaw(-1.0f);
+                camera.zoom_in(left_shift ? 2.0f : 1.0f);
             }
 
-            if (keyboard_state.pressed(scan_code::right) || (num_lock_off && keyboard_state.pressed(scan_code::keypad_6)))
+            if (keys.pressed(scan_code::keypad_minus))
             {
-                camera.yaw(1.0f);
-            }
-
-            if (keyboard_state.pressed(scan_code::keypad_plus))
-            {
-                camera.zoom_in(1.0f);
-            }
-
-            if (keyboard_state.pressed(scan_code::keypad_minus))
-            {
-                camera.zoom_out(1.0f);
+                camera.zoom_out(left_shift ? 2.0f : 1.0f);
             }
 
             if (mouse::relative_mode())

@@ -51,7 +51,7 @@ namespace sdl2
         
         key_code key_code() const;
 
-        key_modifier key_modifier() const;
+        key_modifier_set key_modifiers() const;
     
     private:
         SDL_Event _native_handle;

@@ -30,6 +30,6 @@ namespace sdl2
     public:
         static keyboard_state state();
 
-        static key_modifier mod_state();
+        static key_modifier_set modifier_state();
     };
 }

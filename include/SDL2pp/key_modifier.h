@@ -22,10 +22,12 @@
 
 #include <cstdint>
 
+#include <boost/operators.hpp>
+
 #include <SDL2/SDL_events.h>
 
 namespace sdl2
-{
+{    
     enum class key_modifier : std::uint16_t
     {
         none = KMOD_NONE,
@@ -49,7 +51,60 @@ namespace sdl2
         gui = KMOD_GUI
     };
 
-    key_modifier operator&(key_modifier left, key_modifier right);
+    class key_modifier_set
+    : boost::equality_comparable<key_modifier_set
+    , boost::equality_comparable<key_modifier_set, key_modifier
+    , boost::bitwise<key_modifier_set
+    , boost::bitwise<key_modifier_set, key_modifier
+    , boost::bitwise<key_modifier, key_modifier
+    > > > > >
+    {
+    private:
+        key_modifier_set(uint16_t values);
 
-    key_modifier operator|(key_modifier left, key_modifier right);
+    public:
+        key_modifier_set();
+
+        key_modifier_set(key_modifier value);
+
+        key_modifier_set& operator|=(key_modifier_set const& other);
+
+        key_modifier_set& operator&=(key_modifier_set const& other);
+
+        key_modifier_set& operator^=(key_modifier_set const& other);
+
+        key_modifier_set& operator|=(key_modifier const& value);
+
+        key_modifier_set& operator&=(key_modifier const& value);
+
+        key_modifier_set& operator^=(key_modifier const& value);
+
+        key_modifier_set operator~() const;
+
+        bool operator==(key_modifier_set const& other) const;
+
+        bool operator==(key_modifier const& value) const;
+
+        bool test(key_modifier value) const;
+
+    private:
+        uint16_t _values;
+
+    private:
+        friend key_modifier_set operator|(key_modifier left, key_modifier right);
+
+        friend key_modifier_set operator&(key_modifier left, key_modifier right);
+
+        friend key_modifier_set operator^(key_modifier left, key_modifier right);
+
+        friend key_modifier_set operator~(key_modifier value);
+    };
+
+    key_modifier_set operator|(key_modifier left, key_modifier right);
+
+    key_modifier_set operator&(key_modifier left, key_modifier right);
+
+    key_modifier_set operator^(key_modifier left, key_modifier right);
+
+    key_modifier_set operator~(key_modifier value);
 }

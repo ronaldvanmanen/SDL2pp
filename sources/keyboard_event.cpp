@@ -67,8 +67,8 @@ sdl2::keyboard_event::key_code() const
     return static_cast<sdl2::key_code>(_native_handle.key.keysym.sym);
 }
 
-sdl2::key_modifier
-sdl2::keyboard_event::key_modifier() const
+sdl2::key_modifier_set
+sdl2::keyboard_event::key_modifiers() const
 {
-    return static_cast<sdl2::key_modifier>(_native_handle.key.keysym.mod);
+    return key_modifier_set(static_cast<sdl2::key_modifier>(_native_handle.key.keysym.mod));
 }

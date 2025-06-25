@@ -20,12 +20,110 @@
 
 #include "SDL2pp/key_modifier.h"
 
-sdl2::key_modifier sdl2::operator&(sdl2::key_modifier left, sdl2::key_modifier right)
+sdl2::key_modifier_set::key_modifier_set(std::uint16_t values)
+: _values(values)
+{ }
+
+sdl2::key_modifier_set::key_modifier_set()
+: sdl2::key_modifier_set(static_cast<std::uint16_t>(sdl2::key_modifier::none))
+{ }
+
+sdl2::key_modifier_set::key_modifier_set(sdl2::key_modifier value)
+: _values(static_cast<std::uint16_t>(value))
+{ }
+
+sdl2::key_modifier_set&
+sdl2::key_modifier_set::operator|=(sdl2::key_modifier_set const& other)
 {
-    return static_cast<sdl2::key_modifier>(static_cast<std::uint16_t>(left) & static_cast<std::uint16_t>(right));
+    _values |= other._values;
+    return *this;
 }
 
-sdl2::key_modifier sdl2::operator|(sdl2::key_modifier left, sdl2::key_modifier right)
+sdl2::key_modifier_set&
+sdl2::key_modifier_set::operator&=(sdl2::key_modifier_set const& other)
 {
-    return static_cast<sdl2::key_modifier>(static_cast<std::uint16_t>(left) | static_cast<std::uint16_t>(right));
+    _values &= other._values;
+    return *this;
+}
+
+sdl2::key_modifier_set&
+sdl2::key_modifier_set::operator^=(sdl2::key_modifier_set const& other)
+{
+    _values ^= other._values;
+    return *this;
+}
+
+sdl2::key_modifier_set&
+sdl2::key_modifier_set::operator|=(sdl2::key_modifier const& value)
+{
+    _values |= static_cast<std::uint16_t>(value);
+    return *this;
+}
+
+sdl2::key_modifier_set&
+sdl2::key_modifier_set::operator&=(sdl2::key_modifier const& value)
+{
+    _values &= static_cast<std::uint16_t>(value);
+    return *this;
+}
+
+sdl2::key_modifier_set&
+sdl2::key_modifier_set::operator^=(sdl2::key_modifier const& value)
+{
+    _values ^= static_cast<std::uint16_t>(value);
+    return *this;
+}
+
+sdl2::key_modifier_set
+sdl2::key_modifier_set::operator~() const
+{
+    return sdl2::key_modifier_set(~_values);
+}
+
+bool
+sdl2::key_modifier_set::operator==(sdl2::key_modifier_set const& other) const
+{
+    return _values == other._values;
+}
+
+bool
+sdl2::key_modifier_set::operator==(sdl2::key_modifier const& value) const
+{
+    return _values == static_cast<std::uint16_t>(value);
+}
+
+bool
+sdl2::key_modifier_set::test(sdl2::key_modifier value) const
+{
+    return _values & static_cast<std::uint16_t>(value);
+}
+
+sdl2::key_modifier_set
+sdl2::operator|(sdl2::key_modifier left, sdl2::key_modifier right)
+{
+    return sdl2::key_modifier_set(
+        static_cast<std::uint16_t>(left) | static_cast<std::uint16_t>(right)
+    );
+}
+
+sdl2::key_modifier_set
+sdl2::operator&(sdl2::key_modifier left, sdl2::key_modifier right)
+{
+    return sdl2::key_modifier_set(
+        static_cast<std::uint16_t>(left) & static_cast<std::uint16_t>(right)
+    );
+}
+
+sdl2::key_modifier_set
+sdl2::operator^(sdl2::key_modifier left, sdl2::key_modifier right)
+{
+    return sdl2::key_modifier_set(
+        static_cast<std::uint16_t>(left) ^ static_cast<std::uint16_t>(right)
+    );
+}
+
+sdl2::key_modifier_set
+sdl2::operator~(sdl2::key_modifier value)
+{
+    return sdl2::key_modifier_set(~static_cast<uint16_t>(value));
 }
