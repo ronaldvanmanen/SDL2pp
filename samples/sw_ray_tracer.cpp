@@ -37,6 +37,7 @@
 #include "SDL2pp/image.h"
 #include "SDL2pp/keyboard_event.h"
 #include "SDL2pp/keyboard.h"
+#include "SDL2pp/mouse_wheel_event.h"
 #include "SDL2pp/mouse.h"
 #include "SDL2pp/renderer.h"
 #include "SDL2pp/texture.h"
@@ -300,6 +301,8 @@ public:
 
     void zoom_out(float amount);
 
+    void zoom(float amount);
+
     matrix4x4 view_matrix() const;
 };
 
@@ -394,13 +397,19 @@ perspective_camera::move_backward(float distance)
 void
 perspective_camera::zoom_in(float amount)
 {
-    field_of_view -= amount;
+    zoom(amount);
 }
 
 void
 perspective_camera::zoom_out(float amount)
 {
-    field_of_view += amount;
+    zoom(-amount);
+}
+
+void
+perspective_camera::zoom(float amount)
+{
+    field_of_view -= amount;
 }
 
 matrix4x4
@@ -946,16 +955,28 @@ int main()
             switch (event.type())
             {
                 case event_type::quit:
+                {
                     running = false;
-                    break;
+                }
+                break;
 
                 case event_type::key_up:
+                {
                     auto const key_event = event.as<keyboard_event>();
                     if ((key_event.scan_code() == scan_code::m) && ((key_event.key_modifier() & key_modifier::left_ctrl) != key_modifier::none))
                     {
                         mouse::relative_mode(!mouse::relative_mode());
                     }
-                    break;
+                }
+                break;
+
+                case event_type::mouse_wheel:
+                {
+                    auto const wheel_event = event.as<mouse_wheel_event>();
+                    auto const amount = wheel_event.y();
+                    camera.zoom(static_cast<float>(amount));
+                }
+                break;
             }
         }
         else
