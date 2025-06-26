@@ -708,8 +708,7 @@ shade(hit const& hit, world const& world, int level, float weight)
         auto const reflective_weight = hit.object.reflective_coefficient * weight;
         if (reflective_weight > min_weight)
         {
-            auto const reflected_vector = reflect(hit.ray.direction, shading_normal);
-            auto const reflected_ray = ray(surface_position, reflected_vector);
+            auto const reflected_ray = ray(surface_position, reflect(hit.ray.direction, shading_normal));
             color += hit.object.reflective_coefficient * trace(
                 reflected_ray, world, level + 1, reflective_weight
             );
@@ -719,9 +718,8 @@ shade(hit const& hit, world const& world, int level, float weight)
         auto const transmissive_weight = hit.object.transmissive_coefficient * weight;
         if (transmissive_weight > min_weight)
         {
-            auto const transmitted_vector = refract(hit.ray.direction, shading_normal,
-                dot(shading_normal, hit.ray.direction) < 0.0f ? hit.object.index_of_refraction : 1.0f / hit.object.index_of_refraction
-            );
+            auto const eta = dot(shading_normal, hit.ray.direction) < 0.0f ? hit.object.index_of_refraction : 1.0f / hit.object.index_of_refraction;
+            auto const transmitted_vector = refract(hit.ray.direction, shading_normal, eta);
             if (mag(transmitted_vector) != 0.0)
             {
                 auto const transmitted_ray = ray(surface_position, transmitted_vector);
